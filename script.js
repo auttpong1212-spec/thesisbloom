@@ -3,6 +3,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- 1. Init Data & State ---
     let favorites = JSON.parse(localStorage.getItem('bloomFavorites')) || [];
     
+    // --- MOCK REVIEW DATA (ข้อมูลรีวิวจำลอง) ---
+    const reviewsData = {
+        "MOCA Museum": [
+            { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago" },
+            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago" },
+            { name: "Nong Nat", avatar: "https://i.pravatar.cc/150?img=32", rating: 5, text: "ชอบห้อง Richard Green มาก แสงสวยเหมือนอยู่ยุโรป", date: "1 month ago" }
+        ],
+        "วัดพระศรีมหาธาตุ": [
+            { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday" },
+            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago" },
+            { name: "User99", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 4, text: "สวยงามครับ", date: "2 months ago" }
+        ],
+        "Co-Working Space & Library": [
+            { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "5 hours ago" },
+            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago" },
+            { name: "Group Work Team", avatar: "https://i.pravatar.cc/150?img=53", rating: 5, text: "ห้องประชุมกลุ่มดีมาก เสียงไม่ดังรบกวนข้างนอก", date: "1 week ago" }
+        ],
+        "เมเจอร์ รัชโยธิน": [
+            { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "Yesterday" },
+            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "3 weeks ago" },
+            { name: "K.O.", avatar: "https://i.pravatar.cc/150?img=12", rating: 4, text: "ลานเบียร์หน้าห้างบรรยากาศชิลดีครับ ดนตรีสดเพราะ", date: "1 month ago" }
+        ],
+        "เซ็นทรัล รามอินทรา": [
+            { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "2 days ago" },
+            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "1 week ago" }
+        ],
+        "ตลาดนัดจตุจักรกลางคืน": [
+            { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday" },
+            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "2 weeks ago" }
+        ],
+        "ตลาดนัดจตุจักรกลางวัน": [
+            { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday" },
+            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "3 days ago" }
+        ],
+        "หม่าล่าเสฉวน": [
+            { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "1 hour ago" },
+            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday" },
+            { name: "Poom", avatar: "https://i.pravatar.cc/150?img=55", rating: 5, text: "ฟองเต้าหู้ทอดคือที่สุด! ต้องสั่งแยกมาจุ่มน้ำซุป", date: "1 week ago" }
+        ],
+        "Meetup Mingle Cafe": [
+            { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "2 days ago" },
+            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "3 days ago" }
+        ],
+        "สุกี้จานบิน": [
+            { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "Yesterday" },
+            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "1 week ago" }
+        ],
+        "Little Chicky": [
+            { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "4 hours ago" },
+            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday" }
+        ],
+        "Bad Bad Burger": [
+            { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "2 days ago" },
+            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "1 week ago" }
+        ],
+        "โอยั๊วะเกษตร": [
+            { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday" },
+            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "2 weeks ago" }
+        ],
+        "Uptojug Kitchen": [
+            { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday" },
+            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "5 days ago" }
+        ],
+        "Wallace": [
+            { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "1 month ago" },
+            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "2 months ago" }
+        ]
+    };
+
     // --- 2. Menu Navigation ---
     const menuIcon = document.querySelector('.menu-icon');
     const nav = document.querySelector('.nav');
@@ -128,6 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const detailModal = document.getElementById('detailModal');
     const detailClose = document.querySelector('.detail-close-btn');
     
+    // --- Review Variables ---
+    const reviewModal = document.getElementById('reviewModal');
+    const reviewClose = document.querySelector('.review-close-btn');
+    const reviewList = document.getElementById('reviewList');
+    const submitReviewBtn = document.getElementById('submitReviewBtn');
+    let currentReviewTarget = ""; // เก็บชื่อสถานที่ปัจจุบันที่เปิดอยู่
+
     function updateGallery(imageString) {
         const nav = document.getElementById('thumbnailNav'); const main = document.getElementById('modalImage');
         if (!main || !nav) return;
@@ -145,6 +221,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function openDetail(data) {
         if(!detailModal) return;
+        
+        currentReviewTarget = data.title; // บันทึกชื่อสถานที่
+        
         document.getElementById('modalTitle').textContent = data.title || '';
         document.getElementById('modalDetails').textContent = data.details || '';
         document.getElementById('modalBudget').textContent = data.budget ? `Budget: ${data.budget}` : '';
@@ -169,6 +248,78 @@ document.addEventListener('DOMContentLoaded', function() {
         detailModal.style.display = 'flex'; 
         document.body.style.overflow = 'hidden';
     }
+    
+    // --- OPEN REVIEW MODAL LOGIC (UPDATED) ---
+    function openReviews() {
+        if(!reviewModal) return;
+        
+        document.getElementById('reviewTargetName').textContent = currentReviewTarget;
+        reviewList.innerHTML = ''; // เคลียร์ของเก่า
+
+        // ดึงข้อมูลรีวิว (ถ้าไม่มี ให้ใช้ Default)
+        let reviews = reviewsData[currentReviewTarget];
+        if(!reviews || reviews.length === 0) {
+            // Default Reviews ถ้ายังไม่มีใครรีวิว
+            reviews = [
+                { name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now" }
+            ];
+        }
+
+        // Generate HTML
+        reviews.forEach(r => {
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            const html = `
+                <div class="review-item">
+                    <div class="review-avatar" style="background-image: url('${r.avatar}');"></div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <div class="review-user">${r.name}</div>
+                            <div class="review-date">${r.date}</div>
+                        </div>
+                        <div class="review-stars">${stars}</div>
+                        <p class="review-text">${r.text}</p>
+                    </div>
+                </div>
+            `;
+            reviewList.innerHTML += html;
+        });
+
+        reviewModal.style.display = 'flex';
+    }
+
+    // --- SUBMIT REVIEW LOGIC ---
+    if(submitReviewBtn) {
+        submitReviewBtn.addEventListener('click', () => {
+            const text = document.getElementById('newReviewText').value;
+            if(!text) { alert('Please write something!'); return; }
+            
+            // สร้างรีวิวใหม่ (Mock up)
+            const newReview = {
+                name: "You (Demo)",
+                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                rating: 5,
+                text: text,
+                date: "Just now"
+            };
+            
+            // เพิ่มลงใน Array (ใน Memory ชั่วคราว)
+            if(!reviewsData[currentReviewTarget]) reviewsData[currentReviewTarget] = [];
+            reviewsData[currentReviewTarget].unshift(newReview); // เพิ่มบนสุด
+            
+            // Refresh List
+            openReviews(); 
+            
+            // Clear input
+            document.getElementById('newReviewText').value = '';
+        });
+    }
+
+    // Bind Button
+    const viewReviewsBtn = document.getElementById('viewReviewsBtn');
+    if(viewReviewsBtn) {
+        viewReviewsBtn.addEventListener('click', openReviews);
+    }
+
 
     document.querySelectorAll('.location-card').forEach(card => {
         // Heart Click
@@ -200,8 +351,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeModal(m) { if(m) m.style.display='none'; document.body.style.overflow='auto'; }
     if(detailClose) detailClose.addEventListener('click', () => closeModal(detailModal));
+    if(reviewClose) reviewClose.addEventListener('click', () => closeModal(reviewModal));
+
     window.addEventListener('click', (e) => { 
         if(e.target === detailModal) closeModal(detailModal); 
+        if(e.target === reviewModal) closeModal(reviewModal);
         if(e.target === document.getElementById('loginModal')) closeModal(document.getElementById('loginModal'));
         if(e.target === document.getElementById('signupModal')) closeModal(document.getElementById('signupModal'));
         if(e.target === document.getElementById('searchModal')) closeModal(document.getElementById('searchModal'));
