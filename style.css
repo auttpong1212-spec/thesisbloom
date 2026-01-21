@@ -55,6 +55,21 @@ ul {
     margin: 0; 
 }
 
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-cyan); 
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-blue); 
+}
+
 /* =========================================
    3. HEADER & NAVIGATION
    ========================================= */
@@ -105,7 +120,7 @@ ul {
 }
 
 /* =========================================
-   4. LOGO STYLES (Variant System)
+   4. LOGO STYLES (Uniform System)
    ========================================= */
 /* Base Structure */
 .logo {
@@ -172,32 +187,59 @@ ul {
     background: var(--color-yellow);
 }
 
-/* Variant 3: Hero Big Text (Gimmick) */
-.hero-logo-gimmick {
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: inherit; /* ใช้ขนาดตาม H1 */
-    text-transform: uppercase;
-    cursor: default; 
-    
-    color: transparent;
-    -webkit-text-stroke: 3px white;
-    background: linear-gradient(to right, var(--color-cyan), var(--color-yellow));
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    background-size: 0% 100%;
-    background-repeat: no-repeat;
-    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
-    
-    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+/* Variant 3: Hero Logo Custom (Big & Center) */
+.hero-logo-custom {
+    /* ไม่ต้องจัดกึ่งกลาง เพราะ parent (hero-left-content) ชิดซ้ายอยู่แล้ว */
+    margin-top: 10px;
 }
 
-.hero-logo-gimmick:hover {
+/* ปรับขนาดตัวหนังสือให้ใหญ่สะใจ */
+.hero-logo-custom .logo-text {
+    font-size: 100px; /* ขนาดใหญ่ */
+    font-weight: 800;
+    
+    /* สไตล์ขอบขาว (White Outline) เพื่อให้เด่นบนพื้นหลังมืด */
+    -webkit-text-stroke: 3px white; 
+    color: transparent;
+    
+    /* สีไล่ระดับที่จะแสดงตอนเอาเมาส์วาง (ฟ้า -> เหลือง) */
+    background-image: linear-gradient(to right, var(--color-cyan), var(--color-yellow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    
+    filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
+    transition: all 0.5s ease;
+}
+
+/* ปรับขนาดจุด (Dot) ให้สมส่วนกับตัวหนังสือ */
+.hero-logo-custom .logo-dot {
+    width: 15px; 
+    height: 60px; /* แท่งใหญ่ขึ้น */
+    background: var(--color-yellow);
+    margin-right: 10px; /* ห่างจากตัวหนังสือหน่อย */
+}
+
+/* --- Hover Effects --- */
+/* ตอนวางเมาส์: จุดเปลี่ยนรูปร่าง */
+.hero-logo-custom:hover .logo-dot {
+    width: 60px;
+    height: 15px;
+    background: var(--color-cyan);
+}
+
+/* ตอนวางเมาส์: ตัวหนังสือถมสี */
+.hero-logo-custom:hover .logo-text {
     background-size: 100% 100%;
-    -webkit-text-stroke: 0px transparent;
-    filter: drop-shadow(0 0 20px rgba(0, 212, 194, 0.6));
-    transform: scale(1.05);
+    -webkit-text-stroke: 0px transparent; /* ลบขอบออก */
+    filter: drop-shadow(0 0 30px rgba(0, 212, 194, 0.6)); /* เรืองแสง */
+}
+
+/* Responsive: ปรับลดขนาดในมือถือ */
+@media (max-width: 768px) {
+    .hero-logo-custom .logo-text { font-size: 60px; -webkit-text-stroke: 2px white; }
+    .hero-logo-custom .logo-dot { height: 40px; width: 10px; }
 }
 
 /* =========================================
@@ -465,6 +507,45 @@ ul {
 .logged-in .fa-user { display: none; }
 .logged-in .user-profile-img { display: block; }
 
+/* Scroll Reveal Animation */
+.reveal {
+    position: relative;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 1s ease;
+}
+.reveal.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px; right: 30px;
+    width: 50px; height: 50px;
+    background: var(--color-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 999;
+}
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+.back-to-top:hover {
+    background: var(--color-cyan);
+    transform: translateY(-5px);
+}
+
 /* =========================================
    7. MAIN CONTENT SECTIONS
    ========================================= */
@@ -537,7 +618,7 @@ ul {
     position: absolute; 
     bottom: 0; left: 0; 
     width: 100%; height: 50%; 
-    background: linear-gradient(to top, rgba(0, 133, 227, 0.8), transparent); 
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent); 
     opacity: 0.9; 
     transition: 0.3s; 
 }
@@ -574,122 +655,509 @@ ul {
 .card-arrow, .card-description, .card-rating, .card-budget, .card-tags { display: none; }
 
 /* =========================================
-   9. ABOUT PAGE SPECIFIC
+   9. ABOUT PAGE REDESIGN
    ========================================= */
-.about-content { 
-    max-width: 900px; 
-    margin: 0 auto; 
-    color: var(--color-text-muted); 
+.about-content-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* Typography Layout */
-.about-text-container { 
-    text-align: center; 
-    margin-bottom: 50px; 
-    padding: 0 20px; 
-}
-.about-catchphrase { 
-    font-family: var(--font-head); 
-    font-size: 32px; 
-    font-weight: 700; 
-    color: var(--color-text); 
-    margin-bottom: 30px; 
-    letter-spacing: -0.5px; 
-}
-.about-description { 
-    font-size: 18px; 
-    line-height: 1.8; 
-    margin-bottom: 20px; 
-    font-weight: 300; 
-    max-width: 700px; 
-    margin-left: auto; 
-    margin-right: auto; 
+/* --- 1. Intro Block (Split Layout) --- */
+.about-intro-block {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    margin-bottom: 80px;
 }
 
-/* Text Highlights */
-.highlight-word { 
-    color: var(--color-pink); 
-    font-style: italic; 
-    display: inline-block; 
-    position: relative; 
+.about-image {
+    flex: 1;
+    position: relative;
 }
-.highlight-word::after { 
-    content: ''; 
-    display: block; 
-    width: 100%; height: 8px; 
-    background: rgba(234, 152, 169, 0.2); 
-    position: absolute; 
-    bottom: 5px; left: 0; 
-    z-index: -1; 
-    border-radius: 4px; 
-}
-.brand-name { font-weight: 800; color: var(--color-blue); font-size: 1.1em; }
-.location-highlight { color: var(--color-blue); font-weight: 500; border-bottom: 2px solid var(--color-yellow); }
-.tag-highlight { background: var(--color-bg-soft); color: var(--color-text); padding: 2px 10px; border-radius: 15px; font-weight: 500; font-size: 0.95em; border: 1px solid #eee; }
-.bloom-gradient { background: linear-gradient(to right, var(--color-blue), var(--color-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; font-size: 1.2em; font-style: italic; }
 
-/* Mission Icons */
-.mission-icons { 
-    display: flex; 
-    justify-content: center; 
-    gap: 20px; 
-    margin: 30px 0; 
-    flex-wrap: wrap; 
+.about-image img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
 }
-.mission-box { 
-    background: white; 
-    padding: 25px 20px; 
-    border-radius: 15px; 
-    width: 220px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-    transition: 0.3s; 
-    border: 1px solid #f0f0f0; 
-}
-.mission-box:hover { 
-    transform: translateY(-8px); 
-    box-shadow: 0 15px 30px rgba(0, 212, 194, 0.2); 
-    border-color: var(--color-cyan); 
-}
-.mission-box i { font-size: 32px; color: var(--color-cyan); margin-bottom: 15px; }
-.mission-box h4 { margin: 0 0 8px; color: var(--color-blue); font-family: var(--font-head); font-size: 18px; }
-.mission-box p { font-size: 14px; margin: 0; color: #888; }
 
-/* Team Section */
-.about-divider { border: 0; border-top: 1px solid #eee; margin: 60px 0; width: 50%; margin-left: auto; margin-right: auto; }
+.about-image:hover img {
+    transform: scale(1.02);
+}
+
+/* กรอบตกแต่งหลังรูป */
+.image-decoration {
+    position: absolute;
+    top: 20px;
+    left: -20px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--color-cyan);
+    border-radius: 20px;
+    z-index: 1;
+}
+
+.about-text {
+    flex: 1.2;
+}
+
+.about-slogan {
+    font-family: var(--font-head);
+    font-size: 36px;
+    line-height: 1.3;
+    color: var(--color-blue);
+    margin-bottom: 25px;
+}
+
+.highlight-word {
+    color: var(--color-pink);
+    font-style: italic;
+    background: linear-gradient(120deg, transparent 0%, transparent 100%, rgba(234, 152, 169, 0.2) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 40%;
+    background-position: 0 90%;
+}
+
+.about-desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.location-tag {
+    color: var(--color-blue);
+    font-weight: 600;
+}
+
+.price-tag {
+    background-color: var(--color-yellow);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* =========================================
+   UPDATED: INLINE BLOOM LOGO WITH ANIMATION
+   ========================================= */
+.bloom-text {
+    /* ตั้งค่าการจัดวางให้เหมือนโลโก้ */
+    display: inline-flex;       /* ให้เรียงแนวนอนคู่กับจุด */
+    align-items: center;        /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+    gap: 6px;                   /* ระยะห่างระหว่างจุดกับตัวหนังสือ */
+    cursor: pointer;            /* เปลี่ยนเคอร์เซอร์เป็นรูปมือ */
+    vertical-align: middle;     /* จัดให้พอดีกับบรรทัดข้อความรอบข้าง */
+    position: relative;
+    top: -2px;                  /* ขยับขึ้นนิดหน่อยให้สวยงาม */
+
+    /* --- ส่วนของตัวหนังสือ (Text Base State) --- */
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: 1.4em;           /* ใหญ่กว่าตัวหนังสือรอบๆ เล็กน้อย */
+    letter-spacing: 0.5px;
+    line-height: 1;
+
+    /* เริ่มต้นแบบมีขอบ (Outline) เหมือนโลโก้หลัก */
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-blue); /* ขอบสีฟ้า */
+    
+    /* เตรียมสีไล่ระดับไว้ (แต่ยังไม่แสดง) */
+    background-image: linear-gradient(to right, var(--color-blue), var(--color-cyan));
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-repeat: no-repeat;
+    background-size: 0% 100%;   /* เริ่มต้นที่ 0% (ยังไม่ถมสี) */
+    
+    transition: all 0.5s ease;  /* เอฟเฟกต์การเปลี่ยนสี */
+    filter: drop-shadow(0 2px 3px rgba(0, 133, 227, 0.3)); /* เงาพื้นฐาน */
+}
+
+/* --- สร้าง "แท่งจุด" (The Dot Pseudo-element) --- */
+.bloom-text::before {
+    content: '';                /* สร้าง element ว่างๆ */
+    display: block;
+    width: 7px;                 /* ความกว้างแท่ง (ย่อส่วนจากโลโก้หลัก) */
+    height: 24px;               /* ความสูงแท่ง */
+    background: var(--color-yellow); /* สีเหลือง */
+    border-radius: 4px;         /* ความมน */
+    /* เอฟเฟกต์เด้งดึ๋ง (Bouncy Transition) */
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+/* =========================================
+   HOVER EFFECTS (ลูกเล่นตอนเอาเมาส์ชี้)
+   ========================================= */
+
+/* 1. เมื่อชี้: แท่งจุดเปลี่ยนรูปร่างและสี */
+.bloom-text:hover::before {
+    width: 24px;                /* ยืดแนวนอน */
+    height: 7px;                /* หดแนวตั้ง */
+    background: var(--color-cyan); /* เปลี่ยนเป็นสีฟ้า */
+}
+
+/* 2. เมื่อชี้: ตัวหนังสือถมสีและเรืองแสง */
+.bloom-text:hover {
+    background-size: 100% 100%; /* ถมสีไล่ระดับจนเต็ม */
+    -webkit-text-stroke: 0px transparent; /* ลบขอบออก */
+    /* เพิ่มแสงฟุ้งๆ (Glow Effect) */
+    filter: drop-shadow(0 0 15px rgba(0, 212, 194, 0.6)); 
+}
+
+/* --- 2. Mission Section --- */
+.mission-section {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.mission-title {
+    font-family: var(--font-head);
+    font-size: 14px;
+    color: #999;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.mission-card {
+    background: white;
+    padding: 40px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.mission-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-bg-soft);
+    box-shadow: 0 20px 40px rgba(0, 133, 227, 0.1);
+}
+
+.icon-box {
+    width: 70px;
+    height: 70px;
+    background: var(--color-bg-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--color-blue);
+    font-size: 28px;
+    transition: 0.3s;
+}
+
+.mission-card:hover .icon-box {
+    background: var(--color-blue);
+    color: white;
+}
+
+.mission-card h4 {
+    font-family: var(--font-head);
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+.mission-card p {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.6;
+}
+
+/* --- 3. Team & CTA --- */
+.about-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 0 auto 60px;
+    width: 100px;
+}
+
+.team-section {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
 .sub-header { 
     font-family: var(--font-head); 
     color: var(--color-blue); 
     font-size: 24px; 
-    margin-top: 10px; 
     margin-bottom: 40px; 
     letter-spacing: 1px; 
     text-transform: uppercase; 
-    text-align: center; /* Centered as requested */
-    width: 100%;
 }
-.team-grid { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-bottom: 40px; }
-.team-member { text-align: center; transition: transform 0.3s ease; }
-.team-member:hover { transform: translateY(-5px); }
-.member-img { width: 120px; height: 120px; border-radius: 50%; background-size: cover; background-position: center; margin: 0 auto 15px; border: 3px solid var(--color-cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.1); background-color: #eee; }
-.team-member h4 { font-family: var(--font-head); margin: 0 0 5px 0; color: var(--color-text); font-size: 18px; font-weight: 600; }
-.team-member p { font-size: 14px; color: var(--color-text-muted); margin: 0; font-weight: 400; }
 
-/* Call to Action Box */
-.about-cta-box { 
-    margin-top: 60px; 
-    background: linear-gradient(135deg, var(--color-bg-soft) 0%, white 100%); 
-    padding: 50px; 
-    border-radius: 30px; 
-    text-align: center; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
-    border: 1px solid #f0f0f0; 
+.team-grid { 
+    display: flex; 
+    justify-content: center; 
+    gap: 50px; 
+    flex-wrap: wrap; 
 }
-.about-cta-box p { margin-bottom: 25px; font-weight: 600; font-size: 20px; color: var(--color-blue); }
-.cta-btn { background: var(--color-cyan); color: white; border: none; display: inline-block; padding: 15px 50px; box-shadow: 0 10px 20px rgba(0, 212, 194, 0.3); }
-.cta-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0, 212, 194, 0.4); background: var(--color-blue); }
+
+.team-member { 
+    text-align: center; 
+    transition: transform 0.3s ease; 
+}
+.team-member:hover { 
+    transform: translateY(-5px); 
+}
+
+.member-img-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+}
+
+.member-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.team-member h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--color-blue);
+    font-family: var(--font-head);
+}
+
+.team-member .role {
+    font-size: 14px;
+    color: #999;
+    font-weight: 400;
+}
+
+.cta-section {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.cta-box {
+    background: linear-gradient(135deg, var(--color-blue), var(--color-cyan));
+    padding: 50px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 133, 227, 0.3);
+}
+
+.cta-box p {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    font-family: var(--font-head);
+}
+
+.cta-btn {
+    background: white;
+    color: var(--color-blue);
+    border: none;
+    padding: 15px 40px;
+}
+
+.cta-btn:hover {
+    background: var(--color-yellow);
+    color: var(--color-text);
+    transform: translateY(-3px);
+}
 
 /* =========================================
-   10. MODALS & FORMS
+   11. CONTACT PAGE REDESIGN
+   ========================================= */
+
+/* Background with subtle pattern or color */
+.contact-bg {
+    background-color: var(--color-bg);
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.contact-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* --- The Card --- */
+.contact-card-modern {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Left Side: Info Panel --- */
+.contact-info-panel {
+    flex: 2;
+    background: linear-gradient(135deg, var(--color-blue), #006bb3);
+    padding: 50px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-info-panel h3 {
+    font-family: var(--font-head);
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.contact-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+.detail-item:hover .icon-circle {
+    background: white;
+    color: var(--color-blue);
+    transform: scale(1.1);
+}
+
+.detail-item h4 {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.detail-item p {
+    margin: 5px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Socials in Contact */
+.contact-socials {
+    margin-top: 50px;
+}
+.contact-socials p { margin-bottom: 15px; font-size: 14px; opacity: 0.8; }
+.contact-socials .social-icons { display: flex; gap: 15px; }
+.contact-socials .social-icons a {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    color: white; transition: 0.3s;
+}
+.contact-socials .social-icons a:hover {
+    background: white;
+    color: var(--color-blue);
+    transform: translateY(-3px);
+}
+
+/* Decorations (วงกลมจางๆ พื้นหลัง) */
+.circle-deco-1, .circle-deco-2 {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    z-index: 0;
+}
+.circle-deco-1 { width: 200px; height: 200px; bottom: -50px; right: -50px; }
+.circle-deco-2 { width: 100px; height: 100px; top: 50px; right: 50px; }
+
+/* --- Right Side: Form Panel --- */
+.contact-form-panel {
+    flex: 3;
+    padding: 50px;
+    background: white;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.input-group-modern {
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.input-group-modern label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--color-blue);
+    font-size: 14px;
+}
+
+.input-group-modern input, 
+.input-group-modern textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    transition: 0.3s;
+    background: #f9f9f9;
+}
+
+.input-group-modern input:focus, 
+.input-group-modern textarea:focus {
+    border-color: var(--color-cyan);
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 212, 194, 0.1);
+}
+
+.send-btn {
+    width: auto;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(0, 212, 194, 0.3);
+}
+.send-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0, 212, 194, 0.4);
+}
+
+/* =========================================
+   12. MODALS & FORMS
    ========================================= */
 .modal { 
     background-color: rgba(0,0,0,0.7); 
@@ -757,8 +1225,22 @@ ul {
 .review-stars { color: var(--color-yellow); font-size: 12px; margin-bottom: 5px; }
 .review-text { font-size: 14px; color: #555; line-height: 1.4; margin: 0; }
 
+/* Star Rating Input */
+.star-rating-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #ccc;
+    cursor: pointer;
+}
+.star-rating-input i.filled {
+    color: var(--color-yellow);
+    font-weight: 900;
+}
+
 /* =========================================
-   11. FOOTER
+   13. FOOTER
    ========================================= */
 .footer { 
     background: var(--color-blue); 
@@ -772,7 +1254,7 @@ ul {
 .copyright { margin-top: 20px; font-size: 12px; opacity: 0.7; }
 
 /* =========================================
-   12. RESPONSIVE MEDIA QUERIES
+   14. RESPONSIVE MEDIA QUERIES
    ========================================= */
 @media (max-width: 768px) {
     /* Header */
@@ -794,6 +1276,8 @@ ul {
     .hero-title { font-size: 48px; }
     .hero-bottom-features { flex-direction: column; gap: 20px; left: 20px; bottom: 30px; }
     .hero-right-sidebar { display: none; }
+    .hero-logo-custom .logo-text { font-size: 60px; -webkit-text-stroke: 2px white; }
+    .hero-logo-custom .logo-dot { height: 40px; width: 10px; }
     
     /* Sections */
     .sections-container { padding-left: 20px; padding-right: 20px; }
@@ -803,12 +1287,41 @@ ul {
     .card-grid { grid-template-columns: 1fr; }
     
     /* About */
-    .mission-icons { flex-direction: column; align-items: center; }
+    .about-intro-block { flex-direction: column; text-align: center; gap: 30px; }
+    .image-decoration { left: 10px; top: 10px; }
+    .about-slogan { font-size: 28px; }
     .mission-box { width: 100%; max-width: 280px; }
-    .team-grid { gap: 30px; }
-    .two-column-layout { flex-direction: column; }
+    
+    /* Contact */
+    .contact-card-modern { flex-direction: column; }
+    .contact-info-panel, .contact-form-panel { padding: 30px; }
+    .form-row { flex-direction: column; gap: 0; }
+    .circle-deco-1, .circle-deco-2 { display: none; }
+    .send-btn { width: 100%; justify-content: center; }
     
     /* Modal */
     .modal-gallery .main-image { height: 250px; }
     .modal-buttons { flex-direction: column; gap: 10px; }
+}
+
+/* =========================================
+   15. SEARCH TAG STYLES
+   ========================================= */
+/* สไตล์สำหรับปุ่มคำค้นหาแนะนำ */
+.search-tag-hint {
+    background-color: #f0f0f0;
+    color: var(--color-text-muted);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.search-tag-hint:hover {
+    background-color: var(--color-bg-soft);
+    color: var(--color-blue);
+    border-color: var(--color-blue);
+    transform: translateY(-2px);
 }

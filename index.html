@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLOOM</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2917/2917995.png">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +51,10 @@
                 <div class="hero-left-content">
                     <h1 class="hero-title">
                         <br>
-                        <span class="hero-logo-gimmick">BLOOM</span>
+                        <div class="logo hero-logo-custom">
+                            <span class="logo-dot"></span>
+                            <span class="logo-text">BLOOM</span>
+                        </div>
                     </h1>
                     <p class="hero-subtitle">คู่มือเอาตัวรอดฉบับเด็กศรีปทุม กิน เที่ยว เรียน เล่น ครบจบในที่เดียว
                         พร้อมพิกัดที่จอดรถ!</p>
@@ -78,23 +83,23 @@
         </section>
 
         <section class="hero-image" id="tour-hero" style="background-image: url('/Im/เดินๆ.png');">
-            <div class="hero-content-center">
+            <div class="hero-content-center reveal">
                 <h2>HANGOUT SPOTS</h2><a href="#location-section-tour" class="button-outline view-tour">GO THERE</a>
             </div>
         </section>
         <section class="hero-image" id="restaurant-hero" style="background-image: url('Im/Hangout.png');">
-            <div class="hero-content-center">
+            <div class="hero-content-center reveal">
                 <h2>EAT & DRINK</h2><a href="#location-section-restaurant" class="button-outline view-restaurant">GO
                     THERE</a>
             </div>
         </section>
         <section class="hero-image" id="contact-hero" style="background-image: url('Im/Contact.png');">
-            <div class="hero-content-center">
+            <div class="hero-content-center reveal">
                 <h2>CONTACT US</h2><a href="#contact-section" class="button-outline view-contact">VIEW</a>
             </div>
         </section>
         <section class="hero-image" id="about-hero" style="background-image: url('Im/About.png');">
-            <div class="hero-content-center">
+            <div class="hero-content-center reveal">
                 <h2>ABOUT US</h2><a href="#about-section" class="button-outline view-about">VIEW</a>
             </div>
         </section>
@@ -102,12 +107,12 @@
         <section id="location-section-tour" class="sections-container">
             <a href="#" class="back-to-home-btn custom-back-btn"><i class="fa-solid fa-arrow-left-long"></i> BACK TO
                 HOME</a>
-            <div class="section-header">
+            <div class="section-header reveal">
                 <h2 style="margin-bottom: 5px;">HANGOUT</h2>
                 <p style="color: #666; font-size: 14px; margin-top:0;">ว่างคาบไหน ไปที่นั่น</p>
             </div>
 
-            <div class="filter-container" id="tourFilters">
+            <div class="filter-container reveal" id="tourFilters">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="favorites">My Favs ❤️</button>
                 <button class="filter-btn" data-filter="#NearBTS">ติด BTS</button>
@@ -119,7 +124,7 @@
             <div class="card-grid-container">
                 <div class="card-grid" id="locationList">
 
-                    <div class="location-card" data-title="MOCA Museum"
+                    <div class="location-card reveal" data-title="MOCA Museum"
                         data-details="พิพิธภัณฑ์ศิลปะร่วมสมัย จุดเช็คอินถ่ายรูปสุดฮิต ได้รูปสวยๆ กลับไปลง IG แน่นอน"
                         data-budget="Student: 100 THB" data-highlight="มุมบันไดเลื่อนและห้อง Richard Green แสงสวยมาก"
                         data-hours="10:00 - 18:00 (Closed Mon)" data-phone="02-016-5666"
@@ -134,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="วัดพระศรีมหาธาตุ"
+                    <div class="location-card reveal" data-title="วัดพระศรีมหาธาตุ"
                         data-details="วัดคู่บุญย่านบางเขน ไหว้พระขอพรเรื่องเรียนและเรื่องงาน เดินทางสะดวกด้วย BTS"
                         data-budget="Free" data-highlight="เจดีย์สีขาวองค์ใหญ่ และสิ่งศักดิ์สิทธิ์ขอพรเรื่องการเรียน"
                         data-hours="06:00 - 18:00" data-phone="02-521-0311"
@@ -148,7 +153,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Co-Working Space & Library"
+                    <div class="location-card reveal" data-title="Co-Working Space & Library"
                         data-details="พื้นที่ปั่นงานกลุ่มเงียบๆ มีปลั๊กไฟและ Wi-Fi แรงๆ เหมาะกับช่วง Midterm"
                         data-budget="Free / Low Cost" data-highlight="เงียบสงบ แอร์เย็น และมีปลั๊กไฟทุกโต๊ะ"
                         data-hours="08:30 - 20:00" data-phone="02-579-1111"
@@ -162,7 +167,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="เมเจอร์ รัชโยธิน"
+                    <div class="location-card reveal" data-title="เมเจอร์ รัชโยธิน"
                         data-details="ดูหนังใหม่ล่าสุด โยนโบว์ลิ่ง และร้องคาราโอเกะ แหล่งรวมตัวยอดฮิต"
                         data-budget="200 - 500 THB" data-highlight="โรงหนังระบบ IMAX และลานกิจกรรมหน้าห้าง"
                         data-hours="10:00 - 22:00" data-phone="02-515-5555"
@@ -177,7 +182,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="เซ็นทรัล รามอินทรา"
+                    <div class="location-card reveal" data-title="เซ็นทรัล รามอินทรา"
                         data-details="ห้างโฉมใหม่ใกล้ ม. มากที่สุด มีของกินเยอะ เดินตากแอร์ชิลๆ" data-budget="Varied"
                         data-highlight="โซน B2S และ Food Patio ปรับปรุงใหม่สวยมาก" data-hours="10:00 - 21:00"
                         data-phone="02-790-3000" data-parking="อาคารจอดรถในร่ม (ที่จอดเยอะมาก)"
@@ -191,7 +196,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="ตลาดนัดจตุจักรกลางคืน"
+                    <div class="location-card reveal" data-title="ตลาดนัดจตุจักรกลางคืน"
                         data-details="รายละเอียดและบรรยากาศที่น่าสนใจหลายอย่างครับ โดยจะเปิดให้บริการในวันและเวลาที่แตกต่างจากตลาดนัดจตุจักรหลักในเวลากลางวัน"
                         data-budget="100 - 400 THB" data-highlight="ถ่ายรูปกับปราสาทเก่า และร้านของเล่นวินเทจ"
                         data-hours="19:00 - 24:00 (Fri-Sat-Sun)" data-phone="02-272-4440"
@@ -206,7 +211,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card"data-title="ตลาดนัดจตุจักรกลางวัน" 
+                    <div class="location-card reveal" data-title="ตลาดนัดจตุจักรกลางวัน" 
                         data-details="ตลาดนัดที่ใหญ่ที่สุดในประเทศไทย แหล่งรวมสินค้าทุกชนิด ทั้งของใช้ เสื้อผ้า สัตว์เลี้ยง ต้นไม้ และอาหาร"
                         data-budget="100 - 500 THB"
                         data-highlight="สินค้าหลากหลายครบครัน มีทั้งงานศิลปะ ของตกแต่งบ้าน และโซนสัตว์เลี้ยง" 
@@ -227,12 +232,12 @@
         <section id="location-section-restaurant" class="sections-container">
             <a href="#" class="back-to-home-btn custom-back-btn"><i class="fa-solid fa-arrow-left-long"></i> BACK TO
                 HOME</a>
-            <div class="section-header">
+            <div class="section-header reveal">
                 <h2 style="margin-bottom: 5px;">EATS</h2>
                 <p style="color: #666; font-size: 14px; margin-top:0;">หิวเมื่อไหร่ก็แวะมา</p>
             </div>
 
-            <div class="filter-container" id="diningFilters">
+            <div class="filter-container reveal" id="diningFilters">
                 <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
                 <button class="filter-btn" data-filter="favorites">My Favs ❤️</button>
                 <button class="filter-btn" data-filter="#SaveBudget">ประหยัด</button>
@@ -244,7 +249,7 @@
             <div class="card-grid-container">
                 <div class="card-grid" id="restaurantList">
 
-                    <div class="location-card" data-title="หม่าล่าเสฉวน"
+                    <div class="location-card reveal" data-title="หม่าล่าเสฉวน"
                         data-details="ร้านหม่าล่าขวัญใจเด็ก ม. ราคาเริ่มต้นไม้ละ 5 บาท เผ็ดสะใจ"
                         data-budget="50 - 150 THB" data-highlight="น้ำจิ้มถั่วสูตรเด็ด และฟองเต้าหู้ทอดกรอบ"
                         data-hours="11:00 - 21:00" data-phone="082-645-8483"
@@ -258,10 +263,10 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Meetup Mingle Cafe"
+                    <div class="location-card reveal" data-title="Meetup Mingle Cafe"
                         data-details="คาเฟ่ที่มีบอร์ดเกมให้เล่น นั่งทำงานกลุ่มได้ยาวๆ กาแฟดี ขนมอร่อย"
                         data-budget="100 - 250 THB" data-highlight="มีบอร์ดเกมให้เลือกเยอะมาก และห้องส่วนตัว"
-                        data-hours="10:00 - 22:00" data-phone="02-579-1111" data-parking="จอดหน้าร้านได้ 2-3 คัน"
+                        data-hours="10:00 - 22:00" data-phone="08x-xxx-xxxx" data-parking="จอดหน้าร้านได้ 2-3 คัน"
                         data-tags="#Cafe #WorkFriendly #Fun" data-images="Im/ร้านเกม1.webp,Im/ร้านเกม2.webp">
                         <div class="favorite-btn"><i class="fa-regular fa-heart"></i></div>
                         <div class="card-image" style="background-image: url('Im/ร้านเกม1.webp');"></div>
@@ -271,7 +276,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="สุกี้จานบิน"
+                    <div class="location-card reveal" data-title="สุกี้จานบิน"
                         data-details="สุกี้สายพานยอดฮิตแถวนี้ น้ำซุปเด็ดมาก เหมาะกับวันหิวโซ"
                         data-budget="250 - 400 THB" data-highlight="น้ำซุปกระดูกหมูเข้มข้น และเนื้อออสเตรเลีย"
                         data-hours="11:00 - 02:00" data-phone="095-956-5668"
@@ -285,7 +290,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Little Chicky"
+                    <div class="location-card reveal" data-title="Little Chicky"
                         data-details="ไก่ทอดเกาหลีราคาดีงาม เซ็ตนักเรียนคุ้มมาก กรอบนอกนุ่มใน"
                         data-budget="80 - 200 THB" data-highlight="ไก่ทอดซอสหัวหอม และต๊อกบกกีชีส"
                         data-hours="10:00 - 20:00" data-phone="096-646-3159"
@@ -299,7 +304,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Bad Bad Burger"
+                    <div class="location-card reveal" data-title="Bad Bad Burger"
                         data-details="เบอร์เกอร์พรีเมียมชิ้นโต เนื้อฉ่ำๆ เหมาะสำหรับวันอยากกินของดีๆ"
                         data-budget="250 - 450 THB" data-highlight="Truffle Burger และแป้งบันโฮมเมด"
                         data-hours="16:00 - 23:00" data-phone="095-956-5668" data-parking="จอดริมถนนหน้าร้าน (ช่วงค่ำ)"
@@ -312,7 +317,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="โอยั๊วะเกษตร"
+                    <div class="location-card reveal" data-title="โอยั๊วะเกษตร"
                         data-details="ร้านนั่งชิลริมน้ำ บรรยากาศดี เหมาะสำหรับเลี้ยงสายรหัส" data-budget="300 - 600 THB"
                         data-highlight="ดนตรีสดริมน้ำ และเมนูขาหมูเยอรมัน" data-hours="17:00 - 24:00"
                         data-phone="081-808-9885" data-parking="มีลานจอดรถขนาดใหญ่ของร้าน"
@@ -325,7 +330,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Uptojug Kitchen"
+                    <div class="location-card reveal" data-title="Uptojug Kitchen"
                         data-details="ร้านสวยบรรยากาศดี อาหารฟิวชั่น ถ่ายรูปสวย เหมาะกับนัดเดท"
                         data-budget="200 - 400 THB" data-highlight="สปาเก็ตตี้คาโบนาร่า และมุมถ่ายรูปหน้าร้าน"
                         data-hours="10:00 - 19:00" data-phone="061-542-6666" data-parking="จอดในโครงการ"
@@ -338,7 +343,7 @@
                         </div>
                     </div>
 
-                    <div class="location-card" data-title="Wallace"
+                    <div class="location-card reveal" data-title="Wallace"
                         data-details="อาหารยุโรปหรูหรา บรรยากาศดีที่สุดในย่านนี้ สำหรับโอกาสพิเศษ"
                         data-budget="800+ THB" data-highlight="Steak เนื้อพรีเมียม และไวน์ลิสต์"
                         data-hours="11:00 - 22:00" data-phone="063-021-0537" data-parking="มีบริการ Valet Parking"
@@ -358,39 +363,49 @@
         <section id="about-section" class="sections-container">
             <a href="#" class="back-to-home-btn custom-back-btn"><i class="fa-solid fa-arrow-left-long"></i> BACK TO HOME</a>
 
-            <div class="section-header">
+            <div class="section-header reveal">
                 <h2>ABOUT US</h2>
             </div>
 
-            <div class="about-content">
-
-                <div class="about-text-container">
-                    <p class="about-description">
-                        <span class="brand-name">BLOOM</span> ไม่ใช่แค่เว็บแนะนำสถานที่ แต่คือ <strong>"เพื่อนซี้"</strong> 
-                        ที่จะพาคุณกระโดดขึ้น BTS ออกไปสำรวจความสนุกย่าน <span class="location-highlight">บางเขน-ศรีปทุม</span>
-                    </p>
-                    
-                    <p class="about-description">
-                        เราคัดสรรร้านที่น่าสนใจ คาเฟ่ชิค และที่เที่ยวฉบับ <span class="tag-highlight">Student Price</span> มาให้แล้ว 
-                        ข้อมูลครบ จบในที่เดียว... ให้ชีวิตมหาลัยของคุณ <span class="bloom-gradient">Bloom</span> ไปด้วยกัน!
-                    </p>
+            <div class="about-content-wrapper reveal">
+                
+                <div class="about-intro-block">
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Bloom Vibes">
+                        <div class="image-decoration"></div>
+                    </div>
+                    <div class="about-text">
+                        <h3 class="about-slogan">
+                            "เปลี่ยนวันธรรมดา... <br>ให้ <span class="highlight-word">ซ่า</span> กว่าเดิม!"
+                        </h3>
+                        <p class="about-desc">
+                            <span class="bloom-text">BLOOM</span> คือเพื่อนซี้ที่จะพาคุณกระโดดขึ้น BTS ออกไปสำรวจความสนุกย่าน <span class="location-tag">บางเขน-ศรีปทุม</span> 
+                            เราคัดสรรร้านที่น่าสนใจ คาเฟ่ชิค และที่เที่ยวฉบับ <span class="price-tag">Student Price</span> มาให้แล้ว
+                        </p>
+                        <p class="about-desc">
+                            ข้อมูลครบ จบในที่เดียว... ให้ชีวิตมหาลัยของคุณ <span class="bloom-text">BLOOM</span> ไปด้วยกัน!
+                        </p>
+                    </div>
                 </div>
 
-                <div class="mission-icons">
-                    <div class="mission-box">
-                        <i class="fa-solid fa-heart-circle-check"></i>
-                        <h4>Reviews</h4>
-                        <p>รีวิวจากใจ</p>
-                    </div>
-                    <div class="mission-box">
-                        <i class="fa-solid fa-coins"></i>
-                        <h4>Student Wallet</h4>
-                        <p>คัดร้านราคาประหยัด</p>
-                    </div>
-                    <div class="mission-box">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <h4>Local Guide</h4>
-                        <p>รู้ลึก รู้จริง ทุกซอกซอย</p>
+                <div class="mission-section">
+                    <h4 class="mission-title">WHY CHOOSE US?</h4>
+                    <div class="mission-grid">
+                        <div class="mission-card">
+                            <div class="icon-box"><i class="fa-solid fa-heart-circle-check"></i></div>
+                            <h4>Reviews</h4>
+                            <p>รีวิวจากใจ ไม่มีหน้าม้า ไม่มีการจ้างวาน</p>
+                        </div>
+                        <div class="mission-card">
+                            <div class="icon-box"><i class="fa-solid fa-coins"></i></div>
+                            <h4>Student Wallet</h4>
+                            <p>คัดมาแล้วว่าคุ้มค่า สบายกระเป๋านักศึกษา</p>
+                        </div>
+                        <div class="mission-card">
+                            <div class="icon-box"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <h4>Local Guide</h4>
+                            <p>รู้ลึกทุกซอกซอย พิกัดลับที่คนพื้นที่แนะนำ</p>
+                        </div>
                     </div>
                 </div>
 
@@ -400,41 +415,104 @@
                     <h3 class="sub-header">MEET THE CREATORS</h3>
                     <div class="team-grid">
                         <div class="team-member">
-                            <div class="member-img"
-                                style="background-image: url('Im/Gemini_Generated_Image_7wohcc7wohcc7woh.png');"></div>
+                            <div class="member-img-wrapper">
+                                <div class="member-img" style="background-image: url('Im/Gemini_Generated_Image_7wohcc7wohcc7woh.png');"></div>
+                            </div>
                             <h4>Natthawut Songchaibanchacheep</h4>
-                            <p>Developer</p>
+                            <p class="role">Developer & Content Creator</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="about-cta-box">
-                    <p>อยากให้เราไปรีวิวร้านไหน? หรือเจอที่เด็ดๆ บอกเราได้เลย!</p>
-                    <a href="#contact-section" class="button-outline cta-btn">CONTACT US</a>
+                <div class="cta-section">
+                    <div class="cta-box">
+                        <p>เจอที่เที่ยวเด็ดๆ หรืออยากให้เราไปรีวิวที่ไหน?</p>
+                        <a href="#contact-section" class="button-outline cta-btn">CONTACT US</a>
+                    </div>
                 </div>
 
             </div>
         </section>
 
-        <section id="contact-section" class="sections-container">
-            <a href="#" class="back-to-home-btn custom-back-btn"><i class="fa-solid fa-arrow-left-long"></i> BACK TO
-                HOME</a>
-            <div class="section-header">
-                <h2>CONTACT</h2>
+        <section id="contact-section" class="sections-container contact-bg">
+            <a href="#" class="back-to-home-btn custom-back-btn"><i class="fa-solid fa-arrow-left-long"></i> BACK TO HOME</a>
+            
+            <div class="section-header reveal">
+                <h2>CONTACT US</h2>
+                <p style="color: #666; margin-top: -10px;">เราพร้อมฟังทุกความคิดเห็นและข้อเสนอแนะจากคุณ</p>
             </div>
-            <div class="two-column-layout contact-layout">
-                <div class="column contact-info-column">
-                    <h3>GET IN TOUCH</h3>
-                    <p>Bloom<br>contact@bloom-spu.com<br>+66 90 123 4567</p>
-                </div>
-                <div class="column contact-form-column">
-                    <form id="contactForm" class="contact-form">
-                        <div class="input-group"><label>NAME</label><input type="text" id="contactName"></div>
-                        <div class="input-group"><label>EMAIL</label><input type="email" id="contactEmail"></div>
-                        <div class="input-group"><label>MESSAGE</label><textarea id="contactMessage"
-                                rows="4"></textarea></div>
-                        <button type="submit" class="modal-button">SEND MESSAGE</button>
-                    </form>
+
+            <div class="contact-wrapper reveal">
+                <div class="contact-card-modern">
+                    <div class="contact-info-panel">
+                        <h3>Let's Chat!</h3>
+                        <p class="contact-intro">มีร้านเด็ดอยากแนะนำ? หรือเจอปัญหาการใช้งาน? <br>ทักหาเราได้เลย ทีมงานพร้อมตอบครับ!</p>
+                        
+                        <div class="contact-details-list">
+                            <div class="detail-item">
+                                <div class="icon-circle"><i class="fa-solid fa-location-dot"></i></div>
+                                <div>
+                                    <h4>Location</h4>
+                                    <p>Sripatum University, Bangkok</p>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="icon-circle"><i class="fa-solid fa-phone"></i></div>
+                                <div>
+                                    <h4>Phone</h4>
+                                    <p>+66 90 123 4567</p>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="icon-circle"><i class="fa-solid fa-envelope"></i></div>
+                                <div>
+                                    <h4>Email</h4>
+                                    <p>Bloom@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-socials">
+                            <p>Follow Us:</p>
+                            <div class="social-icons">
+                                <a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="https://x.com/home"><i class="fa-sharp fa-solid fa-x"></i></a>
+                            </div>
+                        </div>
+                        
+                        <div class="circle-deco-1"></div>
+                        <div class="circle-deco-2"></div>
+                    </div>
+
+                    <div class="contact-form-panel">
+                        <form id="contactForm">
+                            <div class="form-row">
+                                <div class="input-group-modern">
+                                    <label>Your Name</label>
+                                    <input type="text" id="contactName" placeholder="John Doe" required>
+                                </div>
+                                <div class="input-group-modern">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="contactPhone" placeholder="08x-xxx-xxxx">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group-modern">
+                                <label>Email Address</label>
+                                <input type="email" id="contactEmail" placeholder="john@example.com" required>
+                            </div>
+                            
+                            <div class="input-group-modern">
+                                <label>Message</label>
+                                <textarea id="contactMessage" rows="4" placeholder="Tell us something..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="modal-button send-btn">
+                                SEND MESSAGE <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -449,12 +527,16 @@
             
             <div class="social-media">
                 <a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://x.com/home"><i class="fa-solid fa-x"></i></a>
+                <a href="https://x.com/home"><i class="fa-sharp fa-solid fa-x"></i></a>
                 <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
             </div>
         </div>
         <p class="copyright">© 2025 Bloom. All rights reserved.</p>
     </footer>
+
+    <div id="backToTop" class="back-to-top">
+        <i class="fa-solid fa-arrow-up"></i>
+    </div>
 
     <div id="detailModal" class="modal">
         <div class="modal-content">
@@ -540,11 +622,21 @@
             <span class="close-btn review-close-btn">×</span>
             <h2 id="reviewTargetName" style="color: var(--color-blue); margin-bottom: 20px;">Reviews</h2>
             
-            <div id="reviewList" class="review-list"></div>
+            <div id="reviewList" class="review-list">
+                </div>
 
             <div class="write-review-section">
                 <hr style="margin: 20px 0; border-top: 1px solid #eee;">
                 <h4>Write a Review</h4>
+                
+                <div class="star-rating-input">
+                    <i class="fa-regular fa-star" data-value="1"></i>
+                    <i class="fa-regular fa-star" data-value="2"></i>
+                    <i class="fa-regular fa-star" data-value="3"></i>
+                    <i class="fa-regular fa-star" data-value="4"></i>
+                    <i class="fa-regular fa-star" data-value="5"></i>
+                </div>
+
                 <div class="input-group">
                     <textarea id="newReviewText" placeholder="Share your experience..." rows="3"></textarea>
                 </div>
@@ -554,10 +646,28 @@
     </div>
 
     <div id="searchModal" class="modal">
-        <div class="modal-content search-modal-content"><span class="close-btn search-close-btn">×</span>
+        <div class="modal-content search-modal-content">
+            <span class="close-btn search-close-btn">×</span>
+            
+            <h2 style="text-align: center; color: var(--color-blue); margin-top: 0;">SEARCH</h2>
+            
             <form id="searchForm">
-                <div class="input-group"><input type="text" id="searchQuery" placeholder="Search..."></div><button
-                    type="submit" class="modal-button">SEARCH</button>
+                <div class="input-group">
+                    <input type="text" id="searchQuery" placeholder="ค้นหาชื่อร้าน, สถานที่, หรือ #Tag (เช่น #Cafe)...">
+                </div>
+                
+                <div style="margin-top: 15px; text-align: center;">
+                    <p style="font-size: 14px; color: #888; margin-bottom: 10px;">คำค้นหายอดฮิต:</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                        <span class="search-tag-hint" onclick="setSearch('#Buffet')">#Buffet</span>
+                        <span class="search-tag-hint" onclick="setSearch('#Cafe')">#Cafe</span>
+                        <span class="search-tag-hint" onclick="setSearch('#NearBTS')">#NearBTS</span>
+                        <span class="search-tag-hint" onclick="setSearch('MOCA')">MOCA</span>
+                        <span class="search-tag-hint" onclick="setSearch('หม่าล่า')">หม่าล่า</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-button" style="margin-top: 20px;">SEARCH</button>
             </form>
         </div>
     </div>
