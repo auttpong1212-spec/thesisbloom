@@ -2,122 +2,69 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- 1. Init Data & State ---
     let favorites = JSON.parse(localStorage.getItem('bloomFavorites')) || [];
-    let currentRating = 0; // Variable to store selected rating
+    let currentRating = 0;
 
-    // --- MOCK REVIEW DATA (Massive List) ---
+    // --- MOCK REVIEW DATA (ครบทุกร้านตาม data-title ใน HTML) ---
     const reviewsData = {
         "MOCA Museum": [
             { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago" },
-            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago" },
-            { name: "Nong Nat", avatar: "https://i.pravatar.cc/150?img=32", rating: 5, text: "ชอบห้อง Richard Green มาก แสงสวยเหมือนอยู่ยุโรป", date: "1 month ago" },
-            { name: "Camera Man", avatar: "https://i.pravatar.cc/150?img=60", rating: 4, text: "ห้ามใช้แฟลชและขาตั้งกล้องนะครับ แต่แสงธรรมชาติสวยอยู่แล้ว ถ่าย Portrait สวยมาก", date: "2 months ago" },
-            { name: "Somsri", avatar: "https://i.pravatar.cc/150?img=44", rating: 5, text: "กาแฟร้านข้างล่างอร่อยค่ะ เดินเหนื่อยๆ ลงมาพักจิบกาแฟฟินมาก", date: "3 months ago" }
+            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago" }
         ],
         "วัดพระศรีมหาธาตุ": [
             { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday" },
-            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago" },
-            { name: "User99", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 4, text: "สวยงามครับ เจดีย์ขาวองค์ใหญ่มาก", date: "2 months ago" },
-            { name: "Mod Dam", avatar: "https://i.pravatar.cc/150?img=23", rating: 5, text: "มาให้อาหารปลาที่นี่ประจำ ร่มรื่นดีค่ะ", date: "1 week ago" },
-            { name: "Big Boy", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "สายมูห้ามพลาด ท้าวเวสสุวรรณศักดิ์สิทธิ์มาก", date: "1 week ago" },
-            { name: "Lisa", avatar: "https://i.pravatar.cc/150?img=34", rating: 4, text: "มาเวียนเทียนทุกปีค่ะ การจัดการดี", date: "1 month ago" }
+            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago" }
         ],
         "Co-Working Space & Library": [
             { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago" },
-            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago" },
-            { name: "Group Work Team", avatar: "https://i.pravatar.cc/150?img=53", rating: 5, text: "ห้องประชุมกลุ่มดีมาก เสียงไม่ดังรบกวนข้างนอก", date: "3 days ago" },
-            { name: "Sleepy Head", avatar: "https://i.pravatar.cc/150?img=12", rating: 4, text: "โซฟานุ่มเกินไปครับ นั่งอ่านหนังสือแล้วหลับตลอดเลย 555", date: "1 week ago" },
-            { name: "Tech Geek", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "Wi-Fi แรงสะใจ โหลดไฟล์งานไวมาก รักเลย", date: "2 weeks ago" },
-            { name: "Freshy", avatar: "https://i.pravatar.cc/150?img=26", rating: 5, text: "พี่บรรณารักษ์ใจดีค่ะ หนังสือใหม่ๆ เยอะเลย", date: "3 weeks ago" },
-            { name: "No Name", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 3, text: "แอร์หนาวไปหน่อย อย่าลืมพกเสื้อกันหนาวมานะ", date: "1 month ago" }
+            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago" }
         ],
         "เมเจอร์ รัชโยธิน": [
             { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago" },
-            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday" },
-            { name: "K.O.", avatar: "https://i.pravatar.cc/150?img=12", rating: 4, text: "ลานเบียร์หน้าห้างบรรยากาศชิลดีครับ ดนตรีสดเพราะ", date: "2 days ago" },
-            { name: "Pop Corn Lover", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "ป๊อปคอร์นชีสผสมหวานคือที่สุดดดด กินเพลินจนลืมดูหนัง", date: "1 week ago" },
-            { name: "Bowling King", avatar: "https://i.pravatar.cc/150?img=56", rating: 4, text: "เลนโบว์ลิ่งดี เพลงมันส์ โยนสนุกครับ", date: "2 weeks ago" },
-            { name: "Sarah", avatar: "https://i.pravatar.cc/150?img=42", rating: 5, text: "โรงหนังสะอาด พนักงานบริการดีค่ะ", date: "3 weeks ago" }
+            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday" }
         ],
         "เซ็นทรัล รามอินทรา": [
             { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday" },
-            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago" },
-            { name: "Shopping Queen", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "B2S ใหญ่มาก เครื่องเขียนครบ เดินเพลินเลย", date: "3 days ago" },
-            { name: "Food Fighter", avatar: "https://i.pravatar.cc/150?img=15", rating: 5, text: "ศูนย์อาหาร Food Patio อาหารอร่อย ราคาไม่แพง สะอาด", date: "1 week ago" },
-            { name: "Driver", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่จอดรถเยอะดีครับ ไม่ต้องวนหานาน", date: "2 weeks ago" },
-            { name: "Cat Lover", avatar: "https://i.pravatar.cc/150?img=19", rating: 4, text: "มีโซน Pet Friendly ด้วย พาน้องแมวมาเดินเล่นได้", date: "1 month ago" }
+            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago" }
         ],
         "ตลาดนัดจตุจักรกลางคืน": [
             { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday" },
-            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago" },
-            { name: "Night Owl", avatar: "https://i.pravatar.cc/150?img=51", rating: 5, text: "บรรยากาศดีมาก ของแปลกๆ เยอะ เดินสนุกกว่าตอนกลางวันอีก", date: "2 weeks ago" },
-            { name: "Toy Collector", avatar: "https://i.pravatar.cc/150?img=39", rating: 5, text: "เจอของเล่นเก่าหายากที่นี่ ร้านพี่คนขายใจดีลดราคาให้ด้วย", date: "3 weeks ago" },
-            { name: "Farang", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "Good vibes! Love the street food here.", date: "1 month ago" }
+            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago" }
         ],
         "ตลาดนัดจตุจักรกลางวัน": [
             { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday" },
-            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday" },
-            { name: "Plant Lover", avatar: "https://i.pravatar.cc/150?img=49", rating: 5, text: "โซนต้นไม้คือสวรรค์ ราคาถูกกว่าร้านข้างนอกเยอะ", date: "1 week ago" },
-            { name: "Fashionista", avatar: "https://i.pravatar.cc/150?img=20", rating: 4, text: "เสื้อผ้าแฟชั่นเยอะมาก ต่อราคาได้นิดหน่อย อย่าลืมพกเงินสดนะ", date: "2 weeks ago" },
-            { name: "Local Guide", avatar: "https://i.pravatar.cc/150?img=65", rating: 3, text: "คนเยอะมาก ระวังกระเป๋าด้วยนะครับ", date: "3 weeks ago" }
+            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday" }
         ],
         "หม่าล่าเสฉวน": [
             { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago" },
-            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday" },
-            { name: "Poom", avatar: "https://i.pravatar.cc/150?img=55", rating: 5, text: "ฟองเต้าหู้ทอดคือที่สุด! ต้องสั่งแยกมาจุ่มน้ำซุป", date: "2 days ago" },
-            { name: "Late Night Eater", avatar: "https://i.pravatar.cc/150?img=8", rating: 4, text: "ร้านปิดดึกดี เหมาะกับคนหิวรอบดึกอย่างเรา", date: "3 days ago" },
-            { name: "Mala Addict", avatar: "https://i.pravatar.cc/150?img=42", rating: 5, text: "กินมาหลายร้าน ร้านนี้เด็ดสุดในย่านนี้แล้ว น้ำซุปหอมเครื่องเทศมาก", date: "1 week ago" },
-            { name: "Save Money", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "กินอิ่มในงบ 100 บาท สบายกระเป๋า", date: "1 week ago" }
+            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday" }
         ],
         "Meetup Mingle Cafe": [
             { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday" },
-            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago" },
-            { name: "Sweet Tooth", avatar: "https://i.pravatar.cc/150?img=18", rating: 5, text: "บิงซูอร่อยมากกก ถ้วยใหญ่กิน 3 คนยังจุก", date: "1 week ago" },
-            { name: "Freelancer", avatar: "https://i.pravatar.cc/150?img=61", rating: 4, text: "บรรยากาศดี เพลงเพราะ เหมาะกับการนั่งปั่นงาน", date: "1 week ago" },
-            { name: "Student B", avatar: "https://i.pravatar.cc/150?img=7", rating: 5, text: "ชอบมาติวหนังสือที่นี่ โต๊ะกว้างดี", date: "3 days ago" }
+            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago" }
         ],
         "สุกี้จานบิน": [
             { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago" },
-            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday" },
-            { name: "Meat Lover", avatar: "https://i.pravatar.cc/150?img=58", rating: 5, text: "เนื้อออสเตรเลียดีมาก สั่งไม่อั้น คุ้มสุดๆ", date: "3 days ago" },
-            { name: "Shabu Shabu", avatar: "https://i.pravatar.cc/150?img=30", rating: 4, text: "น้ำจิ้มอร่อย มีให้เลือกหลายแบบ พนักงานบริการดี", date: "5 days ago" },
-            { name: "Hungry Man", avatar: "https://i.pravatar.cc/150?img=11", rating: 5, text: "กินจนตัวแตก ของหวานไอติมก็รวมในบุฟเฟต์ด้วย ดีงาม", date: "1 week ago" },
-            { name: "Solo Eater", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มาทานคนเดียวก็ไม่เขิน หม้อส่วนตัว สะดวกดี", date: "2 weeks ago" }
+            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday" }
         ],
         "Little Chicky": [
             { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago" },
-            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday" },
-            { name: "K-Pop Fan", avatar: "https://i.pravatar.cc/150?img=26", rating: 5, text: "เปิดเพลงเกาหลีได้ใจมาก ไก่ทอดซอสเผ็ดคือดีย์", date: "3 days ago" },
-            { name: "Budget Meal", avatar: "https://i.pravatar.cc/150?img=34", rating: 4, text: "ถูกและดีมีอยู่จริง ไก่ทอดชิ้นใหญ่มาก", date: "5 days ago" },
-            { name: "Take Away", avatar: "https://i.pravatar.cc/150?img=40", rating: 4, text: "สั่งกลับบ้านยังกรอบอยู่เลย ชอบต๊อกบกกีด้วย", date: "1 week ago" },
-            { name: "Ploy", avatar: "https://i.pravatar.cc/150?img=2", rating: 5, text: "เจ้าของร้านใจดีมาก แถมซอสให้ด้วย", date: "2 weeks ago" }
+            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday" }
         ],
         "Bad Bad Burger": [
             { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday" },
-            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago" },
-            { name: "Western Guy", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "Best burger in this area! Authentic taste.", date: "4 days ago" },
-            { name: "Cheese Lover", avatar: "https://i.pravatar.cc/150?img=22", rating: 5, text: "สั่งเพิ่มชีสเยิ้มๆ คือนิพพาน แป้งขนมปังนุ่มมาก", date: "1 week ago" },
-            { name: "Night Rider", avatar: "https://i.pravatar.cc/150?img=66", rating: 5, text: "ร้านสวย นั่งชิลได้ เบียร์คราฟต์ดี", date: "2 weeks ago" }
+            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago" }
         ],
         "โอยั๊วะเกษตร": [
             { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday" },
-            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday" },
-            { name: "Beer Fest", avatar: "https://i.pravatar.cc/150?img=69", rating: 5, text: "ขาหมูเยอรมันกับเบียร์เย็นๆ เข้ากันสุดๆ ดนตรีสดเล่นดี", date: "1 week ago" },
-            { name: "Family Time", avatar: "https://i.pravatar.cc/150?img=46", rating: 4, text: "พาครอบครัวมาทานข้าว อาหารออกไว รสชาติถูกปากผู้ใหญ่", date: "2 weeks ago" },
-            { name: "Alumni", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "คิดถึงบรรยากาศเก่าๆ ร้านยังรักษามาตรฐานได้ดี", date: "1 month ago" }
+            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday" }
         ],
         "Uptojug Kitchen": [
             { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday" },
-            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago" },
-            { name: "Sweet Girl", avatar: "https://i.pravatar.cc/150?img=19", rating: 5, text: "ขนมเค้กอร่อยมาก โดยเฉพาะชีสเค้กหน้าไหม้", date: "4 days ago" },
-            { name: "Date Night", avatar: "https://i.pravatar.cc/150?img=27", rating: 5, text: "บรรยากาศโรแมนติก เงียบสงบ เหมาะกับการพาแฟนมา", date: "1 week ago" },
-            { name: "Influencer", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "แสงสวยถ่ายรูปอาหารขึ้นมาก แนะนำให้มาช่วงบ่ายแสงกำลังดี", date: "2 weeks ago" }
+            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago" }
         ],
         "Wallace": [
             { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago" },
-            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago" },
-            { name: "Celebration", avatar: "https://i.pravatar.cc/150?img=48", rating: 5, text: "มาฉลองวันเกิดแฟน ทางร้านมีเค้กให้ด้วย ประทับใจมากครับ", date: "1 month ago" },
-            { name: "Chef Table", avatar: "https://i.pravatar.cc/150?img=50", rating: 5, text: "อาหารจัดจานสวยงามเหมือนงานศิลปะ รสชาติซับซ้อน อร่อยครับ", date: "2 months ago" },
-            { name: "Business Man", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "เหมาะกับการมาคุยธุรกิจ เงียบสงบ เป็นส่วนตัว", date: "3 months ago" }
+            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago" }
         ]
     };
 
@@ -242,17 +189,17 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilters('tourFilters', 'locationList');
     setupFilters('diningFilters', 'restaurantList');
 
-    // --- 6. Modal System ---
+    // --- 6. Modal System (Logic for Review Modal on Main Page) ---
     const detailModal = document.getElementById('detailModal');
     const detailClose = document.querySelector('.detail-close-btn');
     
-    // --- Review Variables ---
     const reviewModal = document.getElementById('reviewModal');
     const reviewClose = document.querySelector('.review-close-btn');
     const reviewList = document.getElementById('reviewList');
     const submitReviewBtn = document.getElementById('submitReviewBtn');
-    let currentReviewTarget = ""; // เก็บชื่อสถานที่ปัจจุบันที่เปิดอยู่
+    let currentReviewTarget = ""; 
 
+    // Function to update Gallery in Detail Modal (Legacy)
     function updateGallery(imageString) {
         const nav = document.getElementById('thumbnailNav'); const main = document.getElementById('modalImage');
         if (!main || !nav) return;
@@ -268,77 +215,47 @@ document.addEventListener('DOMContentLoaded', function() {
         nav.style.display = urls.length <= 1 ? 'none' : 'flex';
     }
 
+    // Function to open Detail Modal (Legacy)
     function openDetail(data) {
         if(!detailModal) return;
-        
-        currentReviewTarget = data.title; // บันทึกชื่อสถานที่
-        
+        currentReviewTarget = data.title; 
         document.getElementById('modalTitle').textContent = data.title || '';
         document.getElementById('modalDetails').textContent = data.details || '';
         document.getElementById('modalBudget').textContent = data.budget ? `Budget: ${data.budget}` : '';
-        
         document.getElementById('modalHighlight').textContent = data.highlight || '-';
         document.getElementById('modalHours').textContent = data.hours || 'See details';
         document.getElementById('modalPhone').textContent = data.phone || '-';
         document.getElementById('modalParking').textContent = data.parking || '-';
-
         updateGallery(data.images);
-        
         const tagBox = document.getElementById('modalTags'); tagBox.innerHTML = '';
-        if(data.tags) data.tags.split(' ').forEach(t => {
-            if(t.startsWith('#')) { const s = document.createElement('span'); s.className='modal-tag'; s.textContent=t; tagBox.appendChild(s); }
-        });
-
+        if(data.tags) data.tags.split(' ').forEach(t => { if(t.startsWith('#')) { const s = document.createElement('span'); s.className='modal-tag'; s.textContent=t; tagBox.appendChild(s); } });
         const mapBtn = document.getElementById('googleMapBtn');
-        if(mapBtn) {
-            mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`;
-        }
-
+        if(mapBtn) { mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`; }
         detailModal.style.display = 'flex'; 
         document.body.style.overflow = 'hidden';
     }
     
-    // --- OPEN REVIEW MODAL LOGIC (UPDATED) ---
+    // Function to Open Review Modal
     function openReviews() {
         if(!reviewModal) return;
-        
         document.getElementById('reviewTargetName').textContent = currentReviewTarget;
-        reviewList.innerHTML = ''; // เคลียร์ของเก่า
-
-        // ดึงข้อมูลรีวิว (ถ้าไม่มี ให้ใช้ Default)
+        reviewList.innerHTML = ''; 
+        
+        // Fetch reviews or use default
         let reviews = reviewsData[currentReviewTarget];
         if(!reviews || reviews.length === 0) {
-            // Default Reviews ถ้ายังไม่มีใครรีวิว
-            reviews = [
-                { name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now" }
-            ];
+            reviews = [ { name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now" } ];
         }
 
-        // Generate HTML
         reviews.forEach(r => {
             const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-            const html = `
-                <div class="review-item">
-                    <div class="review-avatar" style="background-image: url('${r.avatar}');"></div>
-                    <div class="review-content">
-                        <div class="review-header">
-                            <div class="review-user">${r.name}</div>
-                            <div class="review-date">${r.date}</div>
-                        </div>
-                        <div class="review-stars">${stars}</div>
-                        <p class="review-text">${r.text}</p>
-                    </div>
-                </div>
-            `;
+            const html = `<div class="review-item"><div class="review-avatar" style="background-image: url('${r.avatar}');"></div><div class="review-content"><div class="review-header"><div class="review-user">${r.name}</div><div class="review-date">${r.date}</div></div><div class="review-stars">${stars}</div><p class="review-text">${r.text}</p></div></div>`;
             reviewList.innerHTML += html;
         });
-
         reviewModal.style.display = 'flex';
     }
 
-    // --- STAR RATING LOGIC ---
     const starInputs = document.querySelectorAll('.star-rating-input i');
-    
     if(starInputs.length > 0) {
         starInputs.forEach(star => {
             star.addEventListener('click', function() {
@@ -352,59 +269,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStarVisuals(rating) {
         starInputs.forEach(star => {
             const val = parseInt(star.getAttribute('data-value'));
-            if(val <= rating) {
-                star.classList.remove('fa-regular');
-                star.classList.add('fa-solid', 'filled');
-            } else {
-                star.classList.remove('fa-solid', 'filled');
-                star.classList.add('fa-regular');
-            }
+            if(val <= rating) { star.classList.remove('fa-regular'); star.classList.add('fa-solid', 'filled'); } else { star.classList.remove('fa-solid', 'filled'); star.classList.add('fa-regular'); }
         });
     }
 
-    // --- SUBMIT REVIEW LOGIC ---
     if(submitReviewBtn) {
         submitReviewBtn.addEventListener('click', () => {
             const text = document.getElementById('newReviewText').value;
-            
-            if (currentRating === 0) {
-                alert('Please select a star rating!');
-                return;
-            }
+            if (currentRating === 0) { alert('Please select a star rating!'); return; }
             if(!text) { alert('Please write something!'); return; }
             
-            // สร้างรีวิวใหม่ (Mock up)
-            const newReview = {
-                name: "You (Demo)",
-                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-                rating: currentRating,
-                text: text,
-                date: "Just now"
-            };
+            const newReview = { name: "You (Demo)", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: currentRating, text: text, date: "Just now" };
             
-            // เพิ่มลงใน Array (ใน Memory ชั่วคราว)
             if(!reviewsData[currentReviewTarget]) reviewsData[currentReviewTarget] = [];
-            reviewsData[currentReviewTarget].unshift(newReview); // เพิ่มบนสุด
+            reviewsData[currentReviewTarget].unshift(newReview); 
             
-            // Refresh List
             openReviews(); 
-            
-            // Clear input & Reset Stars
             document.getElementById('newReviewText').value = '';
             currentRating = 0;
             updateStarVisuals(0);
         });
     }
 
-    // Bind Button
     const viewReviewsBtn = document.getElementById('viewReviewsBtn');
-    if(viewReviewsBtn) {
-        viewReviewsBtn.addEventListener('click', openReviews);
-    }
-
+    if(viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
 
     document.querySelectorAll('.location-card').forEach(card => {
-        // Heart Click
+        // Favorite Logic
         const favBtn = card.querySelector('.favorite-btn');
         if(favBtn) {
             favBtn.addEventListener('click', function(e) {
@@ -414,9 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Card Click
+        // Card Click -> Open Modal (Legacy behavior)
+        // Note: Footer links use separate logic to open details.html
         card.addEventListener('click', function(e) {
             if(e.target.closest('.favorite-btn')) return;
+            
+            // ใช้ข้อมูลจาก Attribute เพื่อเปิด Modal เดิม (สำหรับดูข้อมูลเบื้องต้นและกดรีวิว)
             openDetail({
                 title: this.getAttribute('data-title'),
                 details: this.getAttribute('data-details'),
@@ -447,30 +341,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const accountToggle = document.getElementById('accountToggle');
     const loginModal = document.getElementById('loginModal');
     const signupModal = document.getElementById('signupModal');
-    
     const loginClose = document.querySelector('.login-close-btn');
     const signupClose = document.querySelector('.signup-close-btn');
     const openSignupBtn = document.getElementById('openSignupBtn');
-    
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
 
-    // Open/Close Handlers
     if(loginClose) loginClose.addEventListener('click', () => closeModal(loginModal));
     if(signupClose) signupClose.addEventListener('click', () => closeModal(signupModal));
     
     if(openSignupBtn) {
-        openSignupBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal(loginModal);
-            signupModal.style.display = 'flex';
-        });
+        openSignupBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(loginModal); signupModal.style.display = 'flex'; });
     }
 
-    // Check Status
     function checkLoginStatus() {
         const user = localStorage.getItem('bloomUser');
-        
         let profileImg = accountToggle.querySelector('.user-profile-img');
         if (!profileImg) {
             profileImg = document.createElement('img');
@@ -478,78 +363,48 @@ document.addEventListener('DOMContentLoaded', function() {
             profileImg.className = 'user-profile-img';
             accountToggle.appendChild(profileImg);
         }
-
         if (user) {
             accountToggle.classList.add('logged-in');
-            accountToggle.onclick = function(e) {
-                e.preventDefault();
-                if(confirm('Log out from ' + user + '?')) handleLogout();
-            };
+            accountToggle.onclick = function(e) { e.preventDefault(); if(confirm('Log out from ' + user + '?')) handleLogout(); };
         } else {
             accountToggle.classList.remove('logged-in');
-            accountToggle.onclick = function(e) {
-                e.preventDefault();
-                loginModal.style.display = 'flex';
-            };
+            accountToggle.onclick = function(e) { e.preventDefault(); loginModal.style.display = 'flex'; };
         }
     }
 
-    function handleLogout() {
-        localStorage.removeItem('bloomUser');
-        alert('Logged out successfully!');
-        checkLoginStatus();
-        window.location.reload();
-    }
+    function handleLogout() { localStorage.removeItem('bloomUser'); alert('Logged out successfully!'); checkLoginStatus(); window.location.reload(); }
 
-    // Signup Logic
     if(signupForm) {
         signupForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const pass = document.getElementById('signupPassword').value;
-
-            // Save user to LocalStorage
             const userObj = { name: name, email: email, pass: pass };
             localStorage.setItem('registeredUser', JSON.stringify(userObj));
-
             alert('Account created successfully! Please login.');
             closeModal(signupModal);
             loginModal.style.display = 'flex';
         });
     }
 
-    // Login Logic
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
-            // Get Registered Data
             const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
-
-            // Logic: Check against Registered Data OR Demo Data
+            
             let isLoginSuccess = false;
+            if (registeredUser && email === registeredUser.email && password === registeredUser.pass) { isLoginSuccess = true; } 
+            else if (email === 'admin@spu.ac.th' && password === '1234') { isLoginSuccess = true; }
 
-            if (registeredUser && email === registeredUser.email && password === registeredUser.pass) {
-                isLoginSuccess = true;
-            } else if (email === 'admin@spu.ac.th' && password === '1234') {
-                isLoginSuccess = true;
-            }
-
-            if (isLoginSuccess) {
-                localStorage.setItem('bloomUser', email);
-                alert('Welcome back!');
-                closeModal(loginModal);
-                checkLoginStatus();
-            } else {
-                alert('Invalid email or password!');
-            }
+            if (isLoginSuccess) { localStorage.setItem('bloomUser', email); alert('Welcome back!'); closeModal(loginModal); checkLoginStatus(); } 
+            else { alert('Invalid email or password!'); }
         });
     }
 
-    checkLoginStatus(); // Run on load
+    checkLoginStatus();
 
     // --- 8. Search System ---
     const searchModal = document.getElementById('searchModal');
@@ -566,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const query = document.getElementById('searchQuery').value.toLowerCase();
             const allCards = document.querySelectorAll('.location-card');
             closeModal(searchModal);
-            
             if(query) {
                 let found = false;
                 allCards.forEach(card => {
@@ -588,26 +442,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Scroll Reveal & Back to Top Logic
     const backToTopBtn = document.getElementById("backToTop");
-
     window.addEventListener('scroll', () => {
-        // Reveal
         const reveals = document.querySelectorAll('.reveal');
         for (let i = 0; i < reveals.length; i++) {
             const windowHeight = window.innerHeight;
-            const elementTop = reveals[i].getBoundingClientRect().top;
-            const elementVisible = 150;
-            if (elementTop < windowHeight - elementVisible) {
+            if (reveals[i].getBoundingClientRect().top < windowHeight - 150) {
                 reveals[i].classList.add('active');
             }
         }
-
-        // Back to Top
         if (backToTopBtn) {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.add("show");
-            } else {
-                backToTopBtn.classList.remove("show");
-            }
+            if (window.scrollY > 300) { backToTopBtn.classList.add("show"); } else { backToTopBtn.classList.remove("show"); }
         }
     });
 
@@ -623,8 +467,191 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function for Search Suggestions (Called from HTML onclick)
 function setSearch(text) {
     const input = document.getElementById('searchQuery');
-    if(input) {
-        input.value = text;
-        input.focus();
-    }
+    if(input) { input.value = text; input.focus(); }
 }
+
+/* =========================================
+   9. COMPLETE SHOP DETAILS DATABASE (For details.html)
+   ========================================= */
+const shopDatabase = {
+    // --- HANGOUT SPOTS ---
+    "moca": {
+        title: "MOCA Museum",
+        subtitle: "Museum of Contemporary Art",
+        heroImage: "Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 1.jpg",
+        history: "<p>พิพิธภัณฑ์ศิลปะไทยร่วมสมัย (MOCA BANGKOK) ก่อตั้งโดยคุณบุญชัย เบญจรงคกุล ด้วยความตั้งใจที่จะรวบรวมผลงานศิลปะชิ้นเอกของศิลปินไทยจากรุ่นสู่รุ่น เพื่อให้คนรุ่นใหม่ได้ชื่นชม เป็นหนึ่งในพิพิธภัณฑ์ที่สวยที่สุดในกรุงเทพฯ</p><p>ภายในอาคารมีการออกแบบที่เน้นแสงธรรมชาติ โดยเฉพาะมุมไฮไลท์อย่าง 'สะพานข้ามจักรวาล' และห้อง Richard Green ที่จำลองบรรยากาศแบบยุโรป เหมาะสำหรับผู้ที่รักงานศิลปะและการถ่ายภาพ</p>",
+        menuImages: ["Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 2.jpg", "https://images.unsplash.com/photo-1554907984-15263bf06302?w=600"],
+        info: { hours: "10:00 - 18:00 (ปิดวันจันทร์)", price: "Student 100 THB", phone: "02-016-5666", location: "ถนนวิภาวดีรังสิต" }
+    },
+    "temple": {
+        title: "วัดพระศรีมหาธาตุ",
+        subtitle: "Wat Phra Si Mahathat",
+        heroImage: "Im/วัดพระ.jpg",
+        history: "<p>วัดพระศรีมหาธาตุวรมหาวิหาร หรือที่นิยมเรียกกันว่า 'วัดพระศรี' เป็นพระอารามหลวงชั้นเอก สร้างขึ้นในสมัยจอมพล ป. พิบูลสงคราม เพื่อเป็นอนุสรณ์สถานของการปกครองระบอบประชาธิปไตย</p><p>สถานที่นี้เป็นที่ยึดเหนี่ยวจิตใจสำคัญของชาวบางเขนและนักศึกษาย่านนี้ โดยเฉพาะช่วงสอบที่จะมีคนมาขอพรสิ่งศักดิ์สิทธิ์และท้าวเวสสุวรรณเป็นจำนวนมาก</p>",
+        menuImages: ["Im/วัด 2.jpg", "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600"],
+        info: { hours: "06:00 - 18:00", price: "Free", phone: "02-521-0311", location: "วงเวียนบางเขน" }
+    },
+    "library": {
+        title: "Co-Working Space & Library",
+        subtitle: "SPU Library Zone",
+        heroImage: "Im/ห้องสมุด1.jpg",
+        history: "<p>พื้นที่แห่งการเรียนรู้ที่ออกแบบมาเพื่อนักศึกษาโดยเฉพาะ เป็นมากกว่าห้องสมุดธรรมดา เพราะมีโซน Co-Working Space ที่ทันสมัย ปลั๊กไฟครบทุกจุด และ Wi-Fi ความเร็วสูง</p><p>ที่นี่คือจุดนัดพบยอดฮิตช่วงสอบและช่วงปั่นโปรเจกต์ ด้วยบรรยากาศที่เงียบสงบและแอร์เย็นฉ่ำ ทำให้สามารถนั่งทำงานได้ทั้งวันโดยไม่เบื่อ</p>",
+        menuImages: ["Im/ห้องสมุด2.jpg", "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=600"],
+        info: { hours: "08:30 - 20:00", price: "Free (Student Only)", phone: "02-579-1111", location: "อาคาร 11 ชั้น 1-2" }
+    },
+    "major": {
+        title: "เมเจอร์ รัชโยธิน",
+        subtitle: "Major Cineplex Ratchayothin",
+        heroImage: "Im/เมเจอร์ซีนีเพล็กซ์ รัชโยธิน 1.jpg",
+        history: "<p>แลนด์มาร์คสำคัญของย่านรัชโยธิน เป็นแหล่งรวมความบันเทิงครบวงจร ทั้งโรงภาพยนตร์ระบบ IMAX ที่ใหญ่ที่สุดแห่งหนึ่ง โบว์ลิ่ง คาราโอเกะ และตลาดนัดกลางคืน</p><p>เป็นจุดนัดพบของวัยรุ่นและนักศึกษามาอย่างยาวนาน ไม่ว่าจะดูหนัง กินข้าว หรือเดินช้อปปิ้ง ก็ครบจบในที่เดียว</p>",
+        menuImages: ["Im/เมเจอร์ซีนีเพล็กซ์ รัชโยธิน 2.jpg", "https://images.unsplash.com/photo-1517604931442-71053e6e2306?w=600"],
+        info: { hours: "10:00 - 22:00", price: "Varied", phone: "02-515-5555", location: "แยกรัชโยธิน" }
+    },
+    "central": {
+        title: "เซ็นทรัล รามอินทรา",
+        subtitle: "New Central Ramindra",
+        heroImage: "Im/เซ็นทรัลรามอินทรา 1.jpg",
+        history: "<p>โฉมใหม่ไฉไลกว่าเดิม! เซ็นทรัล รามอินทรา ได้รับการรีโนเวทใหม่ทั้งหมดให้ทันสมัยและตอบโจทย์ไลฟ์สไตล์คนรุ่นใหม่มากขึ้น มาพร้อมกับร้านค้าชั้นนำ ร้านอาหารมากมาย และโรงหนัง SF Cinema</p><p>ที่นี่ยังมีโซน Co-Working Space ฟรี และมุมถ่ายรูปสวยๆ ให้เดินเล่นตากแอร์เย็นๆ ได้อย่างสบายใจ</p>",
+        menuImages: ["Im/เซ็นทรัลรามอินทรา 2.jpg", "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=600"],
+        info: { hours: "10:00 - 21:00", price: "Varied", phone: "02-790-3000", location: "ถนนรามอินทรา" }
+    },
+    "market_night": {
+        title: "ตลาดนัดจตุจักรกลางคืน",
+        subtitle: "Chatuchak Night Market",
+        heroImage: "Im/ตลาดนัดจตุจักรกลางคืน1.jpg",
+        history: "<p>สวรรค์ของคนนอนดึก! ตลาดนัดจตุจักรคืนวันศุกร์จะเปลี่ยนเป็นแหล่งขายส่งเสื้อผ้าแฟชั่นที่ใหญ่ที่สุด พ่อค้าแม่ค้าและวัยรุ่นจะมารวมตัวกันที่นี่เพื่ออัพเดทเทรนด์ใหม่ๆ</p><p>นอกจากเสื้อผ้าแล้ว ยังมีของกินสตรีทฟู้ดอร่อยๆ ให้เดินกินไปช้อปไป บรรยากาศคึกคักและเป็นกันเองสุดๆ</p>",
+        menuImages: ["Im/ตลาดนัดจตุจักรกลางคืน2.jpg", "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600"],
+        info: { hours: "19:00 - 24:00 (Fri-Sat-Sun)", price: "Varied", phone: "02-272-4440", location: "BTS หมอชิต / MRT สวนจตุจักร" }
+    },
+    "market_day": {
+        title: "ตลาดนัดจตุจักรกลางวัน",
+        subtitle: "Chatuchak Weekend Market",
+        heroImage: "Im/ตลาดกลางวัน1.png",
+        history: "<p>ตลาดนัดที่ใหญ่ที่สุดในโลกและเป็นจุดหมายปลายทางของนักท่องเที่ยวทั่วโลก มีร้านค้ากว่า 15,000 ร้าน แบ่งเป็นโซนต่างๆ ทั้งเสื้อผ้า สัตว์เลี้ยง ต้นไม้ ของตกแต่งบ้าน และงานฝีมือ</p><p>เป็นสถานที่ที่เดินวันเดียวก็ไม่ทั่ว เหมาะสำหรับการมาหาของแปลกๆ หรือของที่ระลึกที่มีเพียงชิ้นเดียวในโลก</p>",
+        menuImages: ["Im/ตลาดกลางวัน2.png", "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600"],
+        info: { hours: "09:00 - 18:00 (Sat-Sun)", price: "Varied", phone: "02-272-4440", location: "BTS หมอชิต / MRT สวนจตุจักร" }
+    },
+
+    // --- EATS & DRINKS ---
+    "mala": {
+        title: "หม่าล่าเสฉวน",
+        subtitle: "Budget Spicy & Authentic Taste",
+        heroImage: "Im/หมาล่า1.webp",
+        history: "<p>ร้านหม่าล่าเสฉวนสูตรต้นตำรับที่ครองใจเด็ก ม.ศรีปทุม มายาวนาน ด้วยน้ำซุปที่เคี่ยวนานกว่า 8 ชั่วโมง จนได้รสชาติเผ็ดชาหอมเครื่องเทศแท้ๆ</p><p>จุดเด่นคือวัตถุดิบที่มีให้เลือกเยอะมากในราคาเริ่มต้นไม้ละ 5 บาท และน้ำจิ้มถั่วสูตรเด็ดที่ทางร้านทำเอง ปรุงรสได้ตามใจชอบ เป็นร้านที่ต้องมาลองสักครั้งถ้ามาแถวนี้</p>",
+        menuImages: ["Im/หมาล่า2.webp", "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600"],
+        info: { hours: "11:00 - 21:00", price: "50 - 150 THB", phone: "082-645-8483", location: "ตรงข้าม ม.ศรีปทุม" }
+    },
+    "mingle": {
+        title: "Meetup Mingle Cafe",
+        subtitle: "Board Games & Workspace",
+        heroImage: "Im/ร้านเกม1.webp",
+        history: "<p>คาเฟ่สำหรับคนรักบอร์ดเกมและการสังสรรค์! ที่นี่มีบอร์ดเกมให้เลือกเล่นมากกว่า 300 เกม จากทั่วทุกมุมโลก พร้อมทีมงานที่พร้อมสอนเล่นสำหรับมือใหม่</p><p>นอกจากเกมแล้ว ยังมีกาแฟสด ขนมเค้ก และอาหารจานเดียวให้บริการ จะมานั่งทำงานหรือมาปาร์ตี้บอร์ดเกมกับเพื่อนก็ตอบโจทย์</p>",
+        menuImages: ["Im/ร้านเกม2.webp", "https://images.unsplash.com/photo-1606820854416-43923340d16e?w=600"],
+        info: { hours: "10:00 - 22:00", price: "100 - 250 THB", phone: "08x-xxx-xxxx", location: "หน้า ม.ศรีปทุม" }
+    },
+    "suki": {
+        title: "สุกี้จานบิน",
+        subtitle: "Hotpot Buffet Lover",
+        heroImage: "Im/สุกี้จานบิน1.webp",
+        history: "<p>สุกี้สายพานเจ้าดังที่เสิร์ฟความอร่อยแบบบินตรงถึงที่! ทางร้านคัดสรรวัตถุดิบคุณภาพเยี่ยม ทั้งเนื้อวัวออสเตรเลีย หมูคุโรบุตะ และซีฟู้ดสดใหม่</p><p>น้ำซุปมีให้เลือกถึง 7 รสชาติ และน้ำจิ้มสูตรพิเศษที่ปรุงรสได้อย่างลงตัว บรรยากาศร้านตกแต่งสไตล์โมเดิร์น นั่งสบาย เหมาะกับการมาทานเป็นกลุ่ม</p>",
+        menuImages: ["Im/สุกี้จานบิน2.webp", "https://images.unsplash.com/photo-1584844627036-7c39b363673d?w=600"],
+        info: { hours: "11:00 - 02:00", price: "250 - 400 THB", phone: "095-956-5668", location: "โครงการบางเขน มาร์เก็ต" }
+    },
+    "chicky": {
+        title: "Little Chicky",
+        subtitle: "Korean Fried Chicken",
+        heroImage: "Im/ร้านไก่1.webp",
+        history: "<p>ไก่ทอดเกาหลีโฮมเมดที่ใส่ใจในทุกขั้นตอนการทอด เพื่อให้ได้ไก่ที่กรอบนอกนุ่มใน ไม่อมน้ำมัน คลุกเคล้ากับซอสสูตรลับเฉพาะของทางร้าน</p><p>มีให้เลือกทั้งซอสกระเทียม ซอสเผ็ดเกาหลี และซอสหัวหอม ยิ่งทานคู่กับหัวไชเท้าดองและต๊อกบกกี ยิ่งฟิน! ราคานักเรียนสบายกระเป๋า</p>",
+        menuImages: ["Im/ร้านไก่2.webp", "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600"],
+        info: { hours: "10:00 - 20:00", price: "80 - 200 THB", phone: "096-646-3159", location: "ซอยข้าง ม.ศรีปทุม" }
+    },
+    "burger": {
+        title: "Bad Bad Burger",
+        subtitle: "Premium Craft Burger",
+        heroImage: "Im/สเต็ก1.webp",
+        history: "<p>ร้านเบอร์เกอร์พรีเมียมสำหรับคนรักเนื้อ! ทางร้านใช้เนื้อบดทำเองวันต่อวัน ย่างบนเตาด้วยเทคนิค Smash Burger เพื่อให้ได้ขอบที่กรอบและเนื้อที่ชุ่มฉ่ำ</p><p>ขนมปัง Brioche Bun หอมเนย ทานคู่กับซอสทรัฟเฟิลสูตรพิเศษ เป็นรสชาติที่หาทานยากในราคานี้ สายเนื้อห้ามพลาดเด็ดขาด</p>",
+        menuImages: ["Im/สเต็ก2.webp", "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600"],
+        info: { hours: "16:00 - 23:00", price: "250 - 450 THB", phone: "095-956-5668", location: "ลาดพร้าว-วังหิน" }
+    },
+    "oyuwa": {
+        title: "โอยั๊วะเกษตร",
+        subtitle: "Riverside Hangout",
+        heroImage: "Im/โอยั๊วะเกษตร1.webp",
+        history: "<p>ร้านอาหารริมแม่น้ำเจ้าพระยาบรรยากาศดีระดับตำนาน เป็นสถานที่นัดพบสังสรรค์ของชาวเกษตรและคนย่านนี้มายาวนาน</p><p>โดดเด่นด้วยเมนูอาหารไทยรสจัดจ้านและขาหมูเยอรมันทอดกรอบ พร้อมดนตรีสดที่เล่นเพลงเพราะๆ ทุกค่ำคืน เหมาะสำหรับการเลี้ยงรุ่นหรือพาครอบครัวมาทานข้าว</p>",
+        menuImages: ["Im/โอยั๊วะเกษตร2.webp", "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600"],
+        info: { hours: "17:00 - 24:00", price: "300 - 600 THB", phone: "081-808-9885", location: "ริมแม่น้ำ (ท่าน้ำนนท์)" }
+    },
+    "uptojug": {
+        title: "Uptojug Kitchen",
+        subtitle: "Fusion Cafe & Restaurant",
+        heroImage: "Im/Uptojug1.webp",
+        history: "<p>คาเฟ่และร้านอาหารสไตล์ฟิวชั่นที่ตกแต่งร้านได้สวยงามน่านั่ง มีมุมถ่ายรูปเก๋ๆ เพียบ อาหารแต่ละจานถูกจัดแต่งอย่างพิถีพิถัน</p><p>เมนูแนะนำคือสปาเก็ตตี้คาโบนาร่าไข่ออนเซ็น และเครื่องดื่ม Signature ของทางร้าน บรรยากาศเงียบสงบ เหมาะกับการมาเดทหรือนั่งคุยงาน</p>",
+        menuImages: ["Im/Uptojug2.webp", "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600"],
+        info: { hours: "10:00 - 19:00", price: "200 - 400 THB", phone: "061-542-6666", location: "ในซอยพหลโยธิน" }
+    },
+    "wallace": {
+        title: "Wallace",
+        subtitle: "Fine Dining Experience",
+        heroImage: "Im/Wallace1.webp",
+        history: "<p>สัมผัสประสบการณ์ Fine Dining ในบรรยากาศสุดหรูหราแบบยุโรป ทางร้านคัดสรรวัตถุดิบนำเข้าเกรดพรีเมียมมาปรุงเป็นเมนูสเต็กและอาหารตะวันตกชั้นเลิศ</p><p>บริการระดับ 5 ดาว และไวน์ลิสต์ที่มีให้เลือกมากมาย เหมาะสำหรับโอกาสพิเศษ วันครบรอบ หรือเลี้ยงรับรองแขกผู้ใหญ่</p>",
+        menuImages: ["Im/Wallace2.webp", "https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600"],
+        info: { hours: "11:00 - 22:00", price: "800+ THB", phone: "063-021-0537", location: "ซอยอารีย์" }
+    }
+};
+
+// ฟังก์ชันโหลดข้อมูลหน้า Detail (เรียกจาก details.html)
+window.loadShopDetails = function(shopId) {
+    const data = shopDatabase[shopId];
+    const container = document.getElementById('detailContent');
+
+    if (!data) {
+        container.innerHTML = `<div style="text-align:center; padding:50px;">
+            <h2>ไม่พบข้อมูลร้านค้า</h2>
+            <a href="index.html" class="button-outline">กลับหน้าหลัก</a>
+        </div>`;
+        return;
+    }
+
+    const galleryHTML = data.menuImages.map(img => 
+        `<div class="menu-item"><img src="${img}" alt="Menu"></div>`
+    ).join('');
+
+    container.innerHTML = `
+        <div class="detail-hero" style="background-image: url('${data.heroImage}');"></div>
+        <div class="detail-container">
+            <div class="detail-header-card">
+                <span class="card-desc-short" style="margin-bottom:10px; display:inline-block;">${data.subtitle}</span>
+                <h1 class="detail-title">${data.title}</h1>
+                <div class="detail-meta">
+                    <span><i class="fa-solid fa-star"></i> 4.8/5.0</span>
+                    <span><i class="fa-solid fa-location-dot"></i> ${data.info.location}</span>
+                </div>
+            </div>
+            <div class="content-grid">
+                <div class="main-content">
+                    <div class="story-section">
+                        <h3><i class="fa-solid fa-book-open"></i> เรื่องราวของร้าน</h3>
+                        <div class="story-text">${data.history}</div>
+                    </div>
+                    <div class="menu-section" style="margin-top:40px;">
+                        <h3><i class="fa-solid fa-images"></i> ภาพบรรยากาศ & เมนู</h3>
+                        <div class="menu-grid">
+                            ${galleryHTML}
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar">
+                    <div class="info-sidebar">
+                        <h4 style="margin-top:0; color:var(--color-blue);">ข้อมูลร้าน</h4>
+                        <div class="info-row"><i class="fa-solid fa-clock"></i> <span>${data.info.hours}</span></div>
+                        <div class="info-row"><i class="fa-solid fa-wallet"></i> <span>${data.info.price}</span></div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span>${data.info.phone}</span></div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}" target="_blank" class="modal-button map-btn" style="text-align:center; display:block; margin-top:20px; text-decoration:none;">
+                            <i class="fa-solid fa-map-location-dot"></i> นำทาง
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+};
