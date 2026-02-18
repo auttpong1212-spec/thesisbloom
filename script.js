@@ -82,69 +82,70 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentRating = 0;
     let selectedImageData = null; // ตัวแปรเก็บรูปภาพรีวิว
 
-    // --- FULL REVIEW DATA (ข้อมูลรีวิวเดิมทั้งหมดของคุณ) ---
-    const reviewsData = {
-        "MOCA Museum": [
-            { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago", reviewImage: null },
-            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago", reviewImage: null }
-        ],
-        "วัดพระศรีมหาธาตุ": [
-            { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday", reviewImage: null },
-            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago", reviewImage: null }
-        ],
-        "Co-Working Space & Library": [
-            { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago", reviewImage: null },
-            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago", reviewImage: null }
-        ],
-        "เมเจอร์ รัชโยธิน": [
-            { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago", reviewImage: null },
-            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday", reviewImage: null }
-        ],
-        "เซ็นทรัล รามอินทรา": [
-            { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday", reviewImage: null },
-            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago", reviewImage: null }
-        ],
-        "ตลาดนัดจตุจักรกลางคืน": [
-            { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday", reviewImage: null },
-            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago", reviewImage: null }
-        ],
-        "ตลาดนัดจตุจักรกลางวัน": [
-            { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday", reviewImage: null },
-            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday", reviewImage: null }
-        ],
-        "หม่าล่าเสฉวน": [
-            { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago", reviewImage: null },
-            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday", reviewImage: null }
-        ],
-        "Meetup Mingle Cafe": [
-            { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday", reviewImage: null },
-            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago", reviewImage: null }
-        ],
-        "สุกี้จานบิน": [
-            { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago", reviewImage: null },
-            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday", reviewImage: null }
-        ],
-        "Little Chicky": [
-            { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago", reviewImage: null },
-            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday", reviewImage: null }
-        ],
-        "Bad Bad Burger": [
-            { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday", reviewImage: null },
-            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago", reviewImage: null }
-        ],
-        "โอยั๊วะเกษตร": [
-            { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday", reviewImage: null },
-            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday", reviewImage: null }
-        ],
-        "Uptojug Kitchen": [
-            { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday", reviewImage: null },
-            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago", reviewImage: null }
-        ],
-        "Wallace": [
-            { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago", reviewImage: null },
-            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago", reviewImage: null }
-        ]
-    };
+    // 1. เปลี่ยนจาก const เป็น let เพื่อให้แก้ไขค่าได้
+// 2. ดึงข้อมูลจาก localStorage ถ้าไม่มีให้ใช้ค่าเริ่มต้น (Default)
+let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
+    "MOCA Museum": [
+        { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago", reviewImage: null },
+        { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago", reviewImage: null }
+    ],
+    "วัดพระศรีมหาธาตุ": [
+        { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday", reviewImage: null },
+        { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago", reviewImage: null }
+    ],
+    "Co-Working Space & Library": [
+        { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago", reviewImage: null },
+        { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago", reviewImage: null }
+    ],
+    "เมเจอร์ รัชโยธิน": [
+        { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago", reviewImage: null },
+        { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday", reviewImage: null }
+    ],
+    "เซ็นทรัล รามอินทรา": [
+        { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday", reviewImage: null },
+        { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago", reviewImage: null }
+    ],
+    "ตลาดนัดจตุจักรกลางคืน": [
+        { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday", reviewImage: null },
+        { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago", reviewImage: null }
+    ],
+    "ตลาดนัดจตุจักรกลางวัน": [
+        { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday", reviewImage: null },
+        { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday", reviewImage: null }
+    ],
+    "หม่าล่าเสฉวน": [
+        { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago", reviewImage: null },
+        { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday", reviewImage: null }
+    ],
+    "Meetup Mingle Cafe": [
+        { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday", reviewImage: null },
+        { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago", reviewImage: null }
+    ],
+    "สุกี้จานบิน": [
+        { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago", reviewImage: null },
+        { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday", reviewImage: null }
+    ],
+    "Little Chicky": [
+        { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago", reviewImage: null },
+        { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday", reviewImage: null }
+    ],
+    "Bad Bad Burger": [
+        { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday", reviewImage: null },
+        { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago", reviewImage: null }
+    ],
+    "โอยั๊วะเกษตร": [
+        { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday", reviewImage: null },
+        { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday", reviewImage: null }
+    ],
+    "Uptojug Kitchen": [
+        { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday", reviewImage: null },
+        { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago", reviewImage: null }
+    ],
+    "Wallace": [
+        { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago", reviewImage: null },
+        { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago", reviewImage: null }
+    ]
+};
 
     // --- 2. Menu Navigation ---
     const menuIcon = document.querySelector('.menu-icon');
@@ -464,20 +465,23 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!text) { alert('Please write something!'); return; }
 
             const newReview = { 
-                name: "You (Demo)", 
+                name: "You (Student)", 
                 avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", 
                 rating: currentRating, 
                 text: text, 
                 date: "Just now",
-                reviewImage: selectedImageData // เพิ่มรูปภาพลงในรีวิว
+                reviewImage: selectedImageData
             };
 
             if (!reviewsData[currentReviewTarget]) reviewsData[currentReviewTarget] = [];
             reviewsData[currentReviewTarget].unshift(newReview);
 
-            openReviews(); // Refresh รายการ
+            // --- ส่วนที่เพิ่มใหม่: บันทึกข้อมูลลงเครื่อง ---
+            localStorage.setItem('bloomReviews', JSON.stringify(reviewsData));
+            // ---------------------------------------
+
+            openReviews(); 
             
-            // Clear Form
             document.getElementById('newReviewText').value = '';
             currentRating = 0;
             updateStarVisuals(0);
