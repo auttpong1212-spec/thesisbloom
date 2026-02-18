@@ -90,7 +90,7 @@
         <section class="hero-image" id="restaurant-hero" style="background-image: url('Im/กิน.png');">
             <div class="hero-content-center reveal">
                 <h2>EAT & DRINK</h2><a href="#location-section-restaurant" class="button-outline view-restaurant">GO
-                    </a>
+                </a>
             </div>
         </section>
         <section class="hero-image" id="contact-hero" style="background-image: url('Im/Contact.png');">
@@ -237,6 +237,9 @@
             <div class="section-header reveal">
                 <h2 style="margin-bottom: 5px;">EATS</h2>
                 <p style="color: #666; font-size: 14px; margin-top:0;">หิวเมื่อไหร่ก็แวะมา</p>
+                <button onclick="randomMyMeal()" class="button-outline" style="margin-top: 15px; background: var(--color-yellow); color: var(--color-text);">
+    <i class="fa-solid fa-dice"></i> สุ่มให้หน่อยว่ากินอะไรดี?
+</button>
             </div>
 
             <div class="filter-container reveal" id="diningFilters">
@@ -269,7 +272,8 @@
                         data-details="คาเฟ่ที่มีบอร์ดเกมให้เล่น นั่งทำงานกลุ่มได้ยาวๆ กาแฟดี ขนมอร่อย"
                         data-budget="100 - 250 THB" data-highlight="มีบอร์ดเกมให้เลือกเยอะมาก และห้องส่วนตัว"
                         data-hours="10:00 - 22:00" data-phone="08x-xxx-xxxx" data-parking="จอดหน้าร้านได้ 2-3 คัน"
-                        data-tags="#Cafe #WorkFriendly #Fun" data-images="Im/ร้านเกม1.webp,Im/ร้านเกม2.webp,Im/ร้านเกม3.jpg,Im/ร้านเกม4.jpg">
+                        data-tags="#Cafe #WorkFriendly #Fun"
+                        data-images="Im/ร้านเกม1.webp,Im/ร้านเกม2.webp,Im/ร้านเกม3.jpg,Im/ร้านเกม4.jpg">
                         <div class="favorite-btn"><i class="fa-regular fa-heart"></i></div>
                         <div class="card-image" style="background-image: url('Im/ร้านเกม1.webp');"></div>
                         <div class="card-content">
@@ -484,19 +488,19 @@
                         </div>
 
                         <div class="contact-socials">
-    <p>Follow Our Community:</p>
-    <div class="social-icons">
-        <a href="facebook_page.html" target="_blank" title="Facebook: BLOOM SPU">
-            <i class="fa-brands fa-facebook-f"></i>
-        </a>
-        <a href="https://www.instagram.com/" target="_blank" title="Instagram: @bloom_spu">
-            <i class="fa-brands fa-instagram"></i>
-        </a>
-        <a href="https://x.com/home" target="_blank" title="X: @bloom_spu">
-            <i class="fa-sharp fa-solid fa-x"></i>
-        </a>
-    </div>
-</div>
+                            <p>Follow Our Community:</p>
+                            <div class="social-icons">
+                                <a href="https://www.facebook.com/profile.php?id=61587962790259" target="_blank" title="Facebook: BLOOM SPU">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </a>
+                                <a href="https://www.instagram.com/" target="_blank" title="Instagram: @bloom_spu">
+                                    <i class="fa-brands fa-instagram"></i>
+                                </a>
+                                <a href="https://x.com/home" target="_blank" title="X: @bloom_spu">
+                                    <i class="fa-sharp fa-solid fa-x"></i>
+                                </a>
+                            </div>
+                        </div>
 
                         <div class="circle-deco-1"></div>
                         <div class="circle-deco-2"></div>
@@ -543,18 +547,19 @@
                     <span class="logo-dot"></span>
                     <span class="logo-text">BLOOM</span>
                 </a>
-                <p class="footer-slogan">เปลี่ยนวันธรรมดาให้ซ่ากว่าเดิม กับพิกัดลับย่านบางเขน-ศรีปทุม ที่เราคัดมาเพื่อนักศึกษาโดยเฉพาะ</p>
+                <p class="footer-slogan">เปลี่ยนวันธรรมดาให้ซ่ากว่าเดิม กับพิกัดลับย่านบางเขน-ศรีปทุม
+                    ที่เราคัดมาเพื่อนักศึกษาโดยเฉพาะ</p>
                 <div class="social-media">
-    <a href="facebook_page.html" target="_blank" title="Facebook">
-        <i class="fa-brands fa-facebook-f"></i>
-    </a>
-    <a href="https://x.com/home" target="_blank" title="X">
-        <i class="fa-sharp fa-solid fa-x"></i>
-    </a>
-    <a href="https://www.instagram.com/" target="_blank" title="Instagram">
-        <i class="fa-brands fa-instagram"></i>
-    </a>
-</div>
+                    <a href="https://www.facebook.com/profile.php?id=61587962790259" target="_blank" title="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+                    <a href="https://x.com/home" target="_blank" title="X">
+                        <i class="fa-sharp fa-solid fa-x"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="footer-links">
@@ -584,7 +589,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <hr class="footer-divider">
         <p class="copyright">© 2025 Bloom. All rights reserved.</p>
     </footer>
@@ -683,6 +688,16 @@
             <div class="write-review-section">
                 <hr style="margin: 20px 0; border-top: 1px solid #eee;">
                 <h4>Write a Review</h4>
+                <div class="upload-photo-wrapper" style="margin-bottom: 15px;">
+    <label for="reviewPhotoInput" class="button-outline" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; padding: 8px 15px;">
+        <i class="fa-solid fa-camera"></i> อัปโหลดรูปภาพ
+    </label>
+    <input type="file" id="reviewPhotoInput" accept="image/*" style="display: none;">
+    <div id="photoPreviewContainer" style="margin-top: 10px; display: none;">
+        <img id="photoPreview" src="" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid var(--color-cyan);">
+        <button id="removePhotoBtn" style="background: none; border: none; color: red; cursor: pointer; font-size: 12px; vertical-align: top;">เอาออก</button>
+    </div>
+</div>
 
                 <div class="star-rating-input">
                     <i class="fa-regular fa-star" data-value="1"></i>

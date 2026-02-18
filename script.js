@@ -1,70 +1,148 @@
-document.addEventListener('DOMContentLoaded', function() {
-    
+/* ============================================================
+   1. GLOBAL FUNCTIONS (ฟังก์ชันที่ต้องเรียกใช้จาก HTML)
+   ============================================================ */
+
+// ฟังก์ชันสุ่มร้านอาหาร (Random Meal)
+function randomMyMeal() {
+    const restaurantCards = document.querySelectorAll('#restaurantList .location-card');
+    if (restaurantCards.length > 0) {
+        const randomIndex = Math.floor(Math.random() * restaurantCards.length);
+        const selectedStore = restaurantCards[randomIndex];
+        
+        // เลื่อนหน้าจอไปหาการ์ดที่สุ่มได้
+        selectedStore.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Effect กระพริบขอบสีเขียว
+        selectedStore.style.transition = "all 0.3s ease";
+        selectedStore.style.outline = "5px solid var(--color-cyan)";
+        selectedStore.style.transform = "scale(1.05)";
+        selectedStore.style.zIndex = "10";
+        
+        setTimeout(() => {
+            selectedStore.style.outline = "none";
+            selectedStore.style.transform = "scale(1)";
+            selectedStore.style.zIndex = "1";
+            selectedStore.click(); // เปิด Modal ร้านนั้น
+        }, 800);
+    } else {
+        alert("ไม่พบข้อมูลร้านอาหาร กรุณาลองใหม่อีกครั้ง");
+    }
+}
+
+// ฟังก์ชันช่วยใส่คำค้นหา
+function setSearch(text) {
+    const input = document.getElementById('searchQuery');
+    if (input) { 
+        input.value = text; 
+        input.focus(); 
+    }
+}
+
+/* ============================================================
+   2. DOM CONTENT LOADED (การทำงานหลักเมื่อโหลดหน้าเว็บเสร็จ)
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function () {
+
+    // --- 0. Loading State System ---
+    const loaderOverlay = document.createElement('div');
+    loaderOverlay.className = 'loader-overlay';
+    loaderOverlay.innerHTML = `
+        <div class="loader-spinner"></div>
+        <style>
+            .loader-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(255, 255, 255, 0.95); z-index: 10000;
+                display: flex; justify-content: center; align-items: center;
+                transition: opacity 0.4s ease; opacity: 0; pointer-events: none;
+            }
+            .loader-overlay.active { opacity: 1; pointer-events: all; }
+            .loader-spinner {
+                width: 48px; height: 48px;
+                border: 5px solid #DDD; border-bottom-color: #3498db;
+                border-radius: 50%; display: inline-block;
+                box-sizing: border-box; animation: rotation 1s linear infinite;
+            }
+            @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+    `;
+    document.body.appendChild(loaderOverlay);
+
+    function withLoading(callback) {
+        loaderOverlay.classList.add('active');
+        setTimeout(() => {
+            if (callback) callback();
+            setTimeout(() => {
+                loaderOverlay.classList.remove('active');
+            }, 300);
+        }, 500);
+    }
+
     // --- 1. Init Data & State ---
     let favorites = JSON.parse(localStorage.getItem('bloomFavorites')) || [];
     let currentRating = 0;
+    let selectedImageData = null; // ตัวแปรเก็บรูปภาพรีวิว
 
-    // --- MOCK REVIEW DATA (ครบทุกร้านตาม data-title ใน HTML) ---
+    // --- FULL REVIEW DATA (ข้อมูลรีวิวเดิมทั้งหมดของคุณ) ---
     const reviewsData = {
         "MOCA Museum": [
-            { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago" },
-            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago" }
+            { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago", reviewImage: null },
+            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago", reviewImage: null }
         ],
         "วัดพระศรีมหาธาตุ": [
-            { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday" },
-            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago" }
+            { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday", reviewImage: null },
+            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago", reviewImage: null }
         ],
         "Co-Working Space & Library": [
-            { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago" },
-            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago" }
+            { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago", reviewImage: null },
+            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago", reviewImage: null }
         ],
         "เมเจอร์ รัชโยธิน": [
-            { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago" },
-            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday" }
+            { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago", reviewImage: null },
+            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday", reviewImage: null }
         ],
         "เซ็นทรัล รามอินทรา": [
-            { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday" },
-            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago" }
+            { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday", reviewImage: null },
+            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago", reviewImage: null }
         ],
         "ตลาดนัดจตุจักรกลางคืน": [
-            { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday" },
-            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago" }
+            { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday", reviewImage: null },
+            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago", reviewImage: null }
         ],
         "ตลาดนัดจตุจักรกลางวัน": [
-            { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday" },
-            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday" }
+            { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday", reviewImage: null },
+            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday", reviewImage: null }
         ],
         "หม่าล่าเสฉวน": [
-            { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago" },
-            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday" }
+            { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago", reviewImage: null },
+            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday", reviewImage: null }
         ],
         "Meetup Mingle Cafe": [
-            { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday" },
-            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago" }
+            { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday", reviewImage: null },
+            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago", reviewImage: null }
         ],
         "สุกี้จานบิน": [
-            { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago" },
-            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday" }
+            { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago", reviewImage: null },
+            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday", reviewImage: null }
         ],
         "Little Chicky": [
-            { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago" },
-            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday" }
+            { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago", reviewImage: null },
+            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday", reviewImage: null }
         ],
         "Bad Bad Burger": [
-            { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday" },
-            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago" }
+            { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday", reviewImage: null },
+            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago", reviewImage: null }
         ],
         "โอยั๊วะเกษตร": [
-            { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday" },
-            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday" }
+            { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday", reviewImage: null },
+            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday", reviewImage: null }
         ],
         "Uptojug Kitchen": [
-            { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday" },
-            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago" }
+            { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday", reviewImage: null },
+            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago", reviewImage: null }
         ],
         "Wallace": [
-            { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago" },
-            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago" }
+            { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago", reviewImage: null },
+            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago", reviewImage: null }
         ]
     };
 
@@ -72,9 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuIcon = document.querySelector('.menu-icon');
     const nav = document.querySelector('.nav');
     if (menuIcon && nav) {
-        menuIcon.addEventListener('click', function() {
+        menuIcon.addEventListener('click', function () {
             nav.classList.toggle('open');
-            document.body.classList.toggle('menu-active'); 
+            document.body.classList.toggle('menu-active');
         });
         nav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
@@ -84,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- 3. Sections Switching ---
+    // --- 3. Sections Switching & Active State ---
     const sections = {
         home: [document.querySelector('.hero'), document.getElementById('tour-hero'), document.getElementById('restaurant-hero'), document.getElementById('contact-hero'), document.getElementById('about-hero')],
         tour: document.getElementById('location-section-tour'),
@@ -93,23 +171,62 @@ document.addEventListener('DOMContentLoaded', function() {
         about: document.getElementById('about-section')
     };
 
-    function hideAll() { Object.values(sections).flat().forEach(el => { if(el) el.style.display = 'none'; }); }
-    function showHomePage() { hideAll(); sections.home.forEach(el => { if(el) el.style.display = 'flex'; }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function showSection(section) { if (!section) return; hideAll(); section.style.display = 'flex'; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function updateNavActiveState(targetHref) {
+        document.querySelectorAll('.nav a').forEach(link => {
+            if (link.getAttribute('href') === targetHref) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    function hideAll() {
+        Object.values(sections).flat().forEach(el => { if (el) el.style.display = 'none'; });
+    }
+
+    function showHomePage() {
+        withLoading(() => {
+            hideAll();
+            sections.home.forEach(el => { if (el) el.style.display = 'flex'; });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateNavActiveState('#');
+        });
+    }
+
+    function showSection(section, href) {
+        if (!section) return;
+        withLoading(() => {
+            hideAll();
+            section.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateNavActiveState(href);
+        });
+    }
 
     // Navigation Listeners
-    document.querySelectorAll('.back-to-home-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); showHomePage(); }); });
+    document.querySelectorAll('.back-to-home-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showHomePage();
+        });
+    });
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const id = this.getAttribute('href');
             if (this.classList.contains('back-to-home-btn')) return;
-            if (id === '#location-section-tour') { e.preventDefault(); showSection(sections.tour); }
-            else if (id === '#location-section-restaurant') { e.preventDefault(); showSection(sections.dining); }
-            else if (id === '#contact-section') { e.preventDefault(); showSection(sections.contact); }
-            else if (id === '#about-section') { e.preventDefault(); showSection(sections.about); }
+
+            if (id === '#location-section-tour') { e.preventDefault(); showSection(sections.tour, id); }
+            else if (id === '#location-section-restaurant') { e.preventDefault(); showSection(sections.dining, id); }
+            else if (id === '#contact-section') { e.preventDefault(); showSection(sections.contact, id); }
+            else if (id === '#about-section') { e.preventDefault(); showSection(sections.about, id); }
             else {
                 const target = document.querySelector(id);
-                if (target && sections.home[0].style.display !== 'none') { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+                if (target && sections.home[0].style.display !== 'none') {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         });
     });
@@ -118,14 +235,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleFavorite(title, btn) {
         const index = favorites.indexOf(title);
         const icon = btn.querySelector('i');
-        
+
         if (index === -1) {
-            favorites.push(title); // Add
+            favorites.push(title);
             btn.classList.add('active');
             icon.classList.remove('fa-regular');
             icon.classList.add('fa-solid');
         } else {
-            favorites.splice(index, 1); // Remove
+            favorites.splice(index, 1);
             btn.classList.remove('active');
             icon.classList.remove('fa-solid');
             icon.classList.add('fa-regular');
@@ -137,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.location-card').forEach(card => {
             const title = card.getAttribute('data-title');
             const btn = card.querySelector('.favorite-btn');
-            if(btn) {
+            if (btn) {
                 const icon = btn.querySelector('i');
                 if (favorites.includes(title)) {
                     btn.classList.add('active');
@@ -166,11 +283,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const filter = btn.getAttribute('data-filter');
-                
+
                 cards.forEach(card => {
                     const tags = card.getAttribute('data-tags');
                     const title = card.getAttribute('data-title');
-                    
+
                     let isMatch = false;
                     if (filter === 'all') {
                         isMatch = true;
@@ -180,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         isMatch = (tags && tags.includes(filter));
                     }
 
-                    if (isMatch) card.style.display = 'block'; 
-                    else card.style.display = 'none'; 
+                    if (isMatch) card.style.display = 'block';
+                    else card.style.display = 'none';
                 });
             });
         });
@@ -189,36 +306,73 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilters('tourFilters', 'locationList');
     setupFilters('diningFilters', 'restaurantList');
 
-    // --- 6. Modal System (Logic for Review Modal on Main Page) ---
+    // --- 6. Modal & Review System ---
     const detailModal = document.getElementById('detailModal');
     const detailClose = document.querySelector('.detail-close-btn');
-    
+
     const reviewModal = document.getElementById('reviewModal');
     const reviewClose = document.querySelector('.review-close-btn');
     const reviewList = document.getElementById('reviewList');
     const submitReviewBtn = document.getElementById('submitReviewBtn');
-    let currentReviewTarget = ""; 
+    let currentReviewTarget = "";
 
-    // Function to update Gallery in Detail Modal (Legacy)
+    // --- PHOTO UPLOAD LOGIC ---
+    const reviewPhotoInput = document.getElementById('reviewPhotoInput');
+    const photoPreviewContainer = document.getElementById('photoPreviewContainer');
+    const photoPreview = document.getElementById('photoPreview');
+    const removePhotoBtn = document.getElementById('removePhotoBtn');
+
+    if (reviewPhotoInput) {
+        reviewPhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 1024 * 1024) { // 1MB
+                    alert('ไฟล์ภาพใหญ่เกินไป กรุณาเลือกภาพไม่เกิน 1MB');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    selectedImageData = event.target.result;
+                    photoPreview.src = selectedImageData;
+                    photoPreviewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (removePhotoBtn) {
+        removePhotoBtn.addEventListener('click', function() {
+            selectedImageData = null;
+            reviewPhotoInput.value = '';
+            photoPreviewContainer.style.display = 'none';
+        });
+    }
+
     function updateGallery(imageString) {
-        const nav = document.getElementById('thumbnailNav'); const main = document.getElementById('modalImage');
+        const nav = document.getElementById('thumbnailNav'); 
+        const main = document.getElementById('modalImage');
         if (!main || !nav) return;
-        nav.innerHTML = ''; main.src = ''; 
+        nav.innerHTML = ''; main.src = '';
         if (!imageString) { nav.style.display = 'none'; return; }
         const urls = imageString.split(',');
         urls.forEach((url, i) => {
             const img = document.createElement('img'); img.src = url.trim();
             if (i === 0) { img.classList.add('active'); main.src = url.trim(); }
-            img.addEventListener('click', function() { main.src = url.trim(); nav.querySelectorAll('img').forEach(t => t.classList.remove('active')); this.classList.add('active'); });
+            img.addEventListener('click', function () { 
+                main.src = url.trim(); 
+                nav.querySelectorAll('img').forEach(t => t.classList.remove('active')); 
+                this.classList.add('active'); 
+            });
             nav.appendChild(img);
         });
         nav.style.display = urls.length <= 1 ? 'none' : 'flex';
     }
 
-    // Function to open Detail Modal (Legacy)
     function openDetail(data) {
-        if(!detailModal) return;
-        currentReviewTarget = data.title; 
+        if (!detailModal) return;
+        currentReviewTarget = data.title;
         document.getElementById('modalTitle').textContent = data.title || '';
         document.getElementById('modalDetails').textContent = data.details || '';
         document.getElementById('modalBudget').textContent = data.budget ? `Budget: ${data.budget}` : '';
@@ -228,37 +382,61 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modalParking').textContent = data.parking || '-';
         updateGallery(data.images);
         const tagBox = document.getElementById('modalTags'); tagBox.innerHTML = '';
-        if(data.tags) data.tags.split(' ').forEach(t => { if(t.startsWith('#')) { const s = document.createElement('span'); s.className='modal-tag'; s.textContent=t; tagBox.appendChild(s); } });
+        if (data.tags) data.tags.split(' ').forEach(t => { 
+            if (t.startsWith('#')) { 
+                const s = document.createElement('span'); 
+                s.className = 'modal-tag'; 
+                s.textContent = t; 
+                tagBox.appendChild(s); 
+            } 
+        });
         const mapBtn = document.getElementById('googleMapBtn');
-        if(mapBtn) { mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`; }
-        detailModal.style.display = 'flex'; 
+        if (mapBtn) { 
+            mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`; 
+        }
+        detailModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
-    
-    // Function to Open Review Modal
+
     function openReviews() {
-        if(!reviewModal) return;
+        if (!reviewModal) return;
         document.getElementById('reviewTargetName').textContent = currentReviewTarget;
-        reviewList.innerHTML = ''; 
-        
-        // Fetch reviews or use default
+        reviewList.innerHTML = '';
+
         let reviews = reviewsData[currentReviewTarget];
-        if(!reviews || reviews.length === 0) {
-            reviews = [ { name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now" } ];
+        if (!reviews || reviews.length === 0) {
+            reviews = [{ name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now", reviewImage: null }];
         }
 
         reviews.forEach(r => {
             const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-            const html = `<div class="review-item"><div class="review-avatar" style="background-image: url('${r.avatar}');"></div><div class="review-content"><div class="review-header"><div class="review-user">${r.name}</div><div class="review-date">${r.date}</div></div><div class="review-stars">${stars}</div><p class="review-text">${r.text}</p></div></div>`;
+            // ส่วนแสดงรูปรีวิว
+            const reviewImgHtml = r.reviewImage 
+                ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">` 
+                : '';
+                
+            const html = `
+                <div class="review-item">
+                    <div class="review-avatar" style="background-image: url('${r.avatar}');"></div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <div class="review-user">${r.name}</div>
+                            <div class="review-date">${r.date}</div>
+                        </div>
+                        <div class="review-stars">${stars}</div>
+                        <p class="review-text">${r.text}</p>
+                        ${reviewImgHtml}
+                    </div>
+                </div>`;
             reviewList.innerHTML += html;
         });
         reviewModal.style.display = 'flex';
     }
 
     const starInputs = document.querySelectorAll('.star-rating-input i');
-    if(starInputs.length > 0) {
+    if (starInputs.length > 0) {
         starInputs.forEach(star => {
-            star.addEventListener('click', function() {
+            star.addEventListener('click', function () {
                 const value = parseInt(this.getAttribute('data-value'));
                 currentRating = value;
                 updateStarVisuals(value);
@@ -269,48 +447,61 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStarVisuals(rating) {
         starInputs.forEach(star => {
             const val = parseInt(star.getAttribute('data-value'));
-            if(val <= rating) { star.classList.remove('fa-regular'); star.classList.add('fa-solid', 'filled'); } else { star.classList.remove('fa-solid', 'filled'); star.classList.add('fa-regular'); }
+            if (val <= rating) { 
+                star.classList.remove('fa-regular'); 
+                star.classList.add('fa-solid', 'filled'); 
+            } else { 
+                star.classList.remove('fa-solid', 'filled'); 
+                star.classList.add('fa-regular'); 
+            }
         });
     }
 
-    if(submitReviewBtn) {
+    if (submitReviewBtn) {
         submitReviewBtn.addEventListener('click', () => {
             const text = document.getElementById('newReviewText').value;
             if (currentRating === 0) { alert('Please select a star rating!'); return; }
-            if(!text) { alert('Please write something!'); return; }
+            if (!text) { alert('Please write something!'); return; }
+
+            const newReview = { 
+                name: "You (Demo)", 
+                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", 
+                rating: currentRating, 
+                text: text, 
+                date: "Just now",
+                reviewImage: selectedImageData // เพิ่มรูปภาพลงในรีวิว
+            };
+
+            if (!reviewsData[currentReviewTarget]) reviewsData[currentReviewTarget] = [];
+            reviewsData[currentReviewTarget].unshift(newReview);
+
+            openReviews(); // Refresh รายการ
             
-            const newReview = { name: "You (Demo)", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: currentRating, text: text, date: "Just now" };
-            
-            if(!reviewsData[currentReviewTarget]) reviewsData[currentReviewTarget] = [];
-            reviewsData[currentReviewTarget].unshift(newReview); 
-            
-            openReviews(); 
+            // Clear Form
             document.getElementById('newReviewText').value = '';
             currentRating = 0;
             updateStarVisuals(0);
+            selectedImageData = null;
+            if(reviewPhotoInput) reviewPhotoInput.value = '';
+            if(photoPreviewContainer) photoPreviewContainer.style.display = 'none';
         });
     }
 
     const viewReviewsBtn = document.getElementById('viewReviewsBtn');
-    if(viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
+    if (viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
 
     document.querySelectorAll('.location-card').forEach(card => {
-        // Favorite Logic
         const favBtn = card.querySelector('.favorite-btn');
-        if(favBtn) {
-            favBtn.addEventListener('click', function(e) {
+        if (favBtn) {
+            favBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const title = card.getAttribute('data-title');
                 toggleFavorite(title, this);
             });
         }
 
-        // Card Click -> Open Modal (Legacy behavior)
-        // Note: Footer links use separate logic to open details.html
-        card.addEventListener('click', function(e) {
-            if(e.target.closest('.favorite-btn')) return;
-            
-            // ใช้ข้อมูลจาก Attribute เพื่อเปิด Modal เดิม (สำหรับดูข้อมูลเบื้องต้นและกดรีวิว)
+        card.addEventListener('click', function (e) {
+            if (e.target.closest('.favorite-btn')) return;
             openDetail({
                 title: this.getAttribute('data-title'),
                 details: this.getAttribute('data-details'),
@@ -325,16 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    function closeModal(m) { if(m) m.style.display='none'; document.body.style.overflow='auto'; }
-    if(detailClose) detailClose.addEventListener('click', () => closeModal(detailModal));
-    if(reviewClose) reviewClose.addEventListener('click', () => closeModal(reviewModal));
+    function closeModal(m) { if (m) m.style.display = 'none'; document.body.style.overflow = 'auto'; }
+    if (detailClose) detailClose.addEventListener('click', () => closeModal(detailModal));
+    if (reviewClose) reviewClose.addEventListener('click', () => closeModal(reviewModal));
 
-    window.addEventListener('click', (e) => { 
-        if(e.target === detailModal) closeModal(detailModal); 
-        if(e.target === reviewModal) closeModal(reviewModal);
-        if(e.target === document.getElementById('loginModal')) closeModal(document.getElementById('loginModal'));
-        if(e.target === document.getElementById('signupModal')) closeModal(document.getElementById('signupModal'));
-        if(e.target === document.getElementById('searchModal')) closeModal(document.getElementById('searchModal'));
+    window.addEventListener('click', (e) => {
+        if (e.target === detailModal) closeModal(detailModal);
+        if (e.target === reviewModal) closeModal(reviewModal);
+        if (e.target === document.getElementById('loginModal')) closeModal(document.getElementById('loginModal'));
+        if (e.target === document.getElementById('signupModal')) closeModal(document.getElementById('signupModal'));
+        if (e.target === document.getElementById('searchModal')) closeModal(document.getElementById('searchModal'));
     });
 
     // --- 7. LOGIN & SIGNUP SYSTEM ---
@@ -347,10 +538,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
 
-    if(loginClose) loginClose.addEventListener('click', () => closeModal(loginModal));
-    if(signupClose) signupClose.addEventListener('click', () => closeModal(signupModal));
-    
-    if(openSignupBtn) {
+    if (loginClose) loginClose.addEventListener('click', () => closeModal(loginModal));
+    if (signupClose) signupClose.addEventListener('click', () => closeModal(signupModal));
+
+    if (openSignupBtn) {
         openSignupBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(loginModal); signupModal.style.display = 'flex'; });
     }
 
@@ -359,22 +550,22 @@ document.addEventListener('DOMContentLoaded', function() {
         let profileImg = accountToggle.querySelector('.user-profile-img');
         if (!profileImg) {
             profileImg = document.createElement('img');
-            profileImg.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'; 
+            profileImg.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80';
             profileImg.className = 'user-profile-img';
             accountToggle.appendChild(profileImg);
         }
         if (user) {
             accountToggle.classList.add('logged-in');
-            accountToggle.onclick = function(e) { e.preventDefault(); if(confirm('Log out from ' + user + '?')) handleLogout(); };
+            accountToggle.onclick = function (e) { e.preventDefault(); if (confirm('Log out from ' + user + '?')) handleLogout(); };
         } else {
             accountToggle.classList.remove('logged-in');
-            accountToggle.onclick = function(e) { e.preventDefault(); loginModal.style.display = 'flex'; };
+            accountToggle.onclick = function (e) { e.preventDefault(); loginModal.style.display = 'flex'; };
         }
     }
 
     function handleLogout() { localStorage.removeItem('bloomUser'); alert('Logged out successfully!'); checkLoginStatus(); window.location.reload(); }
 
-    if(signupForm) {
+    if (signupForm) {
         signupForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('signupName').value;
@@ -389,17 +580,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
-            
+
             let isLoginSuccess = false;
-            if (registeredUser && email === registeredUser.email && password === registeredUser.pass) { isLoginSuccess = true; } 
+            if (registeredUser && email === registeredUser.email && password === registeredUser.pass) { isLoginSuccess = true; }
             else if (email === 'admin@spu.ac.th' && password === '1234') { isLoginSuccess = true; }
 
-            if (isLoginSuccess) { localStorage.setItem('bloomUser', email); alert('Welcome back!'); closeModal(loginModal); checkLoginStatus(); } 
+            if (isLoginSuccess) { localStorage.setItem('bloomUser', email); alert('Welcome back!'); closeModal(loginModal); checkLoginStatus(); }
             else { alert('Invalid email or password!'); }
         });
     }
@@ -412,16 +603,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchClose = document.querySelector('.search-close-btn');
     const searchForm = document.getElementById('searchForm');
 
-    if(searchToggle) searchToggle.addEventListener('click', (e) => { e.preventDefault(); searchModal.style.display='flex'; });
-    if(searchClose) searchClose.addEventListener('click', () => closeModal(searchModal));
+    if (searchToggle) searchToggle.addEventListener('click', (e) => { e.preventDefault(); searchModal.style.display = 'flex'; });
+    if (searchClose) searchClose.addEventListener('click', () => closeModal(searchModal));
 
-    if(searchForm) {
+    if (searchForm) {
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const query = document.getElementById('searchQuery').value.toLowerCase();
             const allCards = document.querySelectorAll('.location-card');
             closeModal(searchModal);
-            if(query) {
+            if (query) {
                 let found = false;
                 allCards.forEach(card => {
                     const title = card.getAttribute('data-title').toLowerCase();
@@ -435,12 +626,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         card.style.display = 'none';
                     }
                 });
-                if(!found) alert('No results found for "' + query + '"');
+                if (!found) alert('No results found for "' + query + '"');
             }
         });
     }
 
-    // Scroll Reveal & Back to Top Logic
     const backToTopBtn = document.getElementById("backToTop");
     window.addEventListener('scroll', () => {
         const reveals = document.querySelectorAll('.reveal');
@@ -464,30 +654,21 @@ document.addEventListener('DOMContentLoaded', function() {
     showHomePage();
 });
 
-// Function for Search Suggestions (Called from HTML onclick)
-function setSearch(text) {
-    const input = document.getElementById('searchQuery');
-    if(input) { input.value = text; input.focus(); }
-}
-
-/* =========================================
-   9. COMPLETE SHOP DETAILS DATABASE (For details.html)
-   ========================================= */
+// --- 9. FULL SHOP DATABASE (ข้อมูลร้านค้าเดิมทั้งหมดสำหรับหน้ารายละเอียด) ---
 const shopDatabase = {
-    // --- HANGOUT SPOTS ---
     "moca": {
         title: "MOCA Museum",
         subtitle: "Museum of Contemporary Art",
         heroImage: "Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 1.jpg",
-        history: "<p>พิพิธภัณฑ์ศิลปะไทยร่วมสมัย (MOCA BANGKOK) ก่อตั้งโดยคุณบุญชัย เบญจรงคกุล ด้วยความตั้งใจที่จะรวบรวมผลงานศิลปะชิ้นเอกของศิลปินไทยจากรุ่นสู่รุ่น เพื่อให้คนรุ่นใหม่ได้ชื่นชม เป็นหนึ่งในพิพิธภัณฑ์ที่สวยที่สุดในกรุงเทพฯ</p><p>ภายในอาคารมีการออกแบบที่เน้นแสงธรรมชาติ โดยเฉพาะมุมไฮไลท์อย่าง 'สะพานข้ามจักรวาล' และห้อง Richard Green ที่จำลองบรรยากาศแบบยุโรป เหมาะสำหรับผู้ที่รักงานศิลปะและการถ่ายภาพ</p>",
-        menuImages: ["Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 2.jpg","Im/พิพิ3.jpg","Im/พิพิ4.jpg", "Im/พิพิ5.webp"],
+        history: "<p>พิพิธภัณฑ์ศิลปะไทยร่วมสมัย (MOCA BANGKOK) ก่อตั้งโดยคุณบุญชัย เบญจรงคกุล เพื่อรวบรวมผลงานศิลปะชิ้นสำคัญของศิลปินไทยระดับปรมาจารย์...</p>",
+        menuImages: ["Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 2.jpg", "Im/พิพิ3.jpg", "Im/พิพิ4.jpg", "Im/พิพิ5.webp"],
         info: { hours: "10:00 - 18:00 (ปิดวันจันทร์)", price: "Student 100 THB", phone: "02-016-5666", location: "ถนนวิภาวดีรังสิต" }
     },
     "temple": {
         title: "วัดพระศรีมหาธาตุ",
         subtitle: "Wat Phra Si Mahathat",
         heroImage: "Im/วัดพระ.jpg",
-        history: "<p>วัดพระศรีมหาธาตุวรมหาวิหาร หรือที่นิยมเรียกกันว่า 'วัดพระศรี' เป็นพระอารามหลวงชั้นเอก สร้างขึ้นในสมัยจอมพล ป. พิบูลสงคราม เพื่อเป็นอนุสรณ์สถานของการปกครองระบอบประชาธิปไตย</p><p>สถานที่นี้เป็นที่ยึดเหนี่ยวจิตใจสำคัญของชาวบางเขนและนักศึกษาย่านนี้ โดยเฉพาะช่วงสอบที่จะมีคนมาขอพรสิ่งศักดิ์สิทธิ์และท้าวเวสสุวรรณเป็นจำนวนมาก</p>",
+        history: "<p>วัดพระศรีมหาธาตุวรมหาวิหาร หรือที่นิยมเรียกกันว่า 'วัดพระศรี' เป็นวัดคู่บ้านคู่เมืองของย่านบางเขน...</p>",
         menuImages: ["Im/วัด 2.jpg", "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600"],
         info: { hours: "06:00 - 18:00", price: "Free", phone: "02-521-0311", location: "วงเวียนบางเขน" }
     },
@@ -495,7 +676,7 @@ const shopDatabase = {
         title: "Co-Working Space & Library",
         subtitle: "SPU Library Zone",
         heroImage: "Im/ห้องสมุด1.jpg",
-        history: "<p>พื้นที่แห่งการเรียนรู้ที่ออกแบบมาเพื่อนักศึกษาโดยเฉพาะ เป็นมากกว่าห้องสมุดธรรมดา เพราะมีโซน Co-Working Space ที่ทันสมัย ปลั๊กไฟครบทุกจุด และ Wi-Fi ความเร็วสูง</p><p>ที่นี่คือจุดนัดพบยอดฮิตช่วงสอบและช่วงปั่นโปรเจกต์ ด้วยบรรยากาศที่เงียบสงบและแอร์เย็นฉ่ำ ทำให้สามารถนั่งทำงานได้ทั้งวันโดยไม่เบื่อ</p>",
+        history: "<p>พื้นที่แห่งการเรียนรู้ที่ออกแบบมาเพื่อนักศึกษาโดยเฉพาะ มีทั้งโซนเงียบสำหรับอ่านหนังสือ และโซนพูดคุยสำหรับทำงานกลุ่ม...</p>",
         menuImages: ["Im/ห้องสมุด2.jpg", "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=600"],
         info: { hours: "08:30 - 20:00", price: "Free (Student Only)", phone: "02-579-1111", location: "อาคาร 11 ชั้น 1-2" }
     },
@@ -503,7 +684,7 @@ const shopDatabase = {
         title: "เมเจอร์ รัชโยธิน",
         subtitle: "Major Cineplex Ratchayothin",
         heroImage: "Im/เมเจอร์ซีนีเพล็กซ์ รัชโยธิน 1.jpg",
-        history: "<p>แลนด์มาร์คสำคัญของย่านรัชโยธิน เป็นแหล่งรวมความบันเทิงครบวงจร ทั้งโรงภาพยนตร์ระบบ IMAX ที่ใหญ่ที่สุดแห่งหนึ่ง โบว์ลิ่ง คาราโอเกะ และตลาดนัดกลางคืน</p><p>เป็นจุดนัดพบของวัยรุ่นและนักศึกษามาอย่างยาวนาน ไม่ว่าจะดูหนัง กินข้าว หรือเดินช้อปปิ้ง ก็ครบจบในที่เดียว</p>",
+        history: "<p>แลนด์มาร์คสำคัญของย่านรัชโยธิน เป็นแหล่งรวมความบันเทิงครบวงจร ทั้งโรงภาพยนตร์ระบบ IMAX, โบว์ลิ่ง, คาราโอเกะ...</p>",
         menuImages: ["Im/เมเจอร์ซีนีเพล็กซ์ รัชโยธิน 2.jpg", "https://images.unsplash.com/photo-1517604931442-71053e6e2306?w=600"],
         info: { hours: "10:00 - 22:00", price: "Varied", phone: "02-515-5555", location: "แยกรัชโยธิน" }
     },
@@ -511,7 +692,7 @@ const shopDatabase = {
         title: "เซ็นทรัล รามอินทรา",
         subtitle: "New Central Ramindra",
         heroImage: "Im/เซ็นทรัลรามอินทรา 1.jpg",
-        history: "<p>โฉมใหม่ไฉไลกว่าเดิม! เซ็นทรัล รามอินทรา ได้รับการรีโนเวทใหม่ทั้งหมดให้ทันสมัยและตอบโจทย์ไลฟ์สไตล์คนรุ่นใหม่มากขึ้น มาพร้อมกับร้านค้าชั้นนำ ร้านอาหารมากมาย และโรงหนัง SF Cinema</p><p>ที่นี่ยังมีโซน Co-Working Space ฟรี และมุมถ่ายรูปสวยๆ ให้เดินเล่นตากแอร์เย็นๆ ได้อย่างสบายใจ</p>",
+        history: "<p>โฉมใหม่ไฉไลกว่าเดิม! เซ็นทรัล รามอินทรา ได้รับการรีโนเวทใหม่ทั้งหมด มาในคอนเซปต์ 'Everyday Lifestyle'...</p>",
         menuImages: ["Im/เซ็นทรัลรามอินทรา 2.jpg", "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=600"],
         info: { hours: "10:00 - 21:00", price: "Varied", phone: "02-790-3000", location: "ถนนรามอินทรา" }
     },
@@ -519,7 +700,7 @@ const shopDatabase = {
         title: "ตลาดนัดจตุจักรกลางคืน",
         subtitle: "Chatuchak Night Market",
         heroImage: "Im/ตลาดนัดจตุจักรกลางคืน1.jpg",
-        history: "<p>สวรรค์ของคนนอนดึก! ตลาดนัดจตุจักรคืนวันศุกร์จะเปลี่ยนเป็นแหล่งขายส่งเสื้อผ้าแฟชั่นที่ใหญ่ที่สุด พ่อค้าแม่ค้าและวัยรุ่นจะมารวมตัวกันที่นี่เพื่ออัพเดทเทรนด์ใหม่ๆ</p><p>นอกจากเสื้อผ้าแล้ว ยังมีของกินสตรีทฟู้ดอร่อยๆ ให้เดินกินไปช้อปไป บรรยากาศคึกคักและเป็นกันเองสุดๆ</p>",
+        history: "<p>สวรรค์ของคนนอนดึก! ตลาดนัดจตุจักรคืนวันศุกร์ เป็นแหล่งรวมเสื้อผ้าแฟชั่นราคาส่ง และของกิน Street Food มากมาย...</p>",
         menuImages: ["Im/ตลาดนัดจตุจักรกลางคืน2.jpg", "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600"],
         info: { hours: "19:00 - 24:00 (Fri-Sat-Sun)", price: "Varied", phone: "02-272-4440", location: "BTS หมอชิต / MRT สวนจตุจักร" }
     },
@@ -527,25 +708,23 @@ const shopDatabase = {
         title: "ตลาดนัดจตุจักรกลางวัน",
         subtitle: "Chatuchak Weekend Market",
         heroImage: "Im/ตลาดกลางวัน1.png",
-        history: "<p>ตลาดนัดที่ใหญ่ที่สุดในโลกและเป็นจุดหมายปลายทางของนักท่องเที่ยวทั่วโลก มีร้านค้ากว่า 15,000 ร้าน แบ่งเป็นโซนต่างๆ ทั้งเสื้อผ้า สัตว์เลี้ยง ต้นไม้ ของตกแต่งบ้าน และงานฝีมือ</p><p>เป็นสถานที่ที่เดินวันเดียวก็ไม่ทั่ว เหมาะสำหรับการมาหาของแปลกๆ หรือของที่ระลึกที่มีเพียงชิ้นเดียวในโลก</p>",
+        history: "<p>ตลาดนัดที่ใหญ่ที่สุดในโลกและเป็นจุดหมายปลายทางของนักท่องเที่ยวทั่วโลก มีสินค้าครบทุกหมวดหมู่...</p>",
         menuImages: ["Im/ตลาดกลางวัน2.png", "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600"],
         info: { hours: "09:00 - 18:00 (Sat-Sun)", price: "Varied", phone: "02-272-4440", location: "BTS หมอชิต / MRT สวนจตุจักร" }
     },
-
-    // --- EATS & DRINKS ---
     "mala": {
         title: "หม่าล่าเสฉวน",
         subtitle: "Budget Spicy & Authentic Taste",
         heroImage: "Im/หมาล่า1.webp",
-        history: "<p>ร้านหม่าล่าเสฉวนสูตรต้นตำรับที่ครองใจเด็ก ม.ศรีปทุม มายาวนาน ด้วยน้ำซุปที่เคี่ยวนานกว่า 8 ชั่วโมง จนได้รสชาติเผ็ดชาหอมเครื่องเทศแท้ๆ</p><p>จุดเด่นคือวัตถุดิบที่มีให้เลือกเยอะมากในราคาเริ่มต้นไม้ละ 5 บาท และน้ำจิ้มถั่วสูตรเด็ดที่ทางร้านทำเอง ปรุงรสได้ตามใจชอบ เป็นร้านที่ต้องมาลองสักครั้งถ้ามาแถวนี้</p>",
-        menuImages: ["Im/หมาล่า2.webp","Im/หมาล่า3.jpeg","Im/หมาล่า4.jpg", "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600"],
+        history: "<p>ร้านหม่าล่าเสฉวนสูตรต้นตำรับที่ครองใจเด็ก ม.ศรีปทุม มายาวนาน ด้วยรสชาติที่เผ็ดร้อน ชาลิ้นสะใจ...</p>",
+        menuImages: ["Im/หมาล่า2.webp", "Im/หมาล่า3.jpeg", "Im/หมาล่า4.jpg", "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600"],
         info: { hours: "11:00 - 21:00", price: "50 - 150 THB", phone: "082-645-8483", location: "ตรงข้าม ม.ศรีปทุม" }
     },
     "mingle": {
         title: "Meetup Mingle Cafe",
         subtitle: "Board Games & Workspace",
         heroImage: "Im/ร้านเกม1.webp",
-        history: "<p>คาเฟ่สำหรับคนรักบอร์ดเกมและการสังสรรค์! ที่นี่มีบอร์ดเกมให้เลือกเล่นมากกว่า 300 เกม จากทั่วทุกมุมโลก พร้อมทีมงานที่พร้อมสอนเล่นสำหรับมือใหม่</p><p>นอกจากเกมแล้ว ยังมีกาแฟสด ขนมเค้ก และอาหารจานเดียวให้บริการ จะมานั่งทำงานหรือมาปาร์ตี้บอร์ดเกมกับเพื่อนก็ตอบโจทย์</p>",
+        history: "<p>คาเฟ่สำหรับคนรักบอร์ดเกมและการสังสรรค์! ที่นี่มีบอร์ดเกมให้เลือกเล่นมากกว่า 100 เกม...</p>",
         menuImages: ["Im/ร้านเกม2.webp", "https://images.unsplash.com/photo-1606820854416-43923340d16e?w=600"],
         info: { hours: "10:00 - 22:00", price: "100 - 250 THB", phone: "08x-xxx-xxxx", location: "หน้า ม.ศรีปทุม" }
     },
@@ -553,7 +732,7 @@ const shopDatabase = {
         title: "สุกี้จานบิน",
         subtitle: "Hotpot Buffet Lover",
         heroImage: "Im/สุกี้จานบิน1.webp",
-        history: "<p>สุกี้สายพานเจ้าดังที่เสิร์ฟความอร่อยแบบบินตรงถึงที่! ทางร้านคัดสรรวัตถุดิบคุณภาพเยี่ยม ทั้งเนื้อวัวออสเตรเลีย หมูคุโรบุตะ และซีฟู้ดสดใหม่</p><p>น้ำซุปมีให้เลือกถึง 7 รสชาติ และน้ำจิ้มสูตรพิเศษที่ปรุงรสได้อย่างลงตัว บรรยากาศร้านตกแต่งสไตล์โมเดิร์น นั่งสบาย เหมาะกับการมาทานเป็นกลุ่ม</p>",
+        history: "<p>สุกี้สายพานเจ้าดังที่เสิร์ฟความอร่อยแบบบินตรงถึงที่! จุดเด่นคือน้ำซุปสูตรลับที่เคี่ยวนานกว่า 8 ชั่วโมง...</p>",
         menuImages: ["Im/สุกี้จานบิน2.webp", "https://images.unsplash.com/photo-1584844627036-7c39b363673d?w=600"],
         info: { hours: "11:00 - 02:00", price: "250 - 400 THB", phone: "095-956-5668", location: "โครงการบางเขน มาร์เก็ต" }
     },
@@ -561,7 +740,7 @@ const shopDatabase = {
         title: "Little Chicky",
         subtitle: "Korean Fried Chicken",
         heroImage: "Im/ร้านไก่1.webp",
-        history: "<p>ไก่ทอดเกาหลีโฮมเมดที่ใส่ใจในทุกขั้นตอนการทอด เพื่อให้ได้ไก่ที่กรอบนอกนุ่มใน ไม่อมน้ำมัน คลุกเคล้ากับซอสสูตรลับเฉพาะของทางร้าน</p><p>มีให้เลือกทั้งซอสกระเทียม ซอสเผ็ดเกาหลี และซอสหัวหอม ยิ่งทานคู่กับหัวไชเท้าดองและต๊อกบกกี ยิ่งฟิน! ราคานักเรียนสบายกระเป๋า</p>",
+        history: "<p>ไก่ทอดเกาหลีโฮมเมดที่ใส่ใจในทุกขั้นตอนการทอด ใช้ไก่สดใหม่หมักเครื่องเทศจนเข้าเนื้อ...</p>",
         menuImages: ["Im/ร้านไก่2.webp", "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600"],
         info: { hours: "10:00 - 20:00", price: "80 - 200 THB", phone: "096-646-3159", location: "ซอยข้าง ม.ศรีปทุม" }
     },
@@ -569,7 +748,7 @@ const shopDatabase = {
         title: "Bad Bad Burger",
         subtitle: "Premium Craft Burger",
         heroImage: "Im/สเต็ก1.webp",
-        history: "<p>ร้านเบอร์เกอร์พรีเมียมสำหรับคนรักเนื้อ! ทางร้านใช้เนื้อบดทำเองวันต่อวัน ย่างบนเตาด้วยเทคนิค Smash Burger เพื่อให้ได้ขอบที่กรอบและเนื้อที่ชุ่มฉ่ำ</p><p>ขนมปัง Brioche Bun หอมเนย ทานคู่กับซอสทรัฟเฟิลสูตรพิเศษ เป็นรสชาติที่หาทานยากในราคานี้ สายเนื้อห้ามพลาดเด็ดขาด</p>",
+        history: "<p>ร้านเบอร์เกอร์พรีเมียมสำหรับคนรักเนื้อ! ทางร้านใช้เนื้อ Dry-Aged ที่บ่มเอง ทำให้ได้รสชาติที่เข้มข้น...</p>",
         menuImages: ["Im/สเต็ก2.webp", "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600"],
         info: { hours: "16:00 - 23:00", price: "250 - 450 THB", phone: "095-956-5668", location: "ลาดพร้าว-วังหิน" }
     },
@@ -577,7 +756,7 @@ const shopDatabase = {
         title: "โอยั๊วะเกษตร",
         subtitle: "Riverside Hangout",
         heroImage: "Im/โอยั๊วะเกษตร1.webp",
-        history: "<p>ร้านอาหารริมแม่น้ำเจ้าพระยาบรรยากาศดีระดับตำนาน เป็นสถานที่นัดพบสังสรรค์ของชาวเกษตรและคนย่านนี้มายาวนาน</p><p>โดดเด่นด้วยเมนูอาหารไทยรสจัดจ้านและขาหมูเยอรมันทอดกรอบ พร้อมดนตรีสดที่เล่นเพลงเพราะๆ ทุกค่ำคืน เหมาะสำหรับการเลี้ยงรุ่นหรือพาครอบครัวมาทานข้าว</p>",
+        history: "<p>ร้านอาหารริมแม่น้ำเจ้าพระยาบรรยากาศดีระดับตำนาน เป็นสถานที่ยอดฮิตสำหรับการจัดเลี้ยงสายรหัส...</p>",
         menuImages: ["Im/โอยั๊วะเกษตร2.webp", "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600"],
         info: { hours: "17:00 - 24:00", price: "300 - 600 THB", phone: "081-808-9885", location: "ริมแม่น้ำ (ท่าน้ำนนท์)" }
     },
@@ -585,7 +764,7 @@ const shopDatabase = {
         title: "Uptojug Kitchen",
         subtitle: "Fusion Cafe & Restaurant",
         heroImage: "Im/Uptojug1.webp",
-        history: "<p>คาเฟ่และร้านอาหารสไตล์ฟิวชั่นที่ตกแต่งร้านได้สวยงามน่านั่ง มีมุมถ่ายรูปเก๋ๆ เพียบ อาหารแต่ละจานถูกจัดแต่งอย่างพิถีพิถัน</p><p>เมนูแนะนำคือสปาเก็ตตี้คาโบนาร่าไข่ออนเซ็น และเครื่องดื่ม Signature ของทางร้าน บรรยากาศเงียบสงบ เหมาะกับการมาเดทหรือนั่งคุยงาน</p>",
+        history: "<p>คาเฟ่และร้านอาหารสไตล์ฟิวชั่นที่ตกแต่งร้านได้สวยงามน่านั่ง มีเมนูหลากหลายทั้งไทยและตะวันตก...</p>",
         menuImages: ["Im/Uptojug2.webp", "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600"],
         info: { hours: "10:00 - 19:00", price: "200 - 400 THB", phone: "061-542-6666", location: "ในซอยพหลโยธิน" }
     },
@@ -593,14 +772,14 @@ const shopDatabase = {
         title: "Wallace",
         subtitle: "Fine Dining Experience",
         heroImage: "Im/Wallace1.webp",
-        history: "<p>สัมผัสประสบการณ์ Fine Dining ในบรรยากาศสุดหรูหราแบบยุโรป ทางร้านคัดสรรวัตถุดิบนำเข้าเกรดพรีเมียมมาปรุงเป็นเมนูสเต็กและอาหารตะวันตกชั้นเลิศ</p><p>บริการระดับ 5 ดาว และไวน์ลิสต์ที่มีให้เลือกมากมาย เหมาะสำหรับโอกาสพิเศษ วันครบรอบ หรือเลี้ยงรับรองแขกผู้ใหญ่</p>",
+        history: "<p>สัมผัสประสบการณ์ Fine Dining ในบรรยากาศสุดหรูหราแบบยุโรป เสิร์ฟอาหารคุณภาพเยี่ยมโดยเชฟระดับประเทศ...</p>",
         menuImages: ["Im/Wallace2.webp", "https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600"],
         info: { hours: "11:00 - 22:00", price: "800+ THB", phone: "063-021-0537", location: "ซอยอารีย์" }
     }
 };
 
-// ฟังก์ชันโหลดข้อมูลหน้า Detail (เรียกจาก details.html)
-window.loadShopDetails = function(shopId) {
+// ฟังก์ชันโหลดข้อมูลร้านค้า
+window.loadShopDetails = function (shopId) {
     const data = shopDatabase[shopId];
     const container = document.getElementById('detailContent');
 
@@ -612,7 +791,7 @@ window.loadShopDetails = function(shopId) {
         return;
     }
 
-    const galleryHTML = data.menuImages.map(img => 
+    const galleryHTML = data.menuImages.map(img =>
         `<div class="menu-item"><img src="${img}" alt="Menu"></div>`
     ).join('');
 
@@ -655,4 +834,3 @@ window.loadShopDetails = function(shopId) {
         </div>
     `;
 };
-
