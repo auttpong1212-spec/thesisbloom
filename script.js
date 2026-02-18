@@ -8,16 +8,16 @@ function randomMyMeal() {
     if (restaurantCards.length > 0) {
         const randomIndex = Math.floor(Math.random() * restaurantCards.length);
         const selectedStore = restaurantCards[randomIndex];
-        
+
         // เลื่อนหน้าจอไปหาการ์ดที่สุ่มได้
         selectedStore.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
+
         // Effect กระพริบขอบสีเขียว
         selectedStore.style.transition = "all 0.3s ease";
         selectedStore.style.outline = "5px solid var(--color-cyan)";
         selectedStore.style.transform = "scale(1.05)";
         selectedStore.style.zIndex = "10";
-        
+
         setTimeout(() => {
             selectedStore.style.outline = "none";
             selectedStore.style.transform = "scale(1)";
@@ -32,9 +32,9 @@ function randomMyMeal() {
 // ฟังก์ชันช่วยใส่คำค้นหา
 function setSearch(text) {
     const input = document.getElementById('searchQuery');
-    if (input) { 
-        input.value = text; 
-        input.focus(); 
+    if (input) {
+        input.value = text;
+        input.focus();
     }
 }
 
@@ -83,69 +83,69 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedImageData = null; // ตัวแปรเก็บรูปภาพรีวิว
 
     // 1. เปลี่ยนจาก const เป็น let เพื่อให้แก้ไขค่าได้
-// 2. ดึงข้อมูลจาก localStorage ถ้าไม่มีให้ใช้ค่าเริ่มต้น (Default)
-let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
-    "MOCA Museum": [
-        { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago", reviewImage: null },
-        { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago", reviewImage: null }
-    ],
-    "วัดพระศรีมหาธาตุ": [
-        { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday", reviewImage: null },
-        { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago", reviewImage: null }
-    ],
-    "Co-Working Space & Library": [
-        { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago", reviewImage: null },
-        { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago", reviewImage: null }
-    ],
-    "เมเจอร์ รัชโยธิน": [
-        { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago", reviewImage: null },
-        { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday", reviewImage: null }
-    ],
-    "เซ็นทรัล รามอินทรา": [
-        { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday", reviewImage: null },
-        { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago", reviewImage: null }
-    ],
-    "ตลาดนัดจตุจักรกลางคืน": [
-        { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday", reviewImage: null },
-        { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago", reviewImage: null }
-    ],
-    "ตลาดนัดจตุจักรกลางวัน": [
-        { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday", reviewImage: null },
-        { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday", reviewImage: null }
-    ],
-    "หม่าล่าเสฉวน": [
-        { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago", reviewImage: null },
-        { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday", reviewImage: null }
-    ],
-    "Meetup Mingle Cafe": [
-        { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday", reviewImage: null },
-        { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago", reviewImage: null }
-    ],
-    "สุกี้จานบิน": [
-        { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago", reviewImage: null },
-        { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday", reviewImage: null }
-    ],
-    "Little Chicky": [
-        { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago", reviewImage: null },
-        { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday", reviewImage: null }
-    ],
-    "Bad Bad Burger": [
-        { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday", reviewImage: null },
-        { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago", reviewImage: null }
-    ],
-    "โอยั๊วะเกษตร": [
-        { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday", reviewImage: null },
-        { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday", reviewImage: null }
-    ],
-    "Uptojug Kitchen": [
-        { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday", reviewImage: null },
-        { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago", reviewImage: null }
-    ],
-    "Wallace": [
-        { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago", reviewImage: null },
-        { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago", reviewImage: null }
-    ]
-};
+    // 2. ดึงข้อมูลจาก localStorage ถ้าไม่มีให้ใช้ค่าเริ่มต้น (Default)
+    let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
+        "MOCA Museum": [
+            { name: "Ploy Ch.", avatar: "https://i.pravatar.cc/150?img=5", rating: 5, text: "มุมถ่ายรูปเยอะมากกก แสงสวยทุกจุด เตรียมชุดไปเปลี่ยนได้เลย คุ้มราคาบัตรนักศึกษาค่ะ", date: "2 days ago", reviewImage: null },
+            { name: "Art Ken", avatar: "https://i.pravatar.cc/150?img=11", rating: 4, text: "งานศิลปะดีครับ บรรยากาศเงียบสงบ แอร์เย็นฉ่ำ เดินเพลินๆ ได้ 2-3 ชั่วโมงเลย", date: "1 week ago", reviewImage: null }
+        ],
+        "วัดพระศรีมหาธาตุ": [
+            { name: "Somchai Sai-Mu", avatar: "https://i.pravatar.cc/150?img=13", rating: 5, text: "มาไหว้ขอพรช่วงสอบครับ สงบ ร่มรื่น เดินทางสะดวกติด BTS เลย", date: "Yesterday", reviewImage: null },
+            { name: "Auntie Da", avatar: "https://i.pravatar.cc/150?img=45", rating: 5, text: "วัดสะอาดมาก มีที่จอดรถเยอะ วันพระคนจะเยอะหน่อยนะคะ", date: "3 days ago", reviewImage: null }
+        ],
+        "Co-Working Space & Library": [
+            { name: "Dek SPU 66", avatar: "https://i.pravatar.cc/150?img=3", rating: 5, text: "ที่สิงสถิตช่วง Midterm แอร์เย็น เน็ตแรง ปลั๊กเยอะ ดีสุดๆ", date: "10 mins ago", reviewImage: null },
+            { name: "BookWorm", avatar: "https://i.pravatar.cc/150?img=9", rating: 4, text: "เงียบดีครับ แต่ช่วงบ่ายๆ โต๊ะเต็มเร็วมาก ต้องรีบมาจอง", date: "2 days ago", reviewImage: null }
+        ],
+        "เมเจอร์ รัชโยธิน": [
+            { name: "Movie Buff", avatar: "https://i.pravatar.cc/150?img=60", rating: 5, text: "โรง IMAX ภาพชัดเสียงกระหึ่ม! ป๊อปคอร์นชีสคือเดอะเบสท์", date: "1 hour ago", reviewImage: null },
+            { name: "Jenny", avatar: "https://i.pravatar.cc/150?img=24", rating: 3, text: "ที่จอดรถหายากนิดนึงช่วงวันหยุด แนะนำให้นั่ง BTS มาสะดวกกว่า", date: "Yesterday", reviewImage: null }
+        ],
+        "เซ็นทรัล รามอินทรา": [
+            { name: "Mommy Pink", avatar: "https://i.pravatar.cc/150?img=44", rating: 4, text: "ห้างปรับปรุงใหม่สวยขึ้นเยอะเลย ของกินชั้นล่างเพียบ เดินสบายคนไม่พลุกพล่าน", date: "Yesterday", reviewImage: null },
+            { name: "Tee Lek", avatar: "https://i.pravatar.cc/150?img=59", rating: 5, text: "โรงหนังแอร์เย็นมาก เบาะนุ่ม ใหม่สะอาด ชอบครับ", date: "2 days ago", reviewImage: null }
+        ],
+        "ตลาดนัดจตุจักรกลางคืน": [
+            { name: "Vintage Boy", avatar: "https://i.pravatar.cc/150?img=68", rating: 5, text: "เสื้อผ้ามือสองสวยๆ เยอะมาก ตาดีได้ตาร้ายเสีย ต้องมาเดินดูเอง", date: "Last Friday", reviewImage: null },
+            { name: "Alice In Wonderland", avatar: "https://i.pravatar.cc/150?img=28", rating: 4, text: "ของกินเยอะ แต่ร้อนหน่อยนะ เตรียมพัดลมมือถือมาด้วย", date: "1 week ago", reviewImage: null }
+        ],
+        "ตลาดนัดจตุจักรกลางวัน": [
+            { name: "Tourist Guy", avatar: "https://i.pravatar.cc/150?img=33", rating: 5, text: "Amazing place! So many things to buy. Coconut ice cream is a must!", date: "Yesterday", reviewImage: null },
+            { name: "Ja Ae", avatar: "https://i.pravatar.cc/150?img=41", rating: 4, text: "เดินขาลากเลย ของเยอะจริงๆ แนะนำให้มาเช้าๆ แดดไม่ร้อน", date: "Last Sunday", reviewImage: null }
+        ],
+        "หม่าล่าเสฉวน": [
+            { name: "Spicy Lover", avatar: "https://i.pravatar.cc/150?img=16", rating: 5, text: "เผ็ดชาสะใจ! น้ำจิ้มถั่วปรุงเองอร่อยมาก ราคาไม่แพงเริ่มต้นไม้ละ 5 บาท", date: "30 mins ago", reviewImage: null },
+            { name: "No Spicy", avatar: "https://i.pravatar.cc/150?img=29", rating: 3, text: "อร่อยนะ แต่รอนานไปหน่อยช่วงเย็น คนเยอะมาก", date: "Yesterday", reviewImage: null }
+        ],
+        "Meetup Mingle Cafe": [
+            { name: "Boardgame Master", avatar: "https://i.pravatar.cc/150?img=52", rating: 5, text: "เกมเยอะมากก เจ้าของร้านสอนเล่นเป็นกันเอง ขนมอร่อยด้วย", date: "Yesterday", reviewImage: null },
+            { name: "Coffee Time", avatar: "https://i.pravatar.cc/150?img=35", rating: 4, text: "กาแฟดี นั่งทำงานได้ยาวๆ มีปลั๊กให้", date: "2 days ago", reviewImage: null }
+        ],
+        "สุกี้จานบิน": [
+            { name: "Buffet Hunter", avatar: "https://i.pravatar.cc/150?img=14", rating: 5, text: "น้ำซุปกระดูกหมูเข้มข้นมากก เนื้อลายสวย คุ้มราคาบุฟเฟต์สุดๆ", date: "2 hours ago", reviewImage: null },
+            { name: "Yui", avatar: "https://i.pravatar.cc/150?img=21", rating: 4, text: "ของสดดีค่ะ แต่โต๊ะค่อนข้างแคบไปหน่อยถ้านั่งหลายคน", date: "Yesterday", reviewImage: null }
+        ],
+        "Little Chicky": [
+            { name: "Chicken Run", avatar: "https://i.pravatar.cc/150?img=65", rating: 5, text: "ไก่กรอบนอกนุ่มใน ซอสหัวหอมอร่อยมากกก ให้เยอะด้วย", date: "1 hour ago", reviewImage: null },
+            { name: "Student A", avatar: "https://i.pravatar.cc/150?img=8", rating: 5, text: "ราคาดีงามเหมาะกับนักเรียน เซ็ตข้าวไก่ทอดอิ่มจุกๆ", date: "Yesterday", reviewImage: null }
+        ],
+        "Bad Bad Burger": [
+            { name: "Burger King", avatar: "https://i.pravatar.cc/150?img=57", rating: 5, text: "เบอร์เกอร์ชิ้นใหญ่มาก! เนื้อฉ่ำ ซอสทรัฟเฟิลหอมทะลุจมูก", date: "Yesterday", reviewImage: null },
+            { name: "Fit Girl", avatar: "https://i.pravatar.cc/150?img=42", rating: 4, text: "อร่อยแบบตะโกน แต่แคลอรี่ก็น่าจะตะโกนเหมือนกัน 555 นานๆ กินทีโอเคค่ะ", date: "3 days ago", reviewImage: null }
+        ],
+        "โอยั๊วะเกษตร": [
+            { name: "Party Man", avatar: "https://i.pravatar.cc/150?img=12", rating: 5, text: "ร้านประจำเวลานัดรวมรุ่น บรรยากาศริมน้ำดีมาก อาหารอร่อยทุกอย่าง", date: "Last Friday", reviewImage: null },
+            { name: "Romantic Couple", avatar: "https://i.pravatar.cc/150?img=25", rating: 4, text: "มาเดทตอนเย็นพระอาทิตย์ตกสวยมากครับ ยุงเยอะไปนิดขอยากันยุงได้", date: "Last Sunday", reviewImage: null }
+        ],
+        "Uptojug Kitchen": [
+            { name: "Cafe Hopper", avatar: "https://i.pravatar.cc/150?img=38", rating: 5, text: "ร้านสวยมากกก ตกแต่งดี ถ่ายรูปได้ทุกมุม อาหารฟิวชั่นรสชาติดี", date: "Yesterday", reviewImage: null },
+            { name: "Foodie", avatar: "https://i.pravatar.cc/150?img=4", rating: 4, text: "สปาเก็ตตี้คาโบนาร่าเข้มข้น แนะนำเลยครับ ราคาแรงนิดนึงแต่คุ้ม", date: "2 days ago", reviewImage: null }
+        ],
+        "Wallace": [
+            { name: "Luxury Life", avatar: "https://i.pravatar.cc/150?img=31", rating: 5, text: "สเต็กเนื้อนุ่มละลายในปาก บริการระดับ 5 ดาว เหมาะกับโอกาสพิเศษจริงๆ", date: "3 weeks ago", reviewImage: null },
+            { name: "Wine Lover", avatar: "https://i.pravatar.cc/150?img=10", rating: 5, text: "ไวน์ลิสต์ดีมาก บรรยากาศโรแมนติก แนะนำให้จองโต๊ะริมหน้าต่าง", date: "1 month ago", reviewImage: null }
+        ]
+    };
 
     // --- 2. Menu Navigation ---
     const menuIcon = document.querySelector('.menu-icon');
@@ -324,7 +324,7 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
     const removePhotoBtn = document.getElementById('removePhotoBtn');
 
     if (reviewPhotoInput) {
-        reviewPhotoInput.addEventListener('change', function(e) {
+        reviewPhotoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 if (file.size > 1024 * 1024) { // 1MB
@@ -333,7 +333,7 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
                     return;
                 }
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     selectedImageData = event.target.result;
                     photoPreview.src = selectedImageData;
                     photoPreviewContainer.style.display = 'block';
@@ -344,7 +344,7 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
     }
 
     if (removePhotoBtn) {
-        removePhotoBtn.addEventListener('click', function() {
+        removePhotoBtn.addEventListener('click', function () {
             selectedImageData = null;
             reviewPhotoInput.value = '';
             photoPreviewContainer.style.display = 'none';
@@ -352,7 +352,7 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
     }
 
     function updateGallery(imageString) {
-        const nav = document.getElementById('thumbnailNav'); 
+        const nav = document.getElementById('thumbnailNav');
         const main = document.getElementById('modalImage');
         if (!main || !nav) return;
         nav.innerHTML = ''; main.src = '';
@@ -361,10 +361,10 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
         urls.forEach((url, i) => {
             const img = document.createElement('img'); img.src = url.trim();
             if (i === 0) { img.classList.add('active'); main.src = url.trim(); }
-            img.addEventListener('click', function () { 
-                main.src = url.trim(); 
-                nav.querySelectorAll('img').forEach(t => t.classList.remove('active')); 
-                this.classList.add('active'); 
+            img.addEventListener('click', function () {
+                main.src = url.trim();
+                nav.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
             });
             nav.appendChild(img);
         });
@@ -383,17 +383,17 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
         document.getElementById('modalParking').textContent = data.parking || '-';
         updateGallery(data.images);
         const tagBox = document.getElementById('modalTags'); tagBox.innerHTML = '';
-        if (data.tags) data.tags.split(' ').forEach(t => { 
-            if (t.startsWith('#')) { 
-                const s = document.createElement('span'); 
-                s.className = 'modal-tag'; 
-                s.textContent = t; 
-                tagBox.appendChild(s); 
-            } 
+        if (data.tags) data.tags.split(' ').forEach(t => {
+            if (t.startsWith('#')) {
+                const s = document.createElement('span');
+                s.className = 'modal-tag';
+                s.textContent = t;
+                tagBox.appendChild(s);
+            }
         });
         const mapBtn = document.getElementById('googleMapBtn');
-        if (mapBtn) { 
-            mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`; 
+        if (mapBtn) {
+            mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.title)}`;
         }
         detailModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -412,10 +412,10 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
         reviews.forEach(r => {
             const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
             // ส่วนแสดงรูปรีวิว
-            const reviewImgHtml = r.reviewImage 
-                ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">` 
+            const reviewImgHtml = r.reviewImage
+                ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">`
                 : '';
-                
+
             const html = `
                 <div class="review-item">
                     <div class="review-avatar" style="background-image: url('${r.avatar}');"></div>
@@ -448,12 +448,12 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
     function updateStarVisuals(rating) {
         starInputs.forEach(star => {
             const val = parseInt(star.getAttribute('data-value'));
-            if (val <= rating) { 
-                star.classList.remove('fa-regular'); 
-                star.classList.add('fa-solid', 'filled'); 
-            } else { 
-                star.classList.remove('fa-solid', 'filled'); 
-                star.classList.add('fa-regular'); 
+            if (val <= rating) {
+                star.classList.remove('fa-regular');
+                star.classList.add('fa-solid', 'filled');
+            } else {
+                star.classList.remove('fa-solid', 'filled');
+                star.classList.add('fa-regular');
             }
         });
     }
@@ -464,11 +464,11 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
             if (currentRating === 0) { alert('Please select a star rating!'); return; }
             if (!text) { alert('Please write something!'); return; }
 
-            const newReview = { 
-                name: "You (Student)", 
-                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", 
-                rating: currentRating, 
-                text: text, 
+            const newReview = {
+                name: "You (Student)",
+                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                rating: currentRating,
+                text: text,
                 date: "Just now",
                 reviewImage: selectedImageData
             };
@@ -480,14 +480,14 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
             localStorage.setItem('bloomReviews', JSON.stringify(reviewsData));
             // ---------------------------------------
 
-            openReviews(); 
-            
+            openReviews();
+
             document.getElementById('newReviewText').value = '';
             currentRating = 0;
             updateStarVisuals(0);
             selectedImageData = null;
-            if(reviewPhotoInput) reviewPhotoInput.value = '';
-            if(photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+            if (reviewPhotoInput) reviewPhotoInput.value = '';
+            if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
         });
     }
 
@@ -567,38 +567,65 @@ let reviewsData = JSON.parse(localStorage.getItem('bloomReviews')) || {
         }
     }
 
-    function handleLogout() { localStorage.removeItem('bloomUser'); alert('Logged out successfully!'); checkLoginStatus(); window.location.reload(); }
-
+    function handleLogout() {
+    firebase.auth().signOut().then(() => {
+        localStorage.removeItem('bloomUser');
+        alert('ออกจากระบบแล้ว');
+        window.location.reload(); // รีโหลดหน้าเว็บเพื่อให้ UI กลับเป็นสถานะไม่ได้ Login
+    }).catch((error) => {
+        alert('Logout Error: ' + error.message);
+    });
+}
     if (signupForm) {
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const pass = document.getElementById('signupPassword').value;
-            const userObj = { name: name, email: email, pass: pass };
-            localStorage.setItem('registeredUser', JSON.stringify(userObj));
-            alert('Account created successfully! Please login.');
-            closeModal(signupModal);
-            loginModal.style.display = 'flex';
-        });
-    }
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const pass = document.getElementById('signupPassword').value;
+
+        // เรียกใช้ Firebase Auth เพื่อสร้างบัญชีใหม่
+        firebase.auth().createUserWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                // เมื่อสร้างสำเร็จ ให้บันทึกชื่อ (DisplayName) ลงในโปรไฟล์
+                return userCredential.user.updateProfile({
+                    displayName: name
+                });
+            })
+            .then(() => {
+                alert('สมัครสมาชิกสำเร็จ! ข้อมูลถูกเก็บใน Firebase เรียบร้อย');
+                closeModal(signupModal);
+                loginModal.style.display = 'flex'; // สลับไปหน้า Login
+            })
+            .catch((error) => {
+                // แจ้งเตือนกรณีเกิด Error (เช่น อีเมลซ้ำ หรือรหัสผ่านสั้นเกิน 6 ตัว)
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+            });
+    });
+}
 
     if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
 
-            let isLoginSuccess = false;
-            if (registeredUser && email === registeredUser.email && password === registeredUser.pass) { isLoginSuccess = true; }
-            else if (email === 'admin@spu.ac.th' && password === '1234') { isLoginSuccess = true; }
-
-            if (isLoginSuccess) { localStorage.setItem('bloomUser', email); alert('Welcome back!'); closeModal(loginModal); checkLoginStatus(); }
-            else { alert('Invalid email or password!'); }
-        });
-    }
-
+        // เรียกใช้ Firebase Auth เพื่อตรวจสอบสิทธิ์
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // บันทึกสถานะลง localStorage เพื่อให้ระบบเดิมของคุณทำงานต่อได้
+                localStorage.setItem('bloomUser', user.email);
+                
+                alert('ยินดีต้อนรับคุณ ' + (user.displayName || 'User'));
+                closeModal(loginModal);
+                checkLoginStatus(); // ฟังก์ชันอัปเดตหน้าเว็บที่คุณมีอยู่แล้ว
+            })
+            .catch((error) => {
+                // แจ้งเตือนกรณีรหัสผ่านผิด หรือไม่พบอีเมลนี้
+                alert('เข้าสู่ระบบไม่สำเร็จ: ' + error.message);
+            });
+    });
+}
     checkLoginStatus();
 
     // --- 8. Search System ---

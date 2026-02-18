@@ -237,9 +237,10 @@
             <div class="section-header reveal">
                 <h2 style="margin-bottom: 5px;">EATS</h2>
                 <p style="color: #666; font-size: 14px; margin-top:0;">หิวเมื่อไหร่ก็แวะมา</p>
-                <button onclick="randomMyMeal()" class="button-outline" style="margin-top: 15px; background: var(--color-yellow); color: var(--color-text);">
-    <i class="fa-solid fa-dice"></i> สุ่มให้หน่อยว่ากินอะไรดี?
-</button>
+                <button onclick="randomMyMeal()" class="button-outline"
+                    style="margin-top: 15px; background: var(--color-yellow); color: var(--color-text);">
+                    <i class="fa-solid fa-dice"></i> สุ่มให้หน่อยว่ากินอะไรดี?
+                </button>
             </div>
 
             <div class="filter-container reveal" id="diningFilters">
@@ -378,8 +379,7 @@
 
                 <div class="about-intro-block">
                     <div class="about-image">
-                        <img src="Im/20171130155703SE0I4zZ1.webp"
-                            alt="Bloom Vibes">
+                        <img src="Im/20171130155703SE0I4zZ1.webp" alt="Bloom Vibes">
                         <div class="image-decoration"></div>
                     </div>
                     <div class="about-text">
@@ -490,7 +490,8 @@
                         <div class="contact-socials">
                             <p>Follow Our Community:</p>
                             <div class="social-icons">
-                                <a href="https://www.facebook.com/profile.php?id=61587962790259" target="_blank" title="Facebook: BLOOM SPU">
+                                <a href="https://www.facebook.com/profile.php?id=61587962790259" target="_blank"
+                                    title="Facebook: BLOOM SPU">
                                     <i class="fa-brands fa-facebook-f"></i>
                                 </a>
                                 <a href="https://www.instagram.com/" target="_blank" title="Instagram: @bloom_spu">
@@ -689,15 +690,18 @@
                 <hr style="margin: 20px 0; border-top: 1px solid #eee;">
                 <h4>Write a Review</h4>
                 <div class="upload-photo-wrapper" style="margin-bottom: 15px;">
-    <label for="reviewPhotoInput" class="button-outline" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; padding: 8px 15px;">
-        <i class="fa-solid fa-camera"></i> อัปโหลดรูปภาพ
-    </label>
-    <input type="file" id="reviewPhotoInput" accept="image/*" style="display: none;">
-    <div id="photoPreviewContainer" style="margin-top: 10px; display: none;">
-        <img id="photoPreview" src="" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid var(--color-cyan);">
-        <button id="removePhotoBtn" style="background: none; border: none; color: red; cursor: pointer; font-size: 12px; vertical-align: top;">เอาออก</button>
-    </div>
-</div>
+                    <label for="reviewPhotoInput" class="button-outline"
+                        style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; padding: 8px 15px;">
+                        <i class="fa-solid fa-camera"></i> อัปโหลดรูปภาพ
+                    </label>
+                    <input type="file" id="reviewPhotoInput" accept="image/*" style="display: none;">
+                    <div id="photoPreviewContainer" style="margin-top: 10px; display: none;">
+                        <img id="photoPreview" src=""
+                            style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid var(--color-cyan);">
+                        <button id="removePhotoBtn"
+                            style="background: none; border: none; color: red; cursor: pointer; font-size: 12px; vertical-align: top;">เอาออก</button>
+                    </div>
+                </div>
 
                 <div class="star-rating-input">
                     <i class="fa-regular fa-star" data-value="1"></i>
@@ -742,7 +746,25 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+<script>
+    // ส่วนนี้ต้องแก้! นำค่าจาก Firebase Console ของคุณมาใส่ตรงนี้
+    const firebaseConfig = {
+        apiKey: "AIzaSyC0sb92kmiSq3CaU1Rmell3NEm997eI6Sw",
+        authDomain: "bloom-spu.firebaseapp.com",
+        projectId: "bloom-spu",
+        storageBucket: "bloom-spu.firebasestorage.app",
+        messagingSenderId: "748576917555",
+        appId: "1:748576917555:web:866299d6d51c4e97666248"
+    };
+    
+    // สั่งให้ Firebase เริ่มทำงาน
+    firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="script.js"></script>
 </body>
 
 </html>
