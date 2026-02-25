@@ -24,16 +24,16 @@
             <span class="logo-text">BLOOM</span>
         </a>
 
-        <nav class="nav">
+       <nav class="nav">
             <ul>
-                <li><a href="#location-section-tour">HANGOUT</a></li>
-                <li><a href="#location-section-restaurant">EAT & DRINK</a></li>
-                <li><a href="#about-section">ABOUT</a></li>
-                <li><a href="#contact-section">CONTACT</a></li>
-                <li class="nav-icon search-icon"><a href="#" id="searchToggle"><i
-                            class="fa-solid fa-magnifying-glass"></i></a></li>
-                <li class="nav-icon account-icon"><a href="#" id="accountToggle"><i class="fa-regular fa-user"></i></a>
-                </li>
+                <li><a href="#location-section-tour" class="nav-link">HANGOUT</a></li>
+                <li><a href="#location-section-restaurant" class="nav-link">EAT & DRINK</a></li>
+                <li><a href="#community-section" class="nav-link" style="color: var(--color-pink);"><i class="fa-solid fa-fire"></i> COMMUNITY</a></li>
+                <li><a href="#about-section" class="nav-link">ABOUT</a></li>
+                <li><a href="#contact-section" class="nav-link">CONTACT</a></li>
+                
+                <li><a href="#" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+                <li class="account-icon"><a href="#" id="accountToggle"><i class="fa-regular fa-user"></i></a></li>
             </ul>
         </nav>
         <div class="menu-icon"><i class="fa-solid fa-bars"></i></div>
@@ -571,9 +571,27 @@
                             <p class="card-desc-short">Sweet Dessert</p>
                         </div>
                     </div>
-
                 </div>
             </div>
+        </section>
+
+        <section id="community-section" class="sections-container" style="display: none; padding-top: 100px;">
+            <div class="section-header text-center" style="margin-bottom: 30px;">
+                <h2 style="font-size: 36px;"><span class="highlight">TRENDING</span> FEED</h2>
+                <p>รีวิวล่าสุดจากเพื่อนๆ ชาวศรีปทุม (คลิกที่ #Hashtag เพื่อค้นหา)</p>
+                
+                <div id="hashtagFilterAlert" style="display: none; margin-top: 15px;">
+                    <span style="background: var(--color-blue); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
+                        ค้นหาแท็ก: <strong id="currentHashtagText">#cafe</strong>
+                    </span>
+                    <button onclick="loadCommunityFeed()" style="border:none; background:none; color:var(--color-pink); cursor:pointer; font-weight:bold; margin-left: 10px;">
+                        <i class="fa-solid fa-circle-xmark"></i> ล้างตัวกรอง
+                    </button>
+                </div>
+            </div>
+
+            <div id="communityFeedGrid" class="community-grid">
+                </div>
         </section>
 
         <section id="about-section" class="sections-container">

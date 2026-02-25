@@ -205,7 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tour: document.getElementById('location-section-tour'),
         dining: document.getElementById('location-section-restaurant'),
         contact: document.getElementById('contact-section'),
-        about: document.getElementById('about-section')
+        about: document.getElementById('about-section'),
+        community: document.getElementById('community-section') // 🟢 เพิ่มบรรทัดนี้เข้าไปครับ
     };
 
     function updateNavActiveState(targetHref) {
@@ -220,6 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function hideAll() {
         Object.values(sections).flat().forEach(el => { if (el) el.style.display = 'none'; });
+        
+        // 🟢 เพิ่มบรรทัดนี้ เพื่อสั่งซ่อนหน้า Community ด้วยเวลากลับหน้าหลัก
+        document.querySelectorAll('.sections-container').forEach(sec => sec.style.display = 'none');
     }
 
     function showHomePage() {
@@ -259,6 +263,12 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (id === '#location-section-restaurant') { e.preventDefault(); showSection(sections.dining, id); }
             else if (id === '#contact-section') { e.preventDefault(); showSection(sections.contact, id); }
             else if (id === '#about-section') { e.preventDefault(); showSection(sections.about, id); }
+            else if (id === '#community-section') { 
+                // 🟢 ระบบสลับไปหน้า Community แบบเต็มจอ
+                e.preventDefault(); 
+                showSection(sections.community, id); 
+                loadCommunityFeed(); 
+            }
             else {
                 const target = document.querySelector(id);
                 if (target && sections.home[0].style.display !== 'none') {
@@ -532,15 +542,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             try {
                 // 🟢 ใช้ selectedImageData (Base64) โดยตรง
+                // 🟢 หาจุดนี้ในไฟล์ script.js แล้วเปลี่ยนข้อมูลข้างใน newReview เป็นตามนี้ครับ
                 const newReview = {
                     shopId: currentReviewTarget,
                     name: user.displayName || 'Student',
-                    avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                    avatar: user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
                     rating: currentRating,
                     text: text,
                     date: new Date().toISOString(),
                     reviewImage: selectedImageData, 
-                    userId: user.uid
+                    userId: user.uid,
+                    likedBy: [] // 🟢 เพิ่มบรรทัดนี้ เพื่อเตรียมเก็บข้อมูลคนกด Like
                 };
 
                 await firebase.firestore().collection('reviews').add(newReview);
@@ -1238,3 +1250,205 @@ window.loadShopDetails = function (shopId) {
         </div>
     `;
 };
+
+// ============================================================
+// COMMUNITY FEED SYSTEM (Lemon8 Style)
+// ============================================================
+
+// 1. ฟังก์ชันดึงและแสดงรีวิวทั้งหมด
+async function loadCommunityFeed(hashtagFilter = null) {
+    const feedGrid = document.getElementById('communityFeedGrid');
+    const alertBox = document.getElementById('hashtagFilterAlert');
+    const hashtagText = document.getElementById('currentHashtagText');
+    
+    if(!feedGrid) return;
+    feedGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">กำลังโหลดฟีด...</p>';
+
+    // จัดการปุ่ม Filter
+    if (hashtagFilter) {
+        alertBox.style.display = 'inline-block';
+        hashtagText.innerText = hashtagFilter;
+    } else {
+        alertBox.style.display = 'none';
+    }
+
+    try {
+        // ดึงรีวิวทั้งหมด เรียงตามวันที่ล่าสุด
+        const snapshot = await firebase.firestore().collection('reviews')
+            .orderBy('date', 'desc').get();
+        
+        let feedHTML = '';
+        const currentUserId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const reviewId = doc.id;
+            
+            // ถ้าระบุ Hashtag ให้ข้ามรีวิวที่ไม่มีคำนั้นไป
+            if (hashtagFilter && !data.text.includes(hashtagFilter)) return;
+
+            // ตกแต่งข้อความ: เปลี่ยนคำที่มี # ให้กลายเป็นปุ่มกดได้ (รองรับภาษาไทยและอังกฤษ)
+            // ใช้ Regex จับคำที่ขึ้นต้นด้วย #
+            const formattedText = data.text.replace(/#([A-Za-z0-9_\u0E00-\u0E7F]+)/g, 
+                '<span class="hashtag" onclick="loadCommunityFeed(\'#$1\')">#$1</span>');
+
+            const shopName = shopDatabase[data.shopId] ? shopDatabase[data.shopId].title : 'ร้านลับ';
+            const likesCount = data.likedBy ? data.likedBy.length : 0;
+            const isLiked = data.likedBy && currentUserId && data.likedBy.includes(currentUserId);
+            const likeClass = isLiked ? 'liked' : '';
+            const heartIcon = isLiked ? 'fa-solid' : 'fa-regular';
+
+            // ถ้าไม่มีรูป ให้โชว์โลโก้สีเทาแทน
+            const imageRender = data.reviewImage 
+                ? `<img src="${data.reviewImage}" class="feed-img" alt="Review Image">` 
+                : `<div class="feed-img" style="height: 150px; background: #e2e8f0; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-camera" style="font-size:40px; color:#cbd5e1;"></i></div>`;
+
+            feedHTML += `
+                <div class="feed-card">
+                    ${imageRender}
+                    <div class="feed-content">
+                        <div class="feed-shop-name"><i class="fa-solid fa-location-dot"></i> ${shopName}</div>
+                        <div class="feed-text">${formattedText}</div>
+                        <div class="feed-meta">
+                            <div class="feed-user">
+                                <img src="${data.avatar}" alt="User">
+                                <span>${data.name}</span>
+                            </div>
+                            <button class="like-btn ${likeClass}" onclick="toggleLike('${reviewId}')">
+                                <i class="${heartIcon} fa-heart"></i> <span id="like-count-${reviewId}">${likesCount}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        if(feedHTML === '') {
+            feedGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#94a3b8;">ยังไม่มีรีวิว หรือไม่พบ Hashtag ที่ค้นหาครับ มารีวิวคนแรกกันเถอะ!</p>';
+        } else {
+            feedGrid.innerHTML = feedHTML;
+        }
+
+    } catch (error) {
+        console.error("Error loading feed:", error);
+        feedGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:red;">เกิดข้อผิดพลาดในการโหลดฟีด</p>';
+    }
+}
+
+// 2. ฟังก์ชันกด Like / Unlike
+async function toggleLike(reviewId) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        alert('กรุณาเข้าสู่ระบบก่อนกดหัวใจนะครับ!');
+        document.getElementById('loginModal').style.display = 'flex';
+        return;
+    }
+
+    const reviewRef = firebase.firestore().collection('reviews').doc(reviewId);
+    
+    try {
+        // ใช้ Transaction เพื่อความแม่นยำเวลาคนกดพร้อมกันเยอะๆ
+        await firebase.firestore().runTransaction(async (transaction) => {
+            const doc = await transaction.get(reviewRef);
+            if (!doc.exists) throw "ไม่มีรีวิวนี้อยู่!";
+
+            const data = doc.data();
+            let currentLikes = data.likedBy || [];
+
+            if (currentLikes.includes(user.uid)) {
+                // ถ้าเคยกดแล้ว ให้เอาออก (Unlike)
+                currentLikes = currentLikes.filter(uid => uid !== user.uid);
+            } else {
+                // ถ้ายังไม่เคยกด ให้เพิ่มเข้าไป (Like)
+                currentLikes.push(user.uid);
+            }
+
+            transaction.update(reviewRef, { likedBy: currentLikes });
+        });
+
+        // โหลดฟีดใหม่เพื่ออัปเดตปุ่มหัวใจ
+        loadCommunityFeed();
+    } catch (error) {
+        console.error("Like error:", error);
+    }
+}
+
+// 3. สั่งให้โหลด Feed อัตโนมัติเมื่อเปิดเว็บ
+document.addEventListener('DOMContentLoaded', () => {
+    // หน่วงเวลาเล็กน้อยเพื่อให้ Firebase โหลดเสร็จก่อน
+    setTimeout(() => {
+        loadCommunityFeed();
+    }, 1500);
+});
+
+// ============================================================
+// สคริปต์สำหรับสร้างรีวิวปลอม (รันแค่ครั้งเดียวแล้วลบทิ้งได้เลย)
+// ============================================================
+window.generateFakeReviews = async function() {
+    const fakeReviews = [
+        {
+            shopId: "mingle",
+            name: "Nong Nira (SPU66)",
+            avatar: "https://i.pravatar.cc/150?img=5",
+            rating: 5,
+            text: "ร้านประจำเวลาปั่นงานเลยค่ะ แอร์เย็นฉ่ำ กาแฟอร่อยมาก นั่งยาวๆ ได้ยันดึก มุมถ่ายรูปก็มีนะ ☕️💻 #Cafe #WorkFriendly #เด็กศรีปทุม",
+            date: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 ชั่วโมงที่แล้ว
+            reviewImage: "Im/ร้านเกม2.webp",
+            userId: "fake_user_1",
+            likedBy: ["uid1", "uid2", "uid3", "uid4", "uid5"] // ยอดไลก์ 5 คน
+        },
+        {
+            shopId: "teenoi",
+            name: "Hungry Boy",
+            avatar: "https://i.pravatar.cc/150?img=11",
+            rating: 5,
+            text: "หิวตอนตี 2 ไม่ใช่ปัญหา จัดไปชุดใหญ่ไฟกระพริบ 🥓 สามชั้นสไลด์คือเดอะเบสท์ ทาสรักสุกี้ตี๋น้อยรายงานตัวครับ! #Buffet #LateNight #อร่อยบอกต่อ",
+            date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 วันที่แล้ว
+            reviewImage: "Im/สุกี้ตี๋น้อย2.webp",
+            userId: "fake_user_2",
+            likedBy: ["uid1", "uid2", "uid3"] 
+        },
+        {
+            shopId: "moca",
+            name: "Art.is.me",
+            avatar: "https://i.pravatar.cc/150?img=20",
+            rating: 5,
+            text: "มาเสพงานศิลป์วันหยุด แสงสวยทุกมุม ได้รูปลงไอจีเพียบเลย แนะนำให้มาช่วงบ่ายๆ แสงจะตกกระทบสวยมาก 🎨✨ #PhotoSpot #Art #MOCA",
+            date: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 วันที่แล้ว
+            reviewImage: "Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 2.jpg",
+            userId: "fake_user_3",
+            likedBy: ["uid1", "uid2", "uid3", "uid4", "uid5", "uid6", "uid7", "uid8"] 
+        },
+        {
+            shopId: "ting_ting",
+            name: "Sweet Tooth Girl",
+            avatar: "https://i.pravatar.cc/150?img=32",
+            rating: 4,
+            text: "กินคาวต้องกินหวาน บิงซูชาไทยคือที่สุดในย่านนี้! ไข่มุกหนึบหนับโดนใจมาก คิวแอบยาวนิดนึงแต่อร่อยคุ้มค่าการรอคอย 🍧 #Dessert #ของหวานเยียวยาจิตใจ",
+            date: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 วันที่แล้ว
+            reviewImage: "Im/ถิงถิงบิงซูน้ำขิง2.jpg",
+            userId: "fake_user_4",
+            likedBy: ["uid1", "uid2"] 
+        },
+        {
+            shopId: "ja_ou",
+            name: "P'Moo BBQ",
+            avatar: "https://i.pravatar.cc/150?img=53",
+            rating: 5,
+            text: "ตำนานหมูกระทะคิวล้นซอย น้ำจิ้มคือทีเด็ด หมูหมักนุ่มละมุนลิ้นสุดๆ กินกี่ครั้งก็ไม่เคยเบื่อ ใครสายหมูกระทะต้องมาโดน! 🥩🔥 #Dinner #Party #หมูกระทะจะเยียวยาทุกสิ่ง",
+            date: new Date(Date.now() - 1000 * 60 * 60 * 96).toISOString(), // 4 วันที่แล้ว
+            reviewImage: "Im/จ่าอูหมูเกาหลี2.webp",
+            userId: "fake_user_5",
+            likedBy: ["uid1", "uid2", "uid3", "uid4"] 
+        }
+    ];
+
+    try {
+        for (const review of fakeReviews) {
+            await firebase.firestore().collection('reviews').add(review);
+        }
+        alert("🎉 สร้างรีวิวปลอมสำเร็จแล้ว! รีเฟรชหน้าเว็บ 1 ครั้งเพื่อดูผลลัพธ์ได้เลยครับ");
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
