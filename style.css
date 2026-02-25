@@ -11,7 +11,8 @@
     --color-blue: #0085E3;
 
     /* --- Backgrounds & Text --- */
-    --color-bg: #f8fafc; /* ปรับพื้นหลังให้อ่อนลงเพื่อให้การ์ดสีขาวเด่นขึ้น */
+    --color-bg: #f8fafc;
+    /* ปรับพื้นหลังให้อ่อนลงเพื่อให้การ์ดสีขาวเด่นขึ้น */
     --color-bg-soft: #f1f5f9;
     --color-text: #475569;
     --color-text-muted: #94a3b8;
@@ -22,7 +23,8 @@
 
     /* --- Spacing & Dimensions --- */
     --header-height: 80px;
-    --border-radius-card: 24px; /* เพิ่มความโค้งมน */
+    --border-radius-card: 24px;
+    /* เพิ่มความโค้งมน */
     --border-radius-btn: 50px;
 }
 
@@ -39,7 +41,8 @@ body {
     font-family: var(--font-body);
     background-color: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.7; /* เพิ่มระยะห่างบรรทัดให้อ่านง่าย */
+    line-height: 1.7;
+    /* เพิ่มระยะห่างบรรทัดให้อ่านง่าย */
     overflow-x: hidden;
 }
 
@@ -97,7 +100,8 @@ ul {
 .nav ul {
     display: flex;
     gap: 30px;
-    align-items: center; /* เพิ่มบรรทัดนี้เพื่อให้ทุกอย่างเรียงตรงกันตรงกลาง */
+    align-items: center;
+    /* เพิ่มบรรทัดนี้เพื่อให้ทุกอย่างเรียงตรงกันตรงกลาง */
 }
 
 .nav a {
@@ -117,8 +121,10 @@ ul {
     font-size: 18px;
     cursor: pointer;
     color: var(--color-text);
-    display: flex;         /* เพิ่มบรรทัดนี้ */
-    align-items: center;   /* เพิ่มบรรทัดนี้ */
+    display: flex;
+    /* เพิ่มบรรทัดนี้ */
+    align-items: center;
+    /* เพิ่มบรรทัดนี้ */
 }
 
 .menu-icon {
@@ -143,7 +149,8 @@ ul {
 .logo-dot {
     width: 8px;
     height: 30px;
-    background: var(--color-cyan); /* จุดสีฟ้า Cyan เหมือนกันหมด */
+    background: var(--color-cyan);
+    /* จุดสีฟ้า Cyan เหมือนกันหมด */
     border-radius: 4px;
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -159,7 +166,7 @@ ul {
     -webkit-background-clip: text;
     background-repeat: no-repeat;
     background-size: 0% 100%;
-    
+
     /* --- UNIFIED GRADIENT (สีเหมือนกันทุกจุด) --- */
     /* ไล่สีจาก น้ำเงิน -> ฟ้า Cyan */
     background-image: linear-gradient(to right, var(--color-blue), var(--color-cyan));
@@ -169,13 +176,17 @@ ul {
 .logo:hover .logo-dot {
     height: 10px;
     width: 30px;
-    background: var(--color-blue); /* เปลี่ยนเป็นน้ำเงินเข้ม */
+    background: var(--color-blue);
+    /* เปลี่ยนเป็นน้ำเงินเข้ม */
 }
 
 .logo:hover .logo-text {
-    background-size: 100% 100%; /* ถมสีเต็ม */
-    -webkit-text-stroke: 0px transparent; /* ลบเส้นขอบออก */
-    filter: drop-shadow(0 0 10px rgba(0, 212, 194, 0.6)); /* แสงเรืองสีฟ้า */
+    background-size: 100% 100%;
+    /* ถมสีเต็ม */
+    -webkit-text-stroke: 0px transparent;
+    /* ลบเส้นขอบออก */
+    filter: drop-shadow(0 0 10px rgba(0, 212, 194, 0.6));
+    /* แสงเรืองสีฟ้า */
 }
 
 /* --- Variants (ปรับแค่สีขอบให้เห็นชัดตามพื้นหลัง) --- */
@@ -195,7 +206,8 @@ ul {
 }
 
 .footer-logo-custom .logo-dot {
-    background: white; /* จุดสีขาวตอนยังไม่ชี้ */
+    background: white;
+    /* จุดสีขาวตอนยังไม่ชี้ */
 }
 
 /* 3. โลโก้ตรง Hero (ตัวใหญ่ พื้นหลังมืด -> ขอบต้องสีขาว) */
@@ -206,21 +218,24 @@ ul {
 .hero-logo-custom .logo-text {
     font-size: 100px;
     font-weight: 800;
-    -webkit-text-stroke: 3px white; /* เส้นขอบหนา */
+    -webkit-text-stroke: 3px white;
+    /* เส้นขอบหนา */
     background-size: 0% 100%;
 }
 
 .hero-logo-custom .logo-dot {
     width: 15px;
     height: 60px;
-    background: white; /* จุดสีขาวตอนยังไม่ชี้ */
+    background: white;
+    /* จุดสีขาวตอนยังไม่ชี้ */
     margin-right: 10px;
 }
 
 .hero-logo-custom:hover .logo-dot {
     width: 60px;
     height: 15px;
-    background: var(--color-cyan); /* เปลี่ยนเป็นสี Cyan ตอนชี้ */
+    background: var(--color-cyan);
+    /* เปลี่ยนเป็นสี Cyan ตอนชี้ */
 }
 
 /* Responsive */
@@ -300,7 +315,7 @@ ul {
     margin-bottom: 30px;
     max-width: 500px;
     font-weight: 400;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .link-arrow {
@@ -316,7 +331,8 @@ ul {
 
 .link-arrow:hover {
     color: white;
-    gap: 15px; /* ลูกศรขยับ */
+    gap: 15px;
+    /* ลูกศรขยับ */
 }
 
 .hero-bottom-features {
@@ -332,7 +348,7 @@ ul {
     display: flex;
     gap: 15px;
     align-items: center;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     padding: 10px 20px;
     border-radius: 15px;
     backdrop-filter: blur(5px);
@@ -468,7 +484,7 @@ ul {
     cursor: pointer;
     transition: 0.3s;
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
 }
 
 .filter-btn:hover,
@@ -687,7 +703,7 @@ ul {
     margin: 0 0 10px 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .card-desc-short {
@@ -808,36 +824,40 @@ ul {
     font-family: var(--font-head);
     font-weight: 900;
     display: inline-block;
-    
+
     /* ใช้ Gradient สีเดียวกับโลโก้หลัก (น้ำเงิน -> ฟ้า) */
     background-image: linear-gradient(to right, var(--color-blue), var(--color-cyan));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    
+
     /* ลบเส้นขอบออก (เพื่อให้สีถมเต็มเหมือนโลโก้) */
     -webkit-text-stroke: 0;
-    
+
     /* ตั้งค่าให้แสดงสีเต็มทันที ไม่ต้องรอ Hover */
     background-size: 100% 100%;
-    
+
     /* ปรับขนาดและแสงเงา */
-    font-size: 1.3em; /* ใหญ่กว่าตัวหนังสือปกติเล็กน้อย */
+    font-size: 1.3em;
+    /* ใหญ่กว่าตัวหนังสือปกติเล็กน้อย */
     filter: drop-shadow(0 2px 4px rgba(0, 133, 227, 0.2));
     transition: all 0.3s ease;
     cursor: pointer;
-    margin: 0 2px; /* เว้นระยะห่างซ้ายขวานิดนึง */
+    margin: 0 2px;
+    /* เว้นระยะห่างซ้ายขวานิดนึง */
 }
 
 /* เอฟเฟกต์ตอนชี้เมาส์ */
 .bloom-text:hover {
-    filter: drop-shadow(0 0 10px rgba(0, 212, 194, 0.6)); /* เรืองแสงสีฟ้า */
-    transform: scale(1.05); /* ขยายใหญ่นิดนึง */
+    filter: drop-shadow(0 0 10px rgba(0, 212, 194, 0.6));
+    /* เรืองแสงสีฟ้า */
+    transform: scale(1.05);
+    /* ขยายใหญ่นิดนึง */
 }
 
 /* ซ่อนจุด (Bar) ด้านหน้าออก เพื่อให้เนียนไปกับประโยค */
 .bloom-text::before {
-    display: none; 
+    display: none;
 }
 
 .mission-section {
@@ -867,7 +887,7 @@ ul {
     border-radius: 30px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
     transition: all 0.4s ease;
-    border: 1px solid rgba(0,0,0,0.03);
+    border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 .mission-card:hover {
@@ -1016,7 +1036,7 @@ ul {
     background: var(--color-yellow);
     color: var(--color-text);
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* =========================================
@@ -1240,9 +1260,9 @@ ul {
     width: 100%;
     height: 100%;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* 🟢 เปลี่ยนเป็น flex-start ไม่ให้ทะลุขอบบน */
     overflow-y: auto;
-    padding: 20px;
+    padding: 60px 20px; /* 🟢 เพิ่มระยะห่างด้านบน 60px ให้มีพื้นที่หายใจ */
 }
 
 .modal-content {
@@ -1255,7 +1275,8 @@ ul {
     position: relative;
     font-family: var(--font-body);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin: auto; /* 🟢 เพิ่มบรรทัดนี้ครับ */
 }
 
 .modal-title {
@@ -1290,7 +1311,7 @@ ul {
     border-radius: 15px;
     background-color: #eee;
     display: block;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .thumbnail-nav {
@@ -1448,7 +1469,7 @@ ul {
     margin-bottom: 15px;
     display: flex;
     gap: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
     border: 1px solid #f1f5f9;
 }
 
@@ -1609,7 +1630,7 @@ ul {
     .hero-title {
         font-size: 48px;
     }
-    
+
     .hero-container-ref {
         margin-top: 0;
     }
@@ -1686,7 +1707,7 @@ ul {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .modal-content {
         padding: 25px;
     }
@@ -1700,7 +1721,7 @@ ul {
     .footer-brand {
         align-items: center;
     }
-    
+
     .footer-slogan {
         text-align: center;
     }
@@ -1745,7 +1766,7 @@ ul {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
 }
 
 .detail-container {
@@ -1764,7 +1785,7 @@ ul {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
     text-align: center;
     margin-bottom: 50px;
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .detail-title {
@@ -1809,10 +1830,17 @@ ul {
 }
 
 .story-text {
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: 16px;
+    line-height: 1.8;
     color: #475569;
-    text-align: justify;
+    text-align: left; /* บังคับชิดซ้ายเพื่อไม่ให้ช่องไฟห่างเกินไป */
+    word-break: normal; /* ให้เบราว์เซอร์ตัดคำไทยตามหลักพจนานุกรม */
+    overflow-wrap: normal;
+}
+
+.story-text p {
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
 .info-sidebar {
@@ -1820,7 +1848,7 @@ ul {
     padding: 35px;
     border-radius: 20px;
     height: fit-content;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 100px;
 }
@@ -1878,15 +1906,15 @@ ul {
     .content-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .detail-title {
         font-size: 36px;
     }
-    
+
     .detail-container {
         margin-top: -60px;
     }
-    
+
     .detail-header-card {
         padding: 30px 20px;
     }
@@ -1912,8 +1940,15 @@ ul {
 
 /* --- Loading Animation --- */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .fade-in {
@@ -1933,8 +1968,15 @@ ul {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* =========================================
@@ -1944,9 +1986,11 @@ ul {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.6); /* เอฟเฟกต์กระจกใส */
+    background: rgba(255, 255, 255, 0.6);
+    /* เอฟเฟกต์กระจกใส */
     backdrop-filter: blur(10px);
-    padding: 6px 6px 6px 18px; /* ทำรูปทรงแคปซูล */
+    padding: 6px 6px 6px 18px;
+    /* ทำรูปทรงแคปซูล */
     border-radius: 50px;
     border: 1px solid rgba(0, 133, 227, 0.1);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
@@ -1997,7 +2041,8 @@ ul {
 }
 
 .logout-btn:hover {
-    background: #d88395; /* สีชมพูเข้มขึ้นตอนชี้เมาส์ */
+    background: #d88395;
+    /* สีชมพูเข้มขึ้นตอนชี้เมาส์ */
     transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(234, 152, 169, 0.4);
 }
@@ -2008,6 +2053,7 @@ ul {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2021,13 +2067,14 @@ ul {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-cyan);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* ทำให้ชื่อบน Header คลิกได้ */
 .user-name {
     transition: 0.3s;
 }
+
 .user-name:hover {
     transform: scale(1.05);
     opacity: 0.8;
@@ -2063,7 +2110,8 @@ ul {
     /* แอนิเมชันตอนเริ่ม (ซ่อนอยู่ขวาจอ) */
     transform: translateX(120%);
     opacity: 0;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* เด้งๆ ดึ๋งๆ */
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* เด้งๆ ดึ๋งๆ */
 }
 
 .custom-toast.show {
@@ -2080,5 +2128,107 @@ ul {
     font-size: 22px;
 }
 
-.custom-toast.success i { color: var(--color-cyan); }
-.custom-toast.error i { color: #ff4757; }
+.custom-toast.success i {
+    color: var(--color-cyan);
+}
+
+.custom-toast.error i {
+    color: #ff4757;
+}
+
+/* =========================================
+   SOCIAL LOGIN BUTTONS
+   ========================================= */
+.social-login-container {
+    margin-top: 20px;
+}
+
+.divider-text {
+    text-align: center;
+    position: relative;
+    margin: 15px 0 20px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.divider-text::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.divider-text span {
+    background: white;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.social-btn-group {
+    display: flex;
+    gap: 15px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.google-btn {
+    background: #fff;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.google-btn:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.facebook-btn {
+    background: #1877f2;
+    color: white;
+    box-shadow: 0 2px 5px rgba(24,119,242,0.2);
+}
+
+.facebook-btn:hover {
+    background: #166fe5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(24,119,242,0.3);
+}
+
+@media (max-width: 992px) {
+    .content-grid {
+        grid-template-columns: 1fr; /* บังคับให้เมนูด้านขวา ตกลงมาอยู่ด้านล่างเมื่อจอแคบ */
+        gap: 30px;
+    }
+}
+
+/* ป้องกันคำฉีกขาดในหน้าต่าง Popup */
+#modalDetails {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #475569;
+    text-align: left;
+    word-break: normal;
+    overflow-wrap: normal;
+    margin-top: 20px;
+}

@@ -31,9 +31,9 @@ function randomMyMeal() {
 
 // ฟังก์ชันแจ้งเตือนแบบ Modern (Toast)
 // ฟังก์ชันแจ้งเตือนแบบ Modern (Toast)
-window.showToast = function(message, type = 'success') {
+window.showToast = function (message, type = 'success') {
     const container = document.getElementById('toastContainer');
-    
+
     // 🛑 แผนสำรอง: ถ้าเว็บหากล่องไม่เจอ ให้เด้งเป็น Alert ปกติแทน จะได้รู้ว่าเซฟติดไหม
     if (!container) {
         alert(message);
@@ -42,19 +42,19 @@ window.showToast = function(message, type = 'success') {
 
     const toast = document.createElement('div');
     toast.className = `custom-toast ${type}`;
-    
-    const icon = type === 'success' 
-        ? '<i class="fa-solid fa-circle-check"></i>' 
+
+    const icon = type === 'success'
+        ? '<i class="fa-solid fa-circle-check"></i>'
         : '<i class="fa-solid fa-circle-exclamation"></i>';
-        
+
     toast.innerHTML = `${icon} <span style="margin-left:8px;">${message}</span>`;
     container.appendChild(toast);
-    
+
     // สั่งให้สไลด์เข้ามา
     requestAnimationFrame(() => {
         setTimeout(() => toast.classList.add('show'), 10);
     });
-    
+
     // สั่งให้หายไปเอง
     setTimeout(() => {
         toast.classList.remove('show');
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             showHomePage();
-            
+
         });
     });
 
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 4. FAVORITES SYSTEM ---
     async function toggleFavorite(title, btn) {
         const user = firebase.auth().currentUser;
-        
+
         // ถ้ายังไม่ได้ล็อกอิน บังคับให้ล็อกอินก่อนกดหัวใจ
         if (!user) {
             showToast('กรุณาเข้าสู่ระบบก่อนบันทึกร้านโปรดครับ', 'error');
@@ -295,13 +295,13 @@ document.addEventListener('DOMContentLoaded', function () {
             icon.classList.remove('fa-solid');
             icon.classList.add('fa-regular');
         }
-        
+
         // บันทึกรายการโปรดลง Firestore เข้าบัญชีของคนนั้นๆ
         try {
             await firebase.firestore().collection('users').doc(user.uid).set({
                 favorites: favorites
             }, { merge: true });
-        } catch(error) {
+        } catch (error) {
             console.error("Error saving favorite:", error);
         }
     }
@@ -514,60 +514,72 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (submitReviewBtn) {
-    submitReviewBtn.addEventListener('click', async () => {
-        const user = firebase.auth().currentUser;
-        
-        if (!user) {
-            alert('กรุณาเข้าสู่ระบบก่อนเขียนรีวิวนะครับ');
-            document.getElementById('loginModal').style.display = 'flex';
-            return;
-        }
+        submitReviewBtn.addEventListener('click', async () => {
+            const user = firebase.auth().currentUser;
 
-        const text = document.getElementById('newReviewText').value;
-        if (currentRating === 0) { alert('กรุณาให้คะแนนดาวด้วยครับ!'); return; }
-        if (!text) { alert('กรุณาเขียนข้อความรีวิวด้วยครับ!'); return; }
+            if (!user) {
+                alert('กรุณาเข้าสู่ระบบก่อนเขียนรีวิวนะครับ');
+                document.getElementById('loginModal').style.display = 'flex';
+                return;
+            }
 
-        const originalText = submitReviewBtn.innerText;
-        submitReviewBtn.innerText = 'กำลังบันทึก...';
-        submitReviewBtn.disabled = true;
+            const text = document.getElementById('newReviewText').value;
+            if (currentRating === 0) { alert('กรุณาให้คะแนนดาวด้วยครับ!'); return; }
+            if (!text) { alert('กรุณาเขียนข้อความรีวิวด้วยครับ!'); return; }
 
-        try {
-            // ใช้ตัวแปร selectedImageData (ที่เป็น Base64) ที่มีอยู่ในระบบเดิมของคุณได้เลย
-            // ไม่ต้องอัปโหลดขึ้น Storage แล้ว
-            const newReview = {
-                shopId: currentReviewTarget,
-                name: user.displayName || 'Student',
-                avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-                rating: currentRating,
-                text: text,
-                date: new Date().toISOString(),
-                reviewImage: selectedImageData || null, // เก็บรูปเป็น Data URL ลง Firestore โดยตรง
-                userId: user.uid
-            };
+            const originalText = submitReviewBtn.innerText;
+            submitReviewBtn.innerText = 'กำลังอัปโหลดรูป...'; // เปลี่ยนข้อความให้รู้ว่ากำลังโหลด
+            submitReviewBtn.disabled = true;
 
-            // บันทึกลง Firestore
-            await firebase.firestore().collection('reviews').add(newReview);
+            try {
+                let uploadedImageUrl = null;
+                const fileInput = document.getElementById('reviewPhotoInput');
+                
+                // 🟢 1. ระบบอัปโหลดรูปขึ้น Firebase Storage
+                if (fileInput && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    const storageRef = firebase.storage().ref();
+                    // ตั้งชื่อไฟล์ไม่ให้ซ้ำกัน (เช่น reviews/123456_image.jpg)
+                    const fileRef = storageRef.child(`review_images/${Date.now()}_${file.name}`); 
+                    await fileRef.put(file); // สั่งอัปโหลด
+                    uploadedImageUrl = await fileRef.getDownloadURL(); // ขอลิงก์รูปที่ฝากไว้บนคลาวด์
+                }
 
-            alert('โพสต์รีวิวสำเร็จ!');
-            
-            document.getElementById('newReviewText').value = '';
-            currentRating = 0;
-            updateStarVisuals(0);
-            selectedImageData = null;
-            if (reviewPhotoInput) reviewPhotoInput.value = '';
-            if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+                // 🟢 2. เซฟลิงก์ลง Database
+                const newReview = {
+                    shopId: currentReviewTarget,
+                    name: user.displayName || 'Student',
+                    avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                    rating: currentRating,
+                    text: text,
+                    date: new Date().toISOString(),
+                    reviewImage: uploadedImageUrl, // ใช้ลิงก์ URL คลาวด์แทนแล้ว
+                    userId: user.uid
+                };
 
-            openReviews(); 
+                await firebase.firestore().collection('reviews').add(newReview);
 
-        } catch (error) {
-            alert('เกิดข้อผิดพลาด: ' + error.message);
-            console.error(error);
-        } finally {
-            submitReviewBtn.innerText = originalText;
-            submitReviewBtn.disabled = false;
-        }
-    });
-}
+                alert('โพสต์รีวิวสำเร็จ!');
+
+                // เคลียร์ค่า
+                document.getElementById('newReviewText').value = '';
+                currentRating = 0;
+                updateStarVisuals(0);
+                selectedImageData = null;
+                if (reviewPhotoInput) reviewPhotoInput.value = '';
+                if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
+
+                openReviews();
+
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+                console.error(error);
+            } finally {
+                submitReviewBtn.innerText = originalText;
+                submitReviewBtn.disabled = false;
+            }
+        });
+    }
 
     const viewReviewsBtn = document.getElementById('viewReviewsBtn');
     if (viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
@@ -628,19 +640,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function checkLoginStatus() {
-        const accountLi = document.querySelector('.account-icon'); 
+        const accountLi = document.querySelector('.account-icon');
         const user = firebase.auth().currentUser;
 
         if (user) {
             let photoUrl = null;
-            
+
             // แอบไปค้นหารูปโปรไฟล์และร้านโปรดจาก Firestore มาแสดง
             try {
                 const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
                 if (userDoc.exists) {
                     const data = userDoc.data();
                     if (data.profileImage) photoUrl = data.profileImage;
-                    
+
                     // 🟢 โหลดร้านโปรดของผู้ใช้คนนี้มาใส่ตัวแปร
                     if (data.favorites) {
                         favorites = data.favorites;
@@ -653,8 +665,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Error fetching user data:", error);
             }
 
-            const userIcon = photoUrl 
-                ? `<img src="${photoUrl}" class="header-avatar" alt="Profile">` 
+            const userIcon = photoUrl
+                ? `<img src="${photoUrl}" class="header-avatar" alt="Profile">`
                 : `<i class="fa-solid fa-circle-user"></i>`;
 
             if (accountLi) {
@@ -683,70 +695,110 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    window.handleLogout = function() {
+    window.handleLogout = function () {
         firebase.auth().signOut().then(() => {
             localStorage.removeItem('bloomUser'); // เคลียร์ค่าเดิม
-            
+
             // เปลี่ยนจาก alert เป็น showToast
             showToast('ออกจากระบบเรียบร้อยแล้ว', 'success');
-            
+
             // หน่วงเวลา 1.5 วินาที เพื่อให้ผู้ใช้เห็นป๊อปอัปก่อนรีเฟรชหน้า
             setTimeout(() => {
-                window.location.reload(); 
+                window.location.reload();
             }, 1500);
-            
+
         }).catch((error) => {
             showToast("Logout Error: " + error.message, 'error');
         });
     }
 
     if (signupForm) {
-    signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('signupName').value;
-        const email = document.getElementById('signupEmail').value;
-        const pass = document.getElementById('signupPassword').value;
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const pass = document.getElementById('signupPassword').value;
 
-        // เรียกใช้ Firebase Auth เพื่อสร้างบัญชีใหม่
-        firebase.auth().createUserWithEmailAndPassword(email, pass)
-            .then((userCredential) => {
-                // เมื่อสร้างสำเร็จ ให้บันทึกชื่อ (DisplayName) ลงในโปรไฟล์
-                return userCredential.user.updateProfile({
-                    displayName: name
+            // เรียกใช้ Firebase Auth เพื่อสร้างบัญชีใหม่
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+                .then((userCredential) => {
+                    // เมื่อสร้างสำเร็จ ให้บันทึกชื่อ (DisplayName) ลงในโปรไฟล์
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    showToast('สมัครสมาชิกสำเร็จ!', 'success');
+                    closeModal(signupModal);
+                    loginModal.style.display = 'flex'; // สลับไปหน้า Login
+                })
+                .catch((error) => {
+                    showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
                 });
-            })
-            .then(() => {
-                showToast('สมัครสมาชิกสำเร็จ!', 'success');
-                closeModal(signupModal);
-                loginModal.style.display = 'flex'; // สลับไปหน้า Login
-            })
-            .catch((error) => {
-                showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
-            });
-    });
-}
+        });
+    }
 
     if (loginForm) {
-    loginForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
 
-        // เรียกใช้ Firebase Auth เพื่อตรวจสอบสิทธิ์
-        firebase.auth().signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                localStorage.setItem('bloomUser', user.email);
-                
-                showToast('ยินดีต้อนรับคุณ ' + (user.displayName || 'User'), 'success');
-                closeModal(loginModal);
-                checkLoginStatus(); 
-            })
-            .catch((error) => {
-                showToast('เข้าสู่ระบบไม่สำเร็จ: ' + error.message, 'error');
-            });
-    });
-}
+            // เรียกใช้ Firebase Auth เพื่อตรวจสอบสิทธิ์
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    localStorage.setItem('bloomUser', user.email);
+
+                    showToast('ยินดีต้อนรับคุณ ' + (user.displayName || 'User'), 'success');
+                    closeModal(loginModal);
+                    checkLoginStatus();
+                })
+                .catch((error) => {
+                    showToast('เข้าสู่ระบบไม่สำเร็จ: ' + error.message, 'error');
+                });
+        });
+    }
+
+    // ==========================================
+    // ระบบ SOCIAL LOGIN (Google & Facebook)
+    // ==========================================
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const facebookLoginBtn = document.getElementById('facebookLoginBtn');
+
+    // 1. ล็อกอินด้วย Google
+    if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    localStorage.setItem('bloomUser', user.email);
+                    showToast('เข้าสู่ระบบด้วย Google สำเร็จ!', 'success');
+                    closeModal(loginModal);
+                    checkLoginStatus();
+                }).catch((error) => {
+                    showToast('Google Login Error: ' + error.message, 'error');
+                });
+        });
+    }
+
+    // 2. ล็อกอินด้วย Facebook
+    if (facebookLoginBtn) {
+        facebookLoginBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.FacebookAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    localStorage.setItem('bloomUser', user.email);
+                    showToast('เข้าสู่ระบบด้วย Facebook สำเร็จ!', 'success');
+                    closeModal(loginModal);
+                    checkLoginStatus();
+                }).catch((error) => {
+                    showToast('Facebook Login Error: ' + error.message, 'error');
+                });
+        });
+    }
     // ตรวจสอบสถานะการล็อกอินทุกครั้งที่โหลดหน้าเว็บหรือเปลี่ยนสถานะ
     firebase.auth().onAuthStateChanged((user) => {
         checkLoginStatus();
@@ -818,28 +870,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // =========================================================
     // 🟢 ก๊อปปี้โค้ดด้านล่างนี้มาวางตรงช่องว่างตรงนี้ได้เลยครับ 🟢
-    
-   // =========================================================
+
+    // =========================================================
     // ระบบ EDIT PROFILE (ย้ายมาวางที่นี่)
     // =========================================================
     const profileModal = document.getElementById('profileModal');
     const profileClose = document.querySelector('.profile-close-btn');
-    let newProfileBase64 = null; 
+    let newProfileBase64 = null;
 
-    if(profileClose) {
+    if (profileClose) {
         profileClose.addEventListener('click', () => {
             profileModal.style.display = 'none';
         });
     }
 
     // ฟังก์ชันเปิดหน้าต่างแก้โปรไฟล์และโหลดสถิติ
-    window.openProfileModal = async function() {
+    window.openProfileModal = async function () {
         const user = firebase.auth().currentUser;
-        if(!user) return;
+        if (!user) return;
 
         document.getElementById('editProfileName').value = user.displayName || '';
         const preview = document.getElementById('profileImgPreview');
-        
+
         // 1. รีเซ็ตค่าสถิติระหว่างรอโหลดเพื่อความสวยงาม
         document.getElementById('statReviews').textContent = '...';
         document.getElementById('statFavs').textContent = '...';
@@ -853,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .where('userId', '==', user.uid)
                 .get();
             document.getElementById('statReviews').textContent = reviewSnapshot.size; // .size คือจำนวนข้อมูลที่หาเจอ
-        } catch(error) {
+        } catch (error) {
             console.error("Error loading reviews count:", error);
             document.getElementById('statReviews').textContent = '0';
         }
@@ -872,35 +924,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.faculty) currentFaculty = data.faculty;
                 if (data.bio) currentBio = data.bio;
             }
-        } catch(e) { console.error("Error loading profile data:", e); }
-        
+        } catch (e) { console.error("Error loading profile data:", e); }
+
         // นำข้อมูลมาใส่ในช่องกรอก
         document.getElementById('editProfileFaculty').value = currentFaculty;
         document.getElementById('editProfileBio').value = currentBio;
 
         // แสดงรูปภาพ
-        if(currentPhoto) {
+        if (currentPhoto) {
             preview.innerHTML = `<img src="${currentPhoto}" style="width: 100%; height: 100%; object-fit: cover;">`;
         } else {
             preview.innerHTML = `<i class="fa-solid fa-user-circle" style="font-size: 80px; color: #cbd5e1;"></i>`;
         }
-        
-        newProfileBase64 = null; 
+
+        newProfileBase64 = null;
         profileModal.style.display = 'flex';
     }
 
     const profilePhotoInput = document.getElementById('profilePhotoInput');
-    if(profilePhotoInput) {
-        profilePhotoInput.addEventListener('change', function(e) {
+    if (profilePhotoInput) {
+        profilePhotoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
-            if(file) {
-                if (file.size > 200 * 1024) { 
+            if (file) {
+                if (file.size > 200 * 1024) {
                     alert('ไฟล์ภาพใหญ่เกินไป กรุณาเลือกภาพขนาดไม่เกิน 200KB ครับ (แนะนำให้ครอปภาพก่อน)');
                     this.value = '';
                     return;
                 }
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     newProfileBase64 = event.target.result;
                     const preview = document.getElementById('profileImgPreview');
                     preview.innerHTML = `<img src="${newProfileBase64}" style="width: 100%; height: 100%; object-fit: cover;">`;
@@ -911,38 +963,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const saveProfileBtn = document.getElementById('saveProfileBtn');
-    if(saveProfileBtn) {
+    if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', async () => {
             const user = firebase.auth().currentUser;
             const newName = document.getElementById('editProfileName').value;
             const newFaculty = document.getElementById('editProfileFaculty').value;
             const newBio = document.getElementById('editProfileBio').value;
 
-            if(!newName) { alert('กรุณากรอกชื่อด้วยครับ!'); return; }
+            if (!newName) { alert('กรุณากรอกชื่อด้วยครับ!'); return; }
 
             const originalText = saveProfileBtn.innerText;
             saveProfileBtn.innerText = 'SAVING...';
             saveProfileBtn.disabled = true;
 
             try {
-                // อัปเดตชื่อใน Auth
                 await user.updateProfile({ displayName: newName });
-                
-                // เตรียมข้อมูลที่จะเซฟลง Database
+
                 const updateData = {
                     faculty: newFaculty,
                     bio: newBio
                 };
-                if(newProfileBase64) {
+                
+                // 🟢 ระบบอัปโหลดรูปโปรไฟล์ขึ้น Firebase Storage
+                const fileInput = document.getElementById('profilePhotoInput');
+                if (fileInput && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    const storageRef = firebase.storage().ref();
+                    const fileRef = storageRef.child(`profile_images/${user.uid}_${Date.now()}`);
+                    await fileRef.put(file);
+                    // เอาลิงก์ URL จริงมาเซฟ
+                    updateData.profileImage = await fileRef.getDownloadURL(); 
+                } else if (newProfileBase64) {
                     updateData.profileImage = newProfileBase64;
                 }
 
-                // บันทึกข้อมูลลง Firestore (ใช้ merge: true เพื่อไม่ให้ข้อมูลอื่นหาย)
                 await firebase.firestore().collection('users').doc(user.uid).set(updateData, { merge: true });
-                
+
                 showToast('อัปเดตโปรไฟล์เรียบร้อยแล้ว!', 'success');
                 profileModal.style.display = 'none';
-                checkLoginStatus(); 
+                checkLoginStatus();
 
             } catch (error) {
                 showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
@@ -967,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === profileModal) profileModal.style.display = 'none'; // เพิ่มบรรทัดนี้สำหรับ Profile Modal
     });
 
-}); 
+});
 // --- ปิดวงเล็บของ DOMContentLoaded ---
 
 // --- 9. FULL SHOP DATABASE (ข้อมูลร้านค้าทั้งหมดสำหรับหน้ารายละเอียด) ---
@@ -1138,7 +1197,7 @@ const shopDatabase = {
     "union_mall": {
         title: "Union Mall (ยูเนี่ยน มอลล์)", subtitle: "Fashion Hub", heroImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600",
         history: "<p><b>สวรรค์ของนักช้อปวัยรุ่น!</b> ยูเนี่ยนมอลล์คือศูนย์รวมเสื้อผ้าแฟชั่น กระเป๋า รองเท้า นอกจากนี้ยังมีโซนทำเล็บ ทำผม และ <b>ดงตู้ถ่ายรูปสติกเกอร์</b> ที่ฮิตที่สุด</p>",
-        menuImages: ["https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=600"],
+        menuImages: ["Im/UnionMall1.jpg", "Im/UnionMall2.jpg"],
         info: { hours: "11:00 - 22:00", price: "Varied", phone: "02-512-5000", location: "BTS ห้าแยกลาดพร้าว" }
     },
     "suan_rodfai": {
