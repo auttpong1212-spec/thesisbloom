@@ -2311,3 +2311,45 @@ ul {
     .footer-slogan { text-align: center; margin: 15px auto; }
     .footer-links ul li a:hover { transform: none; }
 }
+
+/* 🟢 ปุ่มลอยสำหรับโพสต์รีวิว */
+.floating-post-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 100px; /* วางไว้ข้างๆ ปุ่ม Back to Top */
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-pink), var(--color-blue));
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(234, 152, 169, 0.4);
+    z-index: 998;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-post-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+}
+
+.custom-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+    .floating-post-btn {
+        right: 20px;
+        bottom: 90px; /* หลบปุ่ม Back to Top บนมือถือ */
+    }
+}

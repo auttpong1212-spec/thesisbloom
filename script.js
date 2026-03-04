@@ -1150,12 +1150,12 @@ const shopDatabase = {
         menuImages: ["Im/ตลาดกลางวัน2.png"],
         info: { hours: "09:00 - 18:00 (Sat-Sun)", price: "100 - 500 THB", phone: "02-272-4440", location: "ตลาดนัดจตุจักร" }
     },
-    "bacc": {
-        title: "BACC (หอศิลป์กรุงเทพฯ)", subtitle: "Bangkok Art Gallery", heroImage: "Im/BACC1.jpg",
-        history: "<p><b>หอศิลปวัฒนธรรมแห่งกรุงเทพมหานคร</b> เป็นพื้นที่จัดแสดงนิทรรศการศิลปะหมุนเวียนที่เปิดให้เข้าชมฟรี จุดเด่นที่พลาดไม่ได้คือ <b>ทางเดินทรงกระบอกวนสโลป</b> ที่เป็น Signature Photo Spot</p>",
-        menuImages: ["Im/BACC2.jpg", "Im/BACC3.jpg", "Im/BACC4.jpg"],
-        info: { hours: "10:00 - 20:00 (ปิด จ.)", price: "Free", phone: "02-214-6630", location: "BTS สนามกีฬาแห่งชาติ" }
-    },
+    "airforce_museum": {
+    title: "พิพิธภัณฑ์กองทัพอากาศ", subtitle: "Vintage Photo Spot", heroImage: "Im/airforce1.jpg",
+    history: "<p>แหล่งเช็คอินสุดคลาสสิกใกล้ ม. เดินทางด้วย BTS มาลงหน้าพิพิธภัณฑ์ได้เลย มีเครื่องบินรุ่นเก่าให้ถ่ายรูปฟีลเท่ๆ เพียบ!</p>",
+    menuImages: ["Im/airforce2.jpg", "Im/airforce3.jpg"],
+    info: { hours: "09:00 - 15:30 (ปิด จ.)", price: "Free", phone: "02-534-1853", location: "BTS พิพิธภัณฑ์กองทัพอากาศ" }
+},
     "chatuchak_park": {
         title: "สวนจตุจักร (Chatuchak Park)", subtitle: "Green Space", heroImage: "Im/ChatuchakPark1.jpg",
         history: "<p>พื้นที่สีเขียวขนาดใหญ่ติด BTS เป็นปอดของคนกรุงเทพฯ กิจกรรมยอดฮิตคือการมาเช่าเสื่อปิกนิก ปั่นจักรยาน หรือวิ่งออกกำลังกายรับลมในช่วงเย็น</p>",
@@ -1168,13 +1168,13 @@ const shopDatabase = {
         menuImages: ["Im/เซ็นทรัลลาดพร้าว2.jpg", "Im/เซ็นทรัลลาดพร้าว3.jpg", "Im/เซ็นทรัลลาดพร้าว4.jpg"],
         info: { hours: "10:00 - 22:00", price: "Varied", phone: "02-793-6000", location: "BTS ห้าแยกลาดพร้าว" }
     },
-    "gumps_ari": {
-        title: "GUMP's Ari", subtitle: "Community Space", heroImage: "Im/GUMP1.jpg",
-        history: "<p>คอมมูนิตี้สุดป๊อปย่านอารีย์ที่ตกแต่งด้วย <b>สีสันสดใสสไตล์ Retro</b> ให้ฟีลลิ่งเกาหลีสุดๆ ที่นี่เป็นแหล่งรวมตัวของวัยรุ่นสายคอนเทนต์ เพราะมีตู้สติกเกอร์และคาเฟ่เยอะมาก</p>",
-        menuImages: ["Im/GUMP2.jpg", "Im/GUMP3.jpg", "Im/GUMP4.jpg"],
-        info: { hours: "10:00 - 20:00", price: "100 - 300 THB", phone: "-", location: "ซอยอารีย์ 4" }
-    },
-    "jodd_fairs": {
+"yingcharoen": {
+    title: "ตลาดยิ่งเจริญ", subtitle: "Street Food Haven", heroImage: "Im/market1.jpg",
+    history: "<p>ตลาดยอดฮิตของชาวสะพานใหม่-บางเขน มีโซน Food Court ที่รวมของอร่อยราคาประหยัดไว้เพียบ เปิดตลอด 24 ชั่วโมง!</p>",
+    menuImages: ["Im/market2.jpg"],
+    info: { hours: "24 Hours", price: "40 - 100 THB", phone: "-", location: "BTS สะพานใหม่" }
+},
+"jodd_fairs": {
         title: "JODD FAIRS แดนเนรมิต", subtitle: "Night Market & Castle", heroImage: "Im/JODDFAIRS1.avif",
         history: "<p>ตลาดนัดกลางคืนสุดชิค โดยยังคงรักษา 'ปราสาทสไตล์ยุโรป' ไว้เป็นฉากหลัง มีโซนให้นั่งชิลฟีลลิ่งแคมป์ปิ้ง และรวบรวมร้าน Street Food ชื่อดังไว้มากมาย</p>",
         menuImages: ["Im/JODDFAIRS2.jpg", "Im/JODDFAIRS3.jpg", "Im/JODDFAIRS4.jpg"],
@@ -1452,3 +1452,95 @@ window.generateFakeReviews = async function() {
         alert("Error: " + error.message);
     }
 }
+
+// ============================================================
+// QUICK REVIEW SYSTEM (Lemon8 Style Action Button)
+// ============================================================
+const quickModal = document.getElementById('quickReviewModal');
+const quickBtn = document.getElementById('quickReviewBtn');
+let quickRating = 0;
+let quickImage = null;
+
+// 1. เปิดหน้าต่างเขียนรีวิว
+if (quickBtn) {
+    quickBtn.addEventListener('click', () => {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            showToast('กรุณาล็อกอินก่อนแบ่งปันรีวิวนะครับ', 'error');
+            document.getElementById('loginModal').style.display = 'flex';
+            return;
+        }
+        
+        // โหลดรายชื่อร้านลงใน Select
+        const select = document.getElementById('quickShopSelect');
+        select.innerHTML = '<option value="">-- เลือกสถานที่ --</option>';
+        Object.keys(shopDatabase).forEach(key => {
+            select.innerHTML += `<option value="${key}">${shopDatabase[key].title}</option>`;
+        });
+
+        quickModal.style.display = 'flex';
+    });
+}
+
+// 2. จัดการรูปภาพ Preview
+document.getElementById('quickPhotoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            quickImage = event.target.result;
+            document.getElementById('quickPhotoPreview').src = quickImage;
+            document.getElementById('quickPhotoPreviewContainer').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 3. จัดการดาว (Rating)
+document.querySelectorAll('#quickStarRating i').forEach(star => {
+    star.addEventListener('click', function() {
+        quickRating = parseInt(this.getAttribute('data-value'));
+        document.querySelectorAll('#quickStarRating i').forEach(s => {
+            const v = parseInt(s.getAttribute('data-value'));
+            s.className = v <= quickRating ? 'fa-solid fa-star filled' : 'fa-regular fa-star';
+        });
+    });
+});
+
+// 4. สั่งโพสต์ลง Firebase
+document.getElementById('submitQuickReview').addEventListener('click', async () => {
+    const shopId = document.getElementById('quickShopSelect').value;
+    const text = document.getElementById('quickReviewText').value;
+    const user = firebase.auth().currentUser;
+
+    if (!shopId) return alert('กรุณาเลือกสถานที่ด้วยครับ');
+    if (quickRating === 0) return alert('กรุณาให้ดาวด้วยครับ');
+    if (!text) return alert('เขียนข้อความสักนิดนะครับ');
+
+    try {
+        await firebase.firestore().collection('reviews').add({
+            shopId,
+            name: user.displayName,
+            avatar: user.photoURL || "https://i.pravatar.cc/150",
+            rating: quickRating,
+            text: text,
+            date: new Date().toISOString(),
+            reviewImage: quickImage,
+            userId: user.uid,
+            likedBy: []
+        });
+
+        showToast('โพสต์รีวิวสำเร็จ! ขอบคุณที่ร่วมแบ่งปันครับ', 'success');
+        quickModal.style.display = 'none';
+        
+        // เคลียร์ค่าเดิม
+        document.getElementById('quickReviewText').value = '';
+        document.getElementById('quickPhotoPreviewContainer').style.display = 'none';
+        quickRating = 0;
+        
+        // โหลดฟีดใหม่
+        loadCommunityFeed();
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+    }
+});
