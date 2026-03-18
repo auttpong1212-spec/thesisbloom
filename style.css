@@ -2352,4 +2352,44 @@ ul {
         right: 20px;
         bottom: 90px; /* หลบปุ่ม Back to Top บนมือถือ */
     }
+
+    /* 🟢 1. ทำให้ปุ่ม Filter ปัดซ้าย-ขวาได้ (Swipeable) */
+    .filter-container {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        justify-content: flex-start !important;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch; /* ให้ปัดลื่นๆ บน iOS */
+    }
+    
+    /* ซ่อนหลอด Scrollbar แนวนอนเพื่อความสวยงาม */
+    .filter-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .filter-btn {
+        white-space: nowrap; /* บังคับไม่ให้ข้อความในปุ่มฉีกขาด */
+        flex-shrink: 0; /* ป้องกันปุ่มโดนบีบจนเบี้ยว */
+    }
+
+    /* 🟢 2. ลดความสูงแผนที่บนมือถือ ป้องกันนิ้วติด */
+    .map-container {
+        height: 280px !important; 
+    }
+    
+    /* ปรับวงกลมเส้นปะสีชมพูให้เล็กลงตามแผนที่ */
+    .map-container > div {
+        width: 200px !important;
+        height: 200px !important;
+    }
+
+    /* 🟢 3. ขยับปุ่มกากบาทและขอบ Modal ให้กดง่ายขึ้น */
+    .modal {
+        padding: 40px 15px 20px; /* ลดขอบบนลง ไม่ให้ติดติ่งรูกล้องมือถือ */
+    }
+    .close-btn {
+        font-size: 36px; /* ขยายปุ่ม X ให้ใหญ่ขึ้นกดยาก */
+        margin-top: -10px;
+        margin-right: -5px;
+    }
 }

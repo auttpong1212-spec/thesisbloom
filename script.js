@@ -382,28 +382,51 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitReviewBtn = document.getElementById('submitReviewBtn');
     let currentReviewTarget = "";
 
-    // --- PHOTO UPLOAD LOGIC ---
+    // --- PHOTO UPLOAD LOGIC & COMPRESSION ---
+    // 🟢 ระบบย่อขนาดรูปภาพอัตโนมัติ ไม่ให้เกินขีดจำกัดของ Firebase (1MB)
+    window.compressImage = function(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // บังคับกว้างสูงสุด
+                const MAX_HEIGHT = 800;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                } else {
+                    if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // บีบอัดเป็น JPEG คุณภาพ 70% (เหลือขนาดประมาณ 100-200KB)
+                callback(canvas.toDataURL('image/jpeg', 0.7));
+            }
+            img.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
     const reviewPhotoInput = document.getElementById('reviewPhotoInput');
     const photoPreviewContainer = document.getElementById('photoPreviewContainer');
     const photoPreview = document.getElementById('photoPreview');
     const removePhotoBtn = document.getElementById('removePhotoBtn');
 
+    // จัดการอัปโหลดรูปร้าน (หน้าธรรมดา)
     if (reviewPhotoInput) {
         reviewPhotoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
-                if (file.size > 1024 * 1024) { // 1MB
-                    alert('ไฟล์ภาพใหญ่เกินไป กรุณาเลือกภาพไม่เกิน 1MB');
-                    this.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    selectedImageData = event.target.result;
+                // 🟢 เรียกใช้ฟังก์ชันย่อรูปก่อน
+                compressImage(file, function(compressedBase64) {
+                    selectedImageData = compressedBase64;
                     photoPreview.src = selectedImageData;
                     photoPreviewContainer.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
+                });
             }
         });
     }
@@ -464,120 +487,153 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = 'hidden';
     }
 
-    function openReviews() {
+    // --- เปลี่ยนระบบดึงรีวิวให้มาจาก Firebase 100% ---
+    async function openReviews() {
         if (!reviewModal) return;
         document.getElementById('reviewTargetName').textContent = currentReviewTarget;
-        reviewList.innerHTML = '';
+        
+        // ขึ้นข้อความโหลดรอไว้ก่อน
+        reviewList.innerHTML = '<p style="text-align:center; padding: 20px;">กำลังโหลดรีวิว...</p>';
+        reviewModal.style.display = 'flex';
 
-        let reviews = reviewsData[currentReviewTarget];
-        if (!reviews || reviews.length === 0) {
-            reviews = [{ name: "Guest User", avatar: "https://cdn-icons-png.flaticon.com/512/149/149071.png", rating: 5, text: "สถานที่สวยงาม บรรยากาศดีครับ!", date: "Just now", reviewImage: null }];
+        // หา ID ร้านจากชื่อภาษาไทย
+        let actualShopId = "unknown";
+        for (const [key, value] of Object.entries(shopDatabase)) {
+            if (value.title === currentReviewTarget) {
+                actualShopId = key; break;
+            }
         }
 
-        reviews.forEach(r => {
-            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-            // ส่วนแสดงรูปรีวิว
-            const reviewImgHtml = r.reviewImage
-                ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">`
-                : '';
+        try {
+            // ดึงข้อมูลรีวิวของร้านนี้จาก Firebase
+            const snapshot = await firebase.firestore().collection('reviews')
+                .where('shopId', '==', actualShopId)
+                .get();
 
-            const html = `
-                <div class="review-item">
-                    <div class="review-avatar" style="background-image: url('${r.avatar}');"></div>
-                    <div class="review-content">
-                        <div class="review-header">
-                            <div class="review-user">${r.name}</div>
-                            <div class="review-date">${r.date}</div>
+            reviewList.innerHTML = '';
+            
+            // ถ้าร้านนี้ยังไม่มีใครรีวิว
+            if (snapshot.empty) {
+                reviewList.innerHTML = '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีรีวิวสำหรับสถานที่นี้ มารีวิวคนแรกกันเถอะ!</p>';
+                return;
+            }
+
+            // นำข้อมูลมาเรียงตามวันที่ (ใหม่ล่าสุดขึ้นก่อน)
+            let reviewsArray = [];
+            snapshot.forEach(doc => reviewsArray.push(doc.data()));
+            reviewsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // สร้างการ์ดรีวิวโชว์บนหน้าจอ
+            reviewsArray.forEach(r => {
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                
+                // แปลงวันที่ให้อ่านง่ายขึ้น
+                const d = new Date(r.date);
+                const dateStr = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+
+                const reviewImgHtml = r.reviewImage
+                    ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">`
+                    : '';
+
+                const html = `
+                    <div class="review-item">
+                        <div class="review-avatar" style="background-image: url('${r.avatar || 'https://i.pravatar.cc/150'}');"></div>
+                        <div class="review-content">
+                            <div class="review-header">
+                                <div class="review-user">${r.name}</div>
+                                <div class="review-date">${dateStr}</div>
+                            </div>
+                            <div class="review-stars">${stars}</div>
+                            <p class="review-text">${r.text}</p>
+                            ${reviewImgHtml}
                         </div>
-                        <div class="review-stars">${stars}</div>
-                        <p class="review-text">${r.text}</p>
-                        ${reviewImgHtml}
-                    </div>
-                </div>`;
-            reviewList.innerHTML += html;
-        });
-        reviewModal.style.display = 'flex';
+                    </div>`;
+                reviewList.innerHTML += html;
+            });
+
+        } catch (error) {
+            console.error("Error loading reviews:", error);
+            reviewList.innerHTML = '<p style="text-align:center; color:red;">เกิดข้อผิดพลาดในการโหลดรีวิว</p>';
+        }
     }
 
-    const starInputs = document.querySelectorAll('.star-rating-input i');
-    if (starInputs.length > 0) {
-        starInputs.forEach(star => {
-            star.addEventListener('click', function () {
-                const value = parseInt(this.getAttribute('data-value'));
-                currentRating = value;
-                updateStarVisuals(value);
+    const viewReviewsBtn = document.getElementById('viewReviewsBtn');
+    if (viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
+
+    // =========================================================
+    // 🟢 โค้ดที่หายไป: ระบบให้คะแนนดาว และปุ่ม POST REVIEW 
+    // =========================================================
+    const reviewStars = document.querySelectorAll('.write-review-section .star-rating-input i');
+    reviewStars.forEach(star => {
+        star.addEventListener('click', function() {
+            currentRating = parseInt(this.getAttribute('data-value'));
+            reviewStars.forEach(s => {
+                const v = parseInt(s.getAttribute('data-value'));
+                s.className = v <= currentRating ? 'fa-solid fa-star filled' : 'fa-regular fa-star';
             });
         });
-    }
-
-    function updateStarVisuals(rating) {
-        starInputs.forEach(star => {
-            const val = parseInt(star.getAttribute('data-value'));
-            if (val <= rating) {
-                star.classList.remove('fa-regular');
-                star.classList.add('fa-solid', 'filled');
-            } else {
-                star.classList.remove('fa-solid', 'filled');
-                star.classList.add('fa-regular');
-            }
-        });
-    }
+    });
 
     if (submitReviewBtn) {
         submitReviewBtn.addEventListener('click', async () => {
             const user = firebase.auth().currentUser;
             if (!user) {
-                alert('กรุณาเข้าสู่ระบบก่อนเขียนรีวิวนะครับ');
+                showToast('กรุณาล็อกอินก่อนโพสต์รีวิวนะครับ', 'error');
                 document.getElementById('loginModal').style.display = 'flex';
                 return;
             }
 
             const text = document.getElementById('newReviewText').value;
-            if (currentRating === 0) { alert('กรุณาให้คะแนนดาวด้วยครับ!'); return; }
-            if (!text) { alert('กรุณาเขียนข้อความรีวิวด้วยครับ!'); return; }
+            if (currentRating === 0) return showToast('กรุณาให้คะแนนดาวด้วยครับ', 'error');
+            if (!text.trim()) return showToast('กรุณาเขียนข้อความรีวิวด้วยนะครับ', 'error');
 
-            const originalText = submitReviewBtn.innerText;
-            submitReviewBtn.innerText = 'กำลังบันทึก...';
+            const originalBtnText = submitReviewBtn.innerText;
+            submitReviewBtn.innerText = 'POSTING...';
             submitReviewBtn.disabled = true;
 
             try {
-                // 🟢 ใช้ selectedImageData (Base64) โดยตรง
-                // 🟢 หาจุดนี้ในไฟล์ script.js แล้วเปลี่ยนข้อมูลข้างใน newReview เป็นตามนี้ครับ
+                // หา ID ร้านจากชื่อภาษาไทย
+                let actualShopId = "unknown";
+                for (const [key, value] of Object.entries(shopDatabase)) {
+                    if (value.title === currentReviewTarget) {
+                        actualShopId = key; break;
+                    }
+                }
+
                 const newReview = {
-                    shopId: currentReviewTarget,
+                    shopId: actualShopId,
                     name: user.displayName || 'Student',
-                    avatar: user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                    avatar: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
                     rating: currentRating,
                     text: text,
                     date: new Date().toISOString(),
                     reviewImage: selectedImageData, 
                     userId: user.uid,
-                    likedBy: [] // 🟢 เพิ่มบรรทัดนี้ เพื่อเตรียมเก็บข้อมูลคนกด Like
+                    likedBy: [] 
                 };
 
+                // ส่งข้อมูลขึ้น Firebase
                 await firebase.firestore().collection('reviews').add(newReview);
-                alert('โพสต์รีวิวสำเร็จ!');
-
-                // เคลียร์ค่า
+                showToast('โพสต์รีวิวสำเร็จ!', 'success');
+                
+                // เคลียร์ฟอร์มให้ว่าง
                 document.getElementById('newReviewText').value = '';
+                reviewStars.forEach(s => s.className = 'fa-regular fa-star');
                 currentRating = 0;
-                updateStarVisuals(0);
-                selectedImageData = null;
-                if (reviewPhotoInput) reviewPhotoInput.value = '';
-                if (photoPreviewContainer) photoPreviewContainer.style.display = 'none';
-
+                if (removePhotoBtn) removePhotoBtn.click();
+                
+                // โหลดข้อมูลรีวิวมาแสดงใหม่ทันที
                 openReviews();
+
             } catch (error) {
-                alert('เกิดข้อผิดพลาด: ' + error.message);
+                showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
             } finally {
-                submitReviewBtn.innerText = originalText;
+                submitReviewBtn.innerText = originalBtnText;
                 submitReviewBtn.disabled = false;
             }
         });
     }
-
-    const viewReviewsBtn = document.getElementById('viewReviewsBtn');
-    if (viewReviewsBtn) { viewReviewsBtn.addEventListener('click', openReviews); }
+    // =========================================================
 
     document.querySelectorAll('.location-card').forEach(card => {
         const favBtn = card.querySelector('.favorite-btn');
@@ -604,6 +660,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    
 
     function closeModal(m) { if (m) m.style.display = 'none'; document.body.style.overflow = 'auto'; }
     if (detailClose) detailClose.addEventListener('click', () => closeModal(detailModal));
@@ -972,31 +1030,86 @@ document.addEventListener('DOMContentLoaded', function () {
             saveProfileBtn.disabled = true;
 
             try {
-                await user.updateProfile({ displayName: newName });
+                // 1. กำหนดรูปที่จะใช้
+                const finalAvatar = newProfileBase64 || user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`;
 
-                const updateData = {
-                    faculty: newFaculty,
-                    bio: newBio
-                };
-                
-                // 🟢 ระบบอัปโหลดรูปแบบ Base64
-                if (newProfileBase64) {
-                    updateData.profileImage = newProfileBase64;
+                // 2. เช็คว่ารูปเป็นรหัส Base64 ยาวๆ หรือไม่
+                const isBase64 = finalAvatar.startsWith('data:image');
+
+                // 3. อัปเดตระบบล็อคอิน (ถ้ารูปรหัสยาว ให้เซฟแค่ชื่อพอ ไม่งั้น Error)
+                if (isBase64) {
+                    await user.updateProfile({ displayName: newName });
+                } else {
+                    await user.updateProfile({ displayName: newName, photoURL: finalAvatar });
                 }
 
-                await firebase.firestore().collection('users').doc(user.uid).set(updateData, { merge: true });
+                // 4. เอารูปรหัสยาวๆ มาเซฟลง Firestore แทน (เพราะเก็บข้อมูลได้เยอะกว่ามาก)
+                await firebase.firestore().collection('users').doc(user.uid).set({
+                    profileImage: finalAvatar,
+                    faculty: newFaculty,
+                    bio: newBio
+                }, { merge: true });
 
-                showToast('อัปเดตโปรไฟล์เรียบร้อยแล้ว!', 'success');
-                profileModal.style.display = 'none';
-                checkLoginStatus();
+                showToast('แก้ไขโปรไฟล์สำเร็จ!');
+
+                // 5. สั่งให้อัปเดต UI และรีวิวเก่า
+                syncNewProfileWithOldReviews(user.uid, newName, finalAvatar);
+                
+                document.getElementById('profileModal').style.display = 'none';
+                checkLoginStatus(); // อัปเดตมุมขวาบนให้เป็นรูปใหม่ทันที
+
             } catch (error) {
-                showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+                showToast('เกิดข้อผิดพลาดในการอัปเดต: ' + error.message, 'error');
             } finally {
                 saveProfileBtn.innerText = originalText;
                 saveProfileBtn.disabled = false;
             }
         });
     }
+
+    // =========================================================
+    // 🟢 เพิ่มฟังก์ชัน: Sync ข้อมูลโปรไฟล์ใหม่ ไปยังรีวิวเก่าทั้งหมด
+    // =========================================================
+    async function syncNewProfileWithOldReviews(userId, newName, newAvatar) {
+        console.log("เริ่มการ Sync ข้อมูลโปรไฟล์ไปยังรีวิวเก่า...");
+        try {
+            const reviewsRef = firebase.firestore().collection('reviews');
+            
+            // 1. ค้นหารีวิวทั้งหมดที่โพสต์โดยผู้ใช้คนนี้ (userId)
+            const snapshot = await reviewsRef.where('userId', '==', userId).get();
+            
+            // ถ้ายูสเซอร์นี้ยังไม่เคยรีวิวอะไรเลย ก็ไม่ต้องทำอะไรต่อ
+            if (snapshot.empty) {
+                console.log("ไม่พบรีวิวเก่าที่ต้อง Sync");
+                return;
+            }
+
+            // 2. ใช้ WriteBatch ของ Firestore เพื่ออัปเดตหลายๆ ใบพร้อมกัน (ประหยัดค่าใช้จ่าย)
+            const batch = firebase.firestore().batch();
+            
+            snapshot.forEach(doc => {
+                // บันทึกคำสั่งอัปเดต Name และ Avatar เข้าไปใน Batch
+                batch.update(doc.ref, {
+                    name: newName,
+                    avatar: newAvatar
+                });
+            });
+
+            // 3. สั่งให้ Batch ทำงานจริง (Execute)
+            await batch.commit();
+            console.log(`Sync สำเร็จ! อัปเดตข้อมูลใน ${snapshot.size} รีวิวเรียบร้อยครับ`);
+
+            // 4. ถ้าตอนนี้เปิดหน้า Community Feed อยู่ ให้โหลดฟีดใหม่เพื่อโชว์ข้อมูลล่าสุด
+            const communitySection = document.getElementById('community-section');
+            if (communitySection && communitySection.style.display !== 'none') {
+                loadCommunityFeed();
+            }
+
+        } catch (error) {
+            console.error("Error syncing profile with reviews:", error);
+        }
+    }
+    // =========================================================
     // =========================================================
 
     // เรียกให้หน้าเว็บโหลดเป็นหน้าหลักเสมอ
@@ -1482,17 +1595,15 @@ if (quickBtn) {
     });
 }
 
-// 2. จัดการรูปภาพ Preview
+// 2. จัดการรูปภาพ Preview (พร้อมย่อขนาด)
 document.getElementById('quickPhotoInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            quickImage = event.target.result;
+        compressImage(file, function(compressedBase64) {
+            quickImage = compressedBase64;
             document.getElementById('quickPhotoPreview').src = quickImage;
             document.getElementById('quickPhotoPreviewContainer').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+        });
     }
 });
 
@@ -1521,7 +1632,7 @@ document.getElementById('submitQuickReview').addEventListener('click', async () 
         await firebase.firestore().collection('reviews').add({
             shopId,
             name: user.displayName,
-            avatar: user.photoURL || "https://i.pravatar.cc/150",
+            avatar: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
             rating: quickRating,
             text: text,
             date: new Date().toISOString(),
