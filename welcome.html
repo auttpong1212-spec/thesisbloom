@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOM - Beyond The Ordinary</title>
+    <meta name="description" content="คู่มือเอาตัวรอดฉบับเด็กศรีปทุม แหล่งรวบรวมพิกัดที่กิน ที่เที่ยว และคาเฟ่ลับย่านบางเขน">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="BLOOM - Beyond The Ordinary">
+    <meta property="og:description" content="คู่มือเอาตัวรอดฉบับเด็กศรีปทุม กิน เที่ยว เรียน เล่น ครบจบในที่เดียว!">
+    <meta property="og:image" content="https://static.wixstatic.com/media/9c608a_2f0a80ebe92f4657852b48447144c505.jpg"> 
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BLOOM - Beyond The Ordinary">
+    <meta name="twitter:description" content="คู่มือเอาตัวรอดฉบับเด็กศรีปทุม กิน เที่ยว เรียน เล่น ครบจบในที่เดียว!">
+    <meta name="twitter:image" content="https://static.wixstatic.com/media/9c608a_2f0a80ebe92f4657852b48447144c505.jpg">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2917/2917995.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* =========================================
+           MOBILE RESPONSIVE (ปรับขนาดให้พอดีมือถือ)
+           ========================================= */
+        @media (max-width: 768px) {
+            .logo-text { font-size: 65px; letter-spacing: 8px; }
+            .subtitle { font-size: 14px; letter-spacing: 5px; margin-bottom: 40px; }
+            .section-header h2 { font-size: 32px; }
+            .section-header p { font-size: 16px; padding: 0 15px; }
+            .feature-card { padding: 30px 20px; }
+            .btn-enter { padding: 15px 40px; font-size: 18px; }
+        }
+        
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #050505; 
+            color: white;
+            font-family: 'Kanit', sans-serif;
+            scroll-behavior: smooth; 
+            overflow-x: hidden;
+        }
+
+        
+        .hero-section {
+            position: relative; width: 100%; height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; overflow: hidden;
+        }
+
+        .bg-video {
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            transform: translate(-50%, -50%);
+            object-fit: cover; z-index: -2;
+            filter: brightness(0.6) contrast(1.2);
+        }
+
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        .logo-text {
+            font-size: 110px; font-weight: 900; letter-spacing: 15px; margin: 0;
+            background: linear-gradient(to bottom, #ffffff 0%, #a5f3fc 100%);
+            -webkit-background-clip: text; color: transparent;
+            text-shadow: 0 0 40px rgba(0, 212, 194, 0.5);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: 22px; font-weight: 300; letter-spacing: 8px; color: #cbd5e1;
+            margin-top: 5px;
+        }
+
+        /* ปุ่มบอกให้เลื่อนลง (Scroll Down) */
+        .scroll-indicator {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            color: #00D4C2; font-size: 14px; letter-spacing: 2px; text-decoration: none;
+            opacity: 0.8; transition: 0.3s;
+        }
+
+        .scroll-indicator i {
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator:hover { opacity: 1; text-shadow: 0 0 10px #00D4C2; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-7px); }
+        }
+
+        /* --- 2. ส่วนเนื้อหาด้านล่าง (Details Section) --- */
+        .details-section {
+            padding: 120px 5%; max-width: 1200px; margin: 0 auto;
+            position: relative; z-index: 10; background-color: #050505;
+        }
+
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header h2 {
+            font-size: 48px; font-weight: 800; margin: 0; color: white;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .section-header p {
+            color: #94a3b8; font-size: 18px; max-width: 600px; margin: 20px auto 0; line-height: 1.6;
+        }
+
+        /* 3 การ์ดฟีเจอร์หลัก สไตล์ UI เกม */
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .feature-card {
+            background: #0f172a; border: 1px solid #1e293b; border-radius: 20px;
+            padding: 40px 30px; text-align: center; position: relative; overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: default;
+        }
+
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: #00D4C2; transform: scaleX(0); transform-origin: left; transition: 0.4s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px); background: #111827;
+            box-shadow: 0 20px 40px rgba(0, 212, 194, 0.1); border-color: #334155;
+        }
+        
+        .feature-card:hover::before { transform: scaleX(1); }
+
+        .feature-icon {
+            font-size: 50px; color: #00D4C2; margin-bottom: 25px;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 194, 0.4));
+        }
+
+        .feature-card h3 { font-size: 24px; font-weight: 700; margin: 0 0 15px 0; letter-spacing: 1px; }
+        .feature-card p { color: #94a3b8; font-size: 15px; line-height: 1.6; margin: 0; }
+
+        /* สีพิเศษสำหรับการ์ดตรงกลาง */
+        .feature-card:nth-child(2) .feature-icon { color: #EA98A9; filter: drop-shadow(0 0 10px rgba(234, 152, 169, 0.4)); }
+        .feature-card:nth-child(2)::before { background: #EA98A9; }
+
+        /* ปุ่มเข้าเว็บใหญ่ๆ ด้านล่างสุด */
+        .enter-wrapper { text-align: center; margin-top: 60px; padding-bottom: 80px; }
+        .btn-enter {
+            display: inline-block; padding: 20px 70px;
+            font-family: 'Kanit', sans-serif; font-size: 22px; font-weight: 800;
+            color: #000; text-decoration: none; letter-spacing: 3px;
+            background: #00D4C2; clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+            transition: all 0.3s ease; box-shadow: 0 0 30px rgba(0, 212, 194, 0.4);
+        }
+
+        .btn-enter:hover {
+            background: white; transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 255, 255, 0.6);
+        }
+
+        /* --- เอฟเฟกต์แอนิเมชันตอนเลื่อนจอ (Reveal) --- */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* =========================================
+           PAGE TRANSITION EFFECT (วาร์ปเปลี่ยนหน้า)
+           ========================================= */
+        .transition-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #f8fafc; /* สีเดียวกับหน้าเว็บหลัก */
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="hero-section">
+        <video autoplay loop muted playsinline class="bg-video">
+            <source src="video/Spu.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+
+        <h1 class="logo-text">BLOOM</h1>
+        <p class="subtitle">BEYOND THE ORDINARY</p>
+
+        <a href="#explore" class="scroll-indicator">
+            <span>EXPLORE</span>
+            <i class="fa-solid fa-angles-down"></i>
+        </a>
+    </section>
+
+    <section class="details-section" id="explore">
+        
+        <div class="section-header reveal">
+            <h2>Welcome to Bloom</h2>
+            <p>คู่มือเอาตัวรอดฉบับเด็กศรีปทุม แหล่งรวบรวมพิกัดที่กิน ที่เที่ยว และคาเฟ่ลับย่านบางเขน ที่เราคัดสรรมาให้คุณโดยเฉพาะ</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon"><i class="fa-solid fa-utensils"></i></div>
+                <h3>EATS & DRINKS</h3>
+                <p>ตั้งแต่สตรีทฟู้ดราคาประหยัด ไปจนถึงบุฟเฟต์ชาบูเปิดดึก อร่อย คุ้มค่า สบายกระเป๋านักศึกษา</p>
+            </div>
+            <div class="feature-card reveal" style="transition-delay: 0.1s;">
+                <div class="feature-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h3>HANGOUTS</h3>
+                <p>จุดเช็คอินถ่ายรูปสวย ที่นั่งอ่านหนังสือเงียบๆ หรือสถานที่แฮงเอาต์หลังเลิกเรียนติด BTS</p>
+            </div>
+            <div class="feature-card reveal" style="transition-delay: 0.2s;">
+                <div class="feature-icon"><i class="fa-solid fa-fire"></i></div>
+                <h3>COMMUNITY</h3>
+                <p>อ่านรีวิวจากเพื่อนๆ ศรีปทุมโดยตรง ไม่มีหน้าม้า พร้อมระบบแชร์พิกัดเด็ดที่คุณค้นพบ</p>
+            </div>
+        </div>
+
+        <div class="enter-wrapper reveal" style="transition-delay: 0.3s;">
+            <a href="index.html" class="btn-enter">
+                START JOURNEY
+            </a>
+        </div>
+
+    </section>
+
+    
+
+    <div id="transitionOverlay" class="transition-overlay"></div>
+
+    <footer style="text-align: center; padding: 30px 20px; color: #475569; font-size: 14px; background: #050505; border-top: 1px solid #1e293b;">
+        © 2026 BLOOM Project. คู่มือเอาตัวรอดฉบับเด็กศรีปทุม.<br>
+        <span style="font-size: 12px; opacity: 0.7;">Made with <i class="fa-solid fa-heart" style="color: #EA98A9;"></i> by SPU Students</span>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ระบบเลื่อนจอสมูทเมื่อกดปุ่ม EXPLORE
+            document.querySelector('.scroll-indicator').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('#explore').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // ระบบ Fade In ตอนเลื่อนหน้าจอ
+            const reveals = document.querySelectorAll('.reveal');
+            function reveal() {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 150;
+                reveals.forEach(el => {
+                    const elementTop = el.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        el.classList.add('active');
+                    }
+                });
+            }
+            window.addEventListener('scroll', reveal);
+            reveal(); // โหลดครั้งแรกให้เช็คเลย
+        });
+
+        // ระบบเปลี่ยนหน้าต่าง (Fade Transition)
+            const enterBtn = document.querySelector('.btn-enter');
+            const transitionOverlay = document.getElementById('transitionOverlay');
+
+            if (enterBtn) {
+                enterBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // หยุดการตัดหน้าจอแบบกระชาก
+                    const targetUrl = this.getAttribute('href');
+                    
+                    // เฟดหน้าจอเป็นสีขาว
+                    transitionOverlay.classList.add('active');
+                    
+                    // รอให้เฟดเสร็จ (800ms) แล้วค่อยวาร์ปเข้าเว็บหลัก
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 800);
+                });
+            }
+
+    </script>
+    
+</body>
+</html>
