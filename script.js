@@ -1112,8 +1112,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================
     // =========================================================
 
-    // เรียกให้หน้าเว็บโหลดเป็นหน้าหลักเสมอ
-    showHomePage();
+    // 🟢 ตรวจสอบว่ามี # แนบมากับลิงก์หรือไม่ (เพื่อเปิดหมวดหมู่ทันที)
+    const currentHash = window.location.hash;
+    
+    if (currentHash === '#location-section-tour') {
+        showSection(sections.tour, currentHash);
+    } else if (currentHash === '#location-section-restaurant') {
+        showSection(sections.dining, currentHash);
+    } else if (currentHash === '#community-section') {
+        showSection(sections.community, currentHash);
+        loadCommunityFeed();
+    } else if (currentHash === '#about-section') {
+        showSection(sections.about, currentHash);
+    } else if (currentHash === '#contact-section') {
+        showSection(sections.contact, currentHash);
+    } else {
+        // ถ้าไม่มี # แนบมา ค่อยแสดงหน้าแรกสุด (Hero)
+        showHomePage();
+    }
 
     // ตัวดักฟังการคลิกนอกกรอบ Modal ทั้งหมด (รวมไว้ที่เดียวเพื่อไม่ให้โค้ดตีกัน)
     window.addEventListener('click', (e) => {
