@@ -23,9 +23,9 @@
 
     /* --- Spacing & Dimensions --- */
     --header-height: 80px;
-    --border-radius-card: 24px;
+    --border-radius-card: 12px;
     /* เพิ่มความโค้งมน */
-    --border-radius-btn: 50px;
+    --border-radius-btn: 10px;
 }
 
 /* =========================================
@@ -339,7 +339,7 @@ ul {
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     padding: 10px 20px;
-    border-radius: 15px;
+    border-radius: 8px;
     backdrop-filter: blur(5px);
 }
 
@@ -443,7 +443,7 @@ ul {
     cursor: pointer;
     background: white;
     padding: 12px 25px;
-    border-radius: 50px;
+    border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
@@ -467,7 +467,7 @@ ul {
     border: none;
     background: white;
     color: var(--color-text-muted);
-    border-radius: 50px;
+    border-radius: 10px;
     font-family: var(--font-body);
     font-size: 15px;
     cursor: pointer;
@@ -705,7 +705,7 @@ ul {
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: inline-block;
     padding: 6px 15px;
-    border-radius: 50px;
+    border-radius: 10px;
 }
 
 .card-arrow,
@@ -739,7 +739,7 @@ ul {
 
 .about-image img {
     width: 100%;
-    border-radius: 30px;
+    border-radius: 12px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 2;
@@ -757,7 +757,7 @@ ul {
     width: 100%;
     height: 100%;
     border: 3px solid var(--color-cyan);
-    border-radius: 30px;
+    border-radius: 12px;
     z-index: 1;
     opacity: 0.5;
 }
@@ -800,7 +800,7 @@ ul {
 .price-tag {
     background-color: var(--color-yellow);
     padding: 2px 10px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-weight: 700;
     font-size: 0.9em;
     color: #555;
@@ -873,7 +873,7 @@ ul {
 .mission-card {
     background: white;
     padding: 50px 30px;
-    border-radius: 30px;
+    border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
     transition: all 0.4s ease;
     border: 1px solid rgba(0, 0, 0, 0.03);
@@ -995,7 +995,7 @@ ul {
 .cta-box {
     background: linear-gradient(120deg, var(--color-blue), var(--color-cyan));
     padding: 60px;
-    border-radius: 30px;
+    border-radius: 12px;
     color: white;
     box-shadow: 0 20px 50px rgba(0, 133, 227, 0.3);
     position: relative;
@@ -1048,7 +1048,7 @@ ul {
     width: 100%;
     max-width: 1100px;
     background: white;
-    border-radius: 30px;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
 }
@@ -1203,7 +1203,7 @@ ul {
     width: 100%;
     padding: 16px;
     border: 2px solid #f1f5f9;
-    border-radius: 15px;
+    border-radius: 8px;
     font-family: var(--font-body);
     font-size: 16px;
     transition: 0.3s;
@@ -1257,7 +1257,7 @@ ul {
 .modal-content {
     background: rgba(255, 255, 255, 0.95);
     color: var(--color-text);
-    border-radius: 24px;
+    border-radius: 12px;
     padding: 40px;
     max-width: 600px;
     width: 100%;
@@ -1297,7 +1297,7 @@ ul {
     width: 100%;
     height: 350px;
     object-fit: cover;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: #eee;
     display: block;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
@@ -1317,7 +1317,7 @@ ul {
     object-fit: cover;
     cursor: pointer;
     opacity: 0.6;
-    border-radius: 12px;
+    border-radius: 6px;
     border: 2px solid transparent;
     transition: 0.3s;
 }
@@ -1336,7 +1336,7 @@ ul {
     background: #e0f2fe;
     color: var(--color-blue);
     padding: 6px 14px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-size: 0.9em;
     margin-right: 8px;
     font-weight: 600;
@@ -1346,7 +1346,7 @@ ul {
 
 .modal-info-grid {
     background: #f8fafc;
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 20px;
     margin-top: 20px;
     border: 1px solid #e2e8f0;
@@ -1404,7 +1404,7 @@ ul {
     background: #f8fafc;
     border: 2px solid #e2e8f0;
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-family: var(--font-body);
     transition: 0.3s;
 }
@@ -1433,7 +1433,7 @@ ul {
     font-family: var(--font-head);
     font-weight: 700;
     cursor: pointer;
-    border-radius: 50px;
+    border-radius: 10px;
     font-size: 16px;
     transition: 0.3s;
 }
@@ -1454,7 +1454,7 @@ ul {
 .review-item {
     background: white;
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 8px;
     margin-bottom: 15px;
     display: flex;
     gap: 15px;
@@ -1599,7 +1599,7 @@ ul {
     background-color: #f1f5f9;
     color: var(--color-text-muted);
     padding: 8px 16px;
-    border-radius: 30px;
+    border-radius: 10px;
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1642,7 +1642,7 @@ ul {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     padding: 50px;
-    border-radius: 30px;
+    border-radius: 12px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
     text-align: center;
     margin-bottom: 50px;
@@ -1707,7 +1707,7 @@ ul {
 .info-sidebar {
     background: white;
     padding: 35px;
-    border-radius: 20px;
+    border-radius: 10px;
     height: fit-content;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     position: sticky;
@@ -1738,7 +1738,7 @@ ul {
 }
 
 .menu-item {
-    border-radius: 20px;
+    border-radius: 10px;
     overflow: hidden;
     height: 220px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
@@ -1852,7 +1852,7 @@ ul {
     backdrop-filter: blur(10px);
     padding: 6px 6px 6px 18px;
     /* ทำรูปทรงแคปซูล */
-    border-radius: 50px;
+    border-radius: 10px;
     border: 1px solid rgba(0, 133, 227, 0.1);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     animation: fadeInDown 0.4s ease;
@@ -1895,7 +1895,7 @@ ul {
     font-family: var(--font-head);
     font-size: 12px;
     font-weight: 700;
-    border-radius: 50px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     letter-spacing: 0.5px;
@@ -1959,7 +1959,7 @@ ul {
     backdrop-filter: blur(10px);
     border-left: 6px solid var(--color-cyan);
     padding: 16px 25px;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     color: var(--color-text);
     font-family: var(--font-head);
@@ -2039,7 +2039,7 @@ ul {
     flex: 1;
     padding: 12px;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-family: var(--font-head);
     font-weight: 600;
     font-size: 14px;
@@ -2112,7 +2112,7 @@ ul {
 
 .feed-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 8px;
     margin-bottom: 15px; /* มือถือใช้ 15px */
     break-inside: avoid; /* ป้องกันการ์ดโดนตัดครึ่ง */
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -2340,7 +2340,7 @@ ul {
 .custom-select {
     width: 100%;
     padding: 12px;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 2px solid #e2e8f0;
     font-family: var(--font-body);
     font-size: 16px;
