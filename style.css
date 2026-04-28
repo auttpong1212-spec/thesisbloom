@@ -257,11 +257,11 @@ ul {
     left: 50%;
     width: 100vw;
     height: 100vh;
-    transform: translate(-50%, -50%) scale(1.15); 
+    transform: translate(-50%, -50%) scale(1.15);
     z-index: -2;
     object-fit: cover;
     /* 🟢 เพิ่มบรรทัดนี้เพื่อดึงภาพให้คมและสีสดขึ้น */
-    filter: contrast(1.15) saturate(1.3); 
+    filter: contrast(1.15) saturate(1.3);
 }
 
 .hero-overlay {
@@ -1249,9 +1249,11 @@ ul {
     width: 100%;
     height: 100%;
     justify-content: center;
-    align-items: flex-start; /* 🟢 เปลี่ยนเป็น flex-start ไม่ให้ทะลุขอบบน */
+    align-items: flex-start;
+    /* 🟢 เปลี่ยนเป็น flex-start ไม่ให้ทะลุขอบบน */
     overflow-y: auto;
-    padding: 60px 20px; /* 🟢 เพิ่มระยะห่างด้านบน 60px ให้มีพื้นที่หายใจ */
+    padding: 60px 20px;
+    /* 🟢 เพิ่มระยะห่างด้านบน 60px ให้มีพื้นที่หายใจ */
 }
 
 .modal-content {
@@ -1265,7 +1267,8 @@ ul {
     font-family: var(--font-body);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    margin: auto; /* 🟢 เพิ่มบรรทัดนี้ครับ */
+    margin: auto;
+    /* 🟢 เพิ่มบรรทัดนี้ครับ */
 }
 
 .modal-title {
@@ -1694,8 +1697,10 @@ ul {
     font-size: 16px;
     line-height: 1.8;
     color: #475569;
-    text-align: left; /* บังคับชิดซ้ายเพื่อไม่ให้ช่องไฟห่างเกินไป */
-    word-break: normal; /* ให้เบราว์เซอร์ตัดคำไทยตามหลักพจนานุกรม */
+    text-align: left;
+    /* บังคับชิดซ้ายเพื่อไม่ให้ช่องไฟห่างเกินไป */
+    word-break: normal;
+    /* ให้เบราว์เซอร์ตัดคำไทยตามหลักพจนานุกรม */
     overflow-wrap: normal;
 }
 
@@ -1764,21 +1769,21 @@ ul {
 }
 
 
-    .content-grid {
-        grid-template-columns: 1fr;
-    }
+.content-grid {
+    grid-template-columns: 1fr;
+}
 
-    .detail-title {
-        font-size: 36px;
-    }
+.detail-title {
+    font-size: 36px;
+}
 
-    .detail-container {
-        margin-top: -60px;
-    }
+.detail-container {
+    margin-top: -60px;
+}
 
-    .detail-header-card {
-        padding: 30px 20px;
-    }
+.detail-header-card {
+    padding: 30px 20px;
+}
 
 
 /* --- Active State Menu --- */
@@ -2055,30 +2060,31 @@ ul {
     background: #fff;
     color: #475569;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .google-btn:hover {
     background: #f8fafc;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .facebook-btn {
     background: #1877f2;
     color: white;
-    box-shadow: 0 2px 5px rgba(24,119,242,0.2);
+    box-shadow: 0 2px 5px rgba(24, 119, 242, 0.2);
 }
 
 .facebook-btn:hover {
     background: #166fe5;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(24,119,242,0.3);
+    box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3);
 }
 
 @media (max-width: 992px) {
     .content-grid {
-        grid-template-columns: 1fr; /* บังคับให้เมนูด้านขวา ตกลงมาอยู่ด้านล่างเมื่อจอแคบ */
+        grid-template-columns: 1fr;
+        /* บังคับให้เมนูด้านขวา ตกลงมาอยู่ด้านล่างเมื่อจอแคบ */
         gap: 30px;
     }
 }
@@ -2098,14 +2104,16 @@ ul {
    COMMUNITY FEED (Lemon8 Style)
    ========================================= */
 .community-grid {
-    column-count: 2; /* แบ่ง 2 คอลัมน์บนมือถือ/แท็บเล็ต */
+    column-count: 2;
+    /* แบ่ง 2 คอลัมน์บนมือถือ/แท็บเล็ต */
     column-gap: 15px;
     padding: 0 10px;
 }
 
 @media (min-width: 992px) {
     .community-grid {
-        column-count: 4; /* แบ่ง 4 คอลัมน์บนจอคอม */
+        column-count: 4;
+        /* แบ่ง 4 คอลัมน์บนจอคอม */
         column-gap: 20px;
     }
 }
@@ -2113,21 +2121,25 @@ ul {
 .feed-card {
     background: white;
     border-radius: 8px;
-    margin-bottom: 15px; /* มือถือใช้ 15px */
-    break-inside: avoid; /* ป้องกันการ์ดโดนตัดครึ่ง */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    /* มือถือใช้ 15px */
+    break-inside: avoid;
+    /* ป้องกันการ์ดโดนตัดครึ่ง */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     transition: 0.3s;
     border: 1px solid #f1f5f9;
 }
 
 @media (min-width: 992px) {
-    .feed-card { margin-bottom: 20px; }
+    .feed-card {
+        margin-bottom: 20px;
+    }
 }
 
 .feed-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .feed-img {
@@ -2155,7 +2167,8 @@ ul {
     line-height: 1.6;
     margin-bottom: 12px;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* ตัดข้อความถ้ายาวเกิน 3 บรรทัด */
+    -webkit-line-clamp: 3;
+    /* ตัดข้อความถ้ายาวเกิน 3 บรรทัด */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -2167,7 +2180,10 @@ ul {
     cursor: pointer;
     transition: 0.2s;
 }
-.feed-text .hashtag:hover { text-decoration: underline; }
+
+.feed-text .hashtag:hover {
+    text-decoration: underline;
+}
 
 .feed-meta {
     display: flex;
@@ -2206,20 +2222,37 @@ ul {
     transition: 0.2s;
 }
 
-.like-btn:hover { color: var(--color-pink); }
-.like-btn.liked { color: var(--color-pink); }
-.like-btn.liked i { animation: heartBeat 0.3s ease-in-out; }
+.like-btn:hover {
+    color: var(--color-pink);
+}
+
+.like-btn.liked {
+    color: var(--color-pink);
+}
+
+.like-btn.liked i {
+    animation: heartBeat 0.3s ease-in-out;
+}
 
 @keyframes heartBeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* =========================================
    14. RESPONSIVE สำหรับมือถือ (รวมครบจบในอันเดียว 100%)
    ========================================= */
 @media (max-width: 768px) {
+
     /* --- 1. แถบเมนูด้านบน (Header & Hamburger Menu) --- */
     .header {
         padding: 15px 20px;
@@ -2227,7 +2260,7 @@ ul {
     }
 
     .menu-icon {
-        display: block !important; 
+        display: block !important;
         font-size: 28px;
         color: var(--color-blue);
     }
@@ -2248,23 +2281,39 @@ ul {
         z-index: 99;
     }
 
-    .nav.open { display: flex; }
-    .nav ul { flex-direction: column; gap: 25px; text-align: center; }
+    .nav.open {
+        display: flex;
+    }
+
+    .nav ul {
+        flex-direction: column;
+        gap: 25px;
+        text-align: center;
+    }
 
     /* --- 2. หน้าแรก (Hero Section & Logo) --- */
-    .hero-title { font-size: 42px; }
-    .hero-subtitle { font-size: 16px; }
-    .hero-container-ref { margin-top: 0; }
-    
-    .hero-logo-custom .logo-text { 
-        font-size: 50px; 
-        -webkit-text-stroke: 2px white; 
+    .hero-title {
+        font-size: 42px;
     }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .hero-container-ref {
+        margin-top: 0;
+    }
+
+    .hero-logo-custom .logo-text {
+        font-size: 50px;
+        -webkit-text-stroke: 2px white;
+    }
+
     .hero-logo-custom .logo-dot {
         height: 40px;
         width: 10px;
     }
-    
+
     .hero-bottom-features {
         flex-direction: column;
         gap: 15px;
@@ -2273,68 +2322,139 @@ ul {
     }
 
     /* --- 3. การ์ดร้านค้าและปุ่มฟิลเตอร์ --- */
-    .sections-container { padding: 100px 20px 80px; }
-    .custom-back-btn { top: 80px; left: 20px; }
-    .card-grid { grid-template-columns: 1fr; }
-    .filter-container { gap: 10px; }
-    .filter-btn { padding: 8px 16px; font-size: 13px; }
+    .sections-container {
+        padding: 100px 20px 80px;
+    }
+
+    .custom-back-btn {
+        top: 80px;
+        left: 20px;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-container {
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
 
     /* --- 4. หน้าต่าง Popup (Login, Profile, Details) --- */
-    .modal { padding: 20px 15px; }
-    .modal-content { padding: 25px 20px; }
-    .modal-title { font-size: 24px; }
-    .social-btn-group { flex-direction: column; }
-    .modal-gallery .main-image { height: 200px; }
-    .modal-buttons { flex-direction: column; gap: 15px; }
-    .profile-stats { gap: 20px !important; }
-    .review-item { flex-direction: column; align-items: flex-start; }
+    .modal {
+        padding: 20px 15px;
+    }
+
+    .modal-content {
+        padding: 25px 20px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .social-btn-group {
+        flex-direction: column;
+    }
+
+    .modal-gallery .main-image {
+        height: 200px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .profile-stats {
+        gap: 20px !important;
+    }
+
+    .review-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
     /* --- 5. หน้า About & Contact --- */
-    .about-intro-block { flex-direction: column; text-align: center; gap: 40px; }
-    .image-decoration { left: 15px; top: 15px; }
-    .about-slogan { font-size: 28px; }
-    .contact-card-modern { flex-direction: column; }
-    .contact-info-panel, .contact-form-panel { padding: 30px 20px; }
-    .form-row { flex-direction: column; gap: 0; }
-    .circle-deco-1, .circle-deco-2 { display: none; }
-    .send-btn { width: 100%; justify-content: center; }
+    .about-intro-block {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .image-decoration {
+        left: 15px;
+        top: 15px;
+    }
+
+    .about-slogan {
+        font-size: 28px;
+    }
+
+    .contact-card-modern {
+        flex-direction: column;
+    }
+
+    .contact-info-panel,
+    .contact-form-panel {
+        padding: 30px 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .circle-deco-1,
+    .circle-deco-2 {
+        display: none;
+    }
+
+    .send-btn {
+        width: 100%;
+        justify-content: center;
+    }
 
     /* --- 6. หน้า Detail ร้านค้า (ดึงข้อมูลมาจากหน้า Details) --- */
-    .content-grid { grid-template-columns: 1fr; }
-    .detail-title { font-size: 36px; }
-    .detail-container { margin-top: -60px; }
-    .detail-header-card { padding: 30px 20px; }
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-title {
+        font-size: 36px;
+    }
+
+    .detail-container {
+        margin-top: -60px;
+    }
+
+    .detail-header-card {
+        padding: 30px 20px;
+    }
 
     /* --- 7. Footer --- */
-    .footer-content-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-    .footer-brand { align-items: center; }
-    .footer-slogan { text-align: center; margin: 15px auto; }
-    .footer-links ul li a:hover { transform: none; }
-}
+    .footer-content-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+    }
 
-/* 🟢 ปุ่มลอยสำหรับโพสต์รีวิว */
-.floating-post-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 100px; /* วางไว้ข้างๆ ปุ่ม Back to Top */
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, var(--color-pink), var(--color-blue));
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(234, 152, 169, 0.4);
-    z-index: 998;
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .footer-brand {
+        align-items: center;
+    }
 
-.floating-post-btn:hover {
-    transform: scale(1.1) rotate(90deg);
+    .footer-slogan {
+        text-align: center;
+        margin: 15px auto;
+    }
+
+    .footer-links ul li a:hover {
+        transform: none;
+    }
 }
 
 .custom-select {
@@ -2348,10 +2468,6 @@ ul {
 }
 
 @media (max-width: 768px) {
-    .floating-post-btn {
-        right: 20px;
-        bottom: 90px; /* หลบปุ่ม Back to Top บนมือถือ */
-    }
 
     /* 🟢 1. ทำให้ปุ่ม Filter ปัดซ้าย-ขวาได้ (Swipeable) */
     .filter-container {
@@ -2359,37 +2475,243 @@ ul {
         overflow-x: auto;
         justify-content: flex-start !important;
         padding-bottom: 10px;
-        -webkit-overflow-scrolling: touch; /* ให้ปัดลื่นๆ บน iOS */
+        -webkit-overflow-scrolling: touch;
+        /* ให้ปัดลื่นๆ บน iOS */
     }
-    
+
     /* ซ่อนหลอด Scrollbar แนวนอนเพื่อความสวยงาม */
     .filter-container::-webkit-scrollbar {
         display: none;
     }
-    
+
     .filter-btn {
-        white-space: nowrap; /* บังคับไม่ให้ข้อความในปุ่มฉีกขาด */
-        flex-shrink: 0; /* ป้องกันปุ่มโดนบีบจนเบี้ยว */
+        white-space: nowrap;
+        /* บังคับไม่ให้ข้อความในปุ่มฉีกขาด */
+        flex-shrink: 0;
+        /* ป้องกันปุ่มโดนบีบจนเบี้ยว */
     }
 
     /* 🟢 2. ลดความสูงแผนที่บนมือถือ ป้องกันนิ้วติด */
     .map-container {
-        height: 280px !important; 
+        height: 280px !important;
     }
-    
+
     /* ปรับวงกลมเส้นปะสีชมพูให้เล็กลงตามแผนที่ */
-    .map-container > div {
+    .map-container>div {
         width: 200px !important;
         height: 200px !important;
     }
 
     /* 🟢 3. ขยับปุ่มกากบาทและขอบ Modal ให้กดง่ายขึ้น */
     .modal {
-        padding: 40px 15px 20px; /* ลดขอบบนลง ไม่ให้ติดติ่งรูกล้องมือถือ */
+        padding: 40px 15px 20px;
+        /* ลดขอบบนลง ไม่ให้ติดติ่งรูกล้องมือถือ */
     }
+
     .close-btn {
-        font-size: 36px; /* ขยายปุ่ม X ให้ใหญ่ขึ้นกดยาก */
+        font-size: 36px;
+        /* ขยายปุ่ม X ให้ใหญ่ขึ้นกดยาก */
         margin-top: -10px;
         margin-right: -5px;
+    }
+}
+
+/* 🟢 ปุ่มลบโพสต์ในหน้า Community */
+.delete-post-btn {
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+    padding: 0 5px;
+}
+
+.delete-post-btn:hover {
+    color: #ff4757;
+    /* เปลี่ยนเป็นสีแดงตอนเอาเมาส์ชี้ */
+    transform: scale(1.1);
+}
+
+.custom-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    background: #f8fafc;
+    outline: none;
+    transition: 0.3s;
+}
+
+.custom-input:focus {
+    border-color: var(--color-cyan);
+    background: white;
+}
+
+/* =========================================
+   AUTO CHATBOT WIDGET STYLES
+   ========================================= */
+.chat-widget-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 100px;
+    /* วางหลบปุ่มเลื่อนขึ้นบนสุด */
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-blue), var(--color-cyan));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 133, 227, 0.3);
+    z-index: 999;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-widget-btn:hover {
+    transform: scale(1.1) translateY(-5px);
+}
+
+.chat-widget-window {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    /* ซ่อนไว้ก่อน */
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    font-family: var(--font-body);
+}
+
+.chat-header {
+    background: linear-gradient(to right, var(--color-blue), var(--color-cyan));
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: var(--color-blue);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.close-chat-btn {
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close-chat-btn:hover {
+    transform: scale(1.2);
+}
+
+.chat-body {
+    height: 350px;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bot-message,
+.user-message {
+    max-width: 80%;
+    padding: 12px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.bot-message {
+    background: white;
+    color: var(--color-text);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.user-message {
+    background: var(--color-blue);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 133, 227, 0.2);
+}
+
+.chat-footer {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+.chat-footer input {
+    flex: 1;
+    border: 2px solid #f1f5f9;
+    outline: none;
+    padding: 10px 15px;
+    background: #f8fafc;
+    border-radius: 20px;
+    font-family: var(--font-body);
+    transition: 0.3s;
+}
+
+.chat-footer input:focus {
+    border-color: var(--color-cyan);
+    background: white;
+}
+
+.chat-footer button {
+    background: var(--color-blue);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+.chat-footer button:hover {
+    background: var(--color-cyan);
+    transform: scale(1.05);
+}
+
+/* ปรับให้พอดีหน้าจอมือถือ */
+@media (max-width: 768px) {
+    .chat-widget-btn {
+        right: 20px;
+        bottom: 100px;
+    }
+
+    .chat-widget-window {
+        width: calc(100% - 40px);
+        bottom: 170px;
+        right: 20px;
+        height: 450px;
     }
 }

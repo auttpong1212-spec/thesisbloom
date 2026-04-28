@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function hideAll() {
         Object.values(sections).flat().forEach(el => { if (el) el.style.display = 'none'; });
-        
+
         // 🟢 เพิ่มบรรทัดนี้ เพื่อสั่งซ่อนหน้า Community ด้วยเวลากลับหน้าหลัก
         document.querySelectorAll('.sections-container').forEach(sec => sec.style.display = 'none');
     }
@@ -263,11 +263,11 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (id === '#location-section-restaurant') { e.preventDefault(); showSection(sections.dining, id); }
             else if (id === '#contact-section') { e.preventDefault(); showSection(sections.contact, id); }
             else if (id === '#about-section') { e.preventDefault(); showSection(sections.about, id); }
-            else if (id === '#community-section') { 
+            else if (id === '#community-section') {
                 // 🟢 ระบบสลับไปหน้า Community แบบเต็มจอ
-                e.preventDefault(); 
-                showSection(sections.community, id); 
-                loadCommunityFeed(); 
+                e.preventDefault();
+                showSection(sections.community, id);
+                loadCommunityFeed();
             }
             else {
                 const target = document.querySelector(id);
@@ -384,11 +384,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- PHOTO UPLOAD LOGIC & COMPRESSION ---
     // 🟢 ระบบย่อขนาดรูปภาพอัตโนมัติ ไม่ให้เกินขีดจำกัดของ Firebase (1MB)
-    window.compressImage = function(file, callback) {
+    window.compressImage = function (file, callback) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             const img = new Image();
-            img.onload = function() {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 800; // บังคับกว้างสูงสุด
                 const MAX_HEIGHT = 800;
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const file = e.target.files[0];
             if (file) {
                 // 🟢 เรียกใช้ฟังก์ชันย่อรูปก่อน
-                compressImage(file, function(compressedBase64) {
+                compressImage(file, function (compressedBase64) {
                     selectedImageData = compressedBase64;
                     photoPreview.src = selectedImageData;
                     photoPreviewContainer.style.display = 'block';
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function openReviews() {
         if (!reviewModal) return;
         document.getElementById('reviewTargetName').textContent = currentReviewTarget;
-        
+
         // ขึ้นข้อความโหลดรอไว้ก่อน
         reviewList.innerHTML = '<p style="text-align:center; padding: 20px;">กำลังโหลดรีวิว...</p>';
         reviewModal.style.display = 'flex';
@@ -506,12 +506,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             // ดึงข้อมูลรีวิวของร้านนี้จาก Firebase
-            const snapshot = await firebase.firestore().collection('reviews')
+            const snapshot = await firebase.firestore().collection('shop_reviews')
                 .where('shopId', '==', actualShopId)
                 .get();
 
             reviewList.innerHTML = '';
-            
+
             // ถ้าร้านนี้ยังไม่มีใครรีวิว
             if (snapshot.empty) {
                 reviewList.innerHTML = '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีรีวิวสำหรับสถานที่นี้ มารีวิวคนแรกกันเถอะ!</p>';
@@ -526,10 +526,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // สร้างการ์ดรีวิวโชว์บนหน้าจอ
             reviewsArray.forEach(r => {
                 const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                
+
                 // แปลงวันที่ให้อ่านง่ายขึ้น
                 const d = new Date(r.date);
-                const dateStr = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                const dateStr = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 
                 const reviewImgHtml = r.reviewImage
                     ? `<img src="${r.reviewImage}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid #eee;">`
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================
     const reviewStars = document.querySelectorAll('.write-review-section .star-rating-input i');
     reviewStars.forEach(star => {
-        star.addEventListener('click', function() {
+        star.addEventListener('click', function () {
             currentRating = parseInt(this.getAttribute('data-value'));
             reviewStars.forEach(s => {
                 const v = parseInt(s.getAttribute('data-value'));
@@ -600,28 +600,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
+                // 🟢 ดึงรูปโปรไฟล์ล่าสุดจาก Firestore ก่อนโพสต์
+                let currentAvatar = user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`;
+                const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().profileImage) {
+                    currentAvatar = userDoc.data().profileImage;
+                }
+
                 const newReview = {
                     shopId: actualShopId,
                     name: user.displayName || 'Student',
-                    avatar: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+                    avatar: currentAvatar, // 🟢 เปลี่ยนมาใช้ตัวแปรนี้แทน
                     rating: currentRating,
                     text: text,
                     date: new Date().toISOString(),
-                    reviewImage: selectedImageData, 
+                    reviewImage: selectedImageData,
                     userId: user.uid,
-                    likedBy: [] 
+                    likedBy: []
                 };
 
                 // ส่งข้อมูลขึ้น Firebase
-                await firebase.firestore().collection('reviews').add(newReview);
+                await firebase.firestore().collection('shop_reviews').add(newReview);
                 showToast('โพสต์รีวิวสำเร็จ!', 'success');
-                
+
                 // เคลียร์ฟอร์มให้ว่าง
                 document.getElementById('newReviewText').value = '';
                 reviewStars.forEach(s => s.className = 'fa-regular fa-star');
                 currentRating = 0;
                 if (removePhotoBtn) removePhotoBtn.click();
-                
+
                 // โหลดข้อมูลรีวิวมาแสดงใหม่ทันที
                 openReviews();
 
@@ -661,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    
+
 
     function closeModal(m) { if (m) m.style.display = 'none'; document.body.style.overflow = 'auto'; }
     if (detailClose) detailClose.addEventListener('click', () => closeModal(detailModal));
@@ -718,6 +725,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Error fetching user data:", error);
             }
 
+            // โชว์ปุ่มสร้างโพสต์เมื่อล็อกอิน
+            const postBtn = document.getElementById('communityPostAction');
+            if (postBtn) postBtn.style.display = 'block';
+
             const userIcon = photoUrl
                 ? `<img src="${photoUrl}" class="header-avatar" alt="Profile">`
                 : `<i class="fa-solid fa-circle-user"></i>`;
@@ -738,6 +749,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // 🟢 เคลียร์หัวใจออกจากหน้าจอเมื่อไม่มีคนล็อกอิน
             favorites = [];
             updateFavoriteUI();
+
+            // ซ่อนปุ่มสร้างโพสต์เมื่อไม่ได้ล็อกอิน
+            const postBtn = document.getElementById('communityPostAction');
+            if (postBtn) postBtn.style.display = 'none';
 
             if (accountLi) {
                 accountLi.innerHTML = `<a href="#" id="accountToggle" style="display: flex; align-items: center;"><i class="fa-regular fa-user"></i></a>`;
@@ -1054,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // 5. สั่งให้อัปเดต UI และรีวิวเก่า
                 syncNewProfileWithOldReviews(user.uid, newName, finalAvatar);
-                
+
                 document.getElementById('profileModal').style.display = 'none';
                 checkLoginStatus(); // อัปเดตมุมขวาบนให้เป็นรูปใหม่ทันที
 
@@ -1074,10 +1089,10 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("เริ่มการ Sync ข้อมูลโปรไฟล์ไปยังรีวิวเก่า...");
         try {
             const reviewsRef = firebase.firestore().collection('reviews');
-            
+
             // 1. ค้นหารีวิวทั้งหมดที่โพสต์โดยผู้ใช้คนนี้ (userId)
             const snapshot = await reviewsRef.where('userId', '==', userId).get();
-            
+
             // ถ้ายูสเซอร์นี้ยังไม่เคยรีวิวอะไรเลย ก็ไม่ต้องทำอะไรต่อ
             if (snapshot.empty) {
                 console.log("ไม่พบรีวิวเก่าที่ต้อง Sync");
@@ -1086,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 2. ใช้ WriteBatch ของ Firestore เพื่ออัปเดตหลายๆ ใบพร้อมกัน (ประหยัดค่าใช้จ่าย)
             const batch = firebase.firestore().batch();
-            
+
             snapshot.forEach(doc => {
                 // บันทึกคำสั่งอัปเดต Name และ Avatar เข้าไปใน Batch
                 batch.update(doc.ref, {
@@ -1114,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 🟢 ตรวจสอบว่ามี # แนบมากับลิงก์หรือไม่ (เพื่อเปิดหมวดหมู่ทันที)
     const currentHash = window.location.hash;
-    
+
     if (currentHash === '#location-section-tour') {
         showSection(sections.tour, currentHash);
     } else if (currentHash === '#location-section-restaurant') {
@@ -1280,11 +1295,11 @@ const shopDatabase = {
         info: { hours: "09:00 - 18:00 (Sat-Sun)", price: "100 - 500 THB", phone: "02-272-4440", location: "ตลาดนัดจตุจักร" }
     },
     "airforce_museum": {
-    title: "พิพิธภัณฑ์กองทัพอากาศ", subtitle: "Vintage Photo Spot", heroImage: "Im/airforce1.jpg",
-    history: "<p>แหล่งเช็คอินสุดคลาสสิกใกล้ ม. เดินทางด้วย BTS มาลงหน้าพิพิธภัณฑ์ได้เลย มีเครื่องบินรุ่นเก่าให้ถ่ายรูปฟีลเท่ๆ เพียบ!</p>",
-    menuImages: ["Im/airforce2.jpg", "Im/airforce3.jpg"],
-    info: { hours: "09:00 - 15:30 (ปิด จ.)", price: "Free", phone: "02-534-1853", location: "BTS พิพิธภัณฑ์กองทัพอากาศ" }
-},
+        title: "พิพิธภัณฑ์กองทัพอากาศ", subtitle: "Vintage Photo Spot", heroImage: "Im/airforce1.jpg",
+        history: "<p>แหล่งเช็คอินสุดคลาสสิกใกล้ ม. เดินทางด้วย BTS มาลงหน้าพิพิธภัณฑ์ได้เลย มีเครื่องบินรุ่นเก่าให้ถ่ายรูปฟีลเท่ๆ เพียบ!</p>",
+        menuImages: ["Im/airforce2.jpg", "Im/airforce3.jpg"],
+        info: { hours: "09:00 - 15:30 (ปิด จ.)", price: "Free", phone: "02-534-1853", location: "BTS พิพิธภัณฑ์กองทัพอากาศ" }
+    },
     "chatuchak_park": {
         title: "สวนจตุจักร (Chatuchak Park)", subtitle: "Green Space", heroImage: "Im/ChatuchakPark1.jpg",
         history: "<p>พื้นที่สีเขียวขนาดใหญ่ติด BTS เป็นปอดของคนกรุงเทพฯ กิจกรรมยอดฮิตคือการมาเช่าเสื่อปิกนิก ปั่นจักรยาน หรือวิ่งออกกำลังกายรับลมในช่วงเย็น</p>",
@@ -1297,13 +1312,13 @@ const shopDatabase = {
         menuImages: ["Im/เซ็นทรัลลาดพร้าว2.jpg", "Im/เซ็นทรัลลาดพร้าว3.jpg", "Im/เซ็นทรัลลาดพร้าว4.jpg"],
         info: { hours: "10:00 - 22:00", price: "Varied", phone: "02-793-6000", location: "BTS ห้าแยกลาดพร้าว" }
     },
-"yingcharoen": {
-    title: "ตลาดยิ่งเจริญ", subtitle: "Street Food Haven", heroImage: "Im/market1.jpg",
-    history: "<p>ตลาดยอดฮิตของชาวสะพานใหม่-บางเขน มีโซน Food Court ที่รวมของอร่อยราคาประหยัดไว้เพียบ เปิดตลอด 24 ชั่วโมง!</p>",
-    menuImages: ["Im/market2.jpg"],
-    info: { hours: "24 Hours", price: "40 - 100 THB", phone: "-", location: "BTS สะพานใหม่" }
-},
-"jodd_fairs": {
+    "yingcharoen": {
+        title: "ตลาดยิ่งเจริญ", subtitle: "Street Food Haven", heroImage: "Im/market1.jpg",
+        history: "<p>ตลาดยอดฮิตของชาวสะพานใหม่-บางเขน มีโซน Food Court ที่รวมของอร่อยราคาประหยัดไว้เพียบ เปิดตลอด 24 ชั่วโมง!</p>",
+        menuImages: ["Im/market2.jpg"],
+        info: { hours: "24 Hours", price: "40 - 100 THB", phone: "-", location: "BTS สะพานใหม่" }
+    },
+    "jodd_fairs": {
         title: "JODD FAIRS แดนเนรมิต", subtitle: "Night Market & Castle", heroImage: "Im/JODDFAIRS1.avif",
         history: "<p>ตลาดนัดกลางคืนสุดชิค โดยยังคงรักษา 'ปราสาทสไตล์ยุโรป' ไว้เป็นฉากหลัง มีโซนให้นั่งชิลฟีลลิ่งแคมป์ปิ้ง และรวบรวมร้าน Street Food ชื่อดังไว้มากมาย</p>",
         menuImages: ["Im/JODDFAIRS2.jpg", "Im/JODDFAIRS3.jpg", "Im/JODDFAIRS4.jpg"],
@@ -1363,6 +1378,14 @@ window.loadShopDetails = function (shopId) {
                             ${galleryHTML}
                         </div>
                     </div>
+                    
+                    <div class="reviews-section" style="margin-top:40px; border-top: 1px solid #e2e8f0; padding-top: 30px;">
+                        <h3><i class="fa-solid fa-comments"></i> รีวิวจากเพื่อนๆ</h3>
+                        <div id="shopReviewsContainer">
+                            <p style="text-align:center; color:#94a3b8;">กำลังโหลดรีวิว...</p>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="sidebar">
                     <div class="info-sidebar">
@@ -1378,6 +1401,8 @@ window.loadShopDetails = function (shopId) {
             </div>
         </div>
     `;
+    // เรียกใช้ฟังก์ชันดึงรีวิวที่เราเพิ่งเขียนไปด้านบน
+    loadReviewsForShop(shopId);
 };
 
 // ============================================================
@@ -1389,8 +1414,8 @@ async function loadCommunityFeed(hashtagFilter = null) {
     const feedGrid = document.getElementById('communityFeedGrid');
     const alertBox = document.getElementById('hashtagFilterAlert');
     const hashtagText = document.getElementById('currentHashtagText');
-    
-    if(!feedGrid) return;
+
+    if (!feedGrid) return;
     feedGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">กำลังโหลดฟีด...</p>';
 
     // จัดการปุ่ม Filter
@@ -1405,38 +1430,44 @@ async function loadCommunityFeed(hashtagFilter = null) {
         // ดึงรีวิวทั้งหมด เรียงตามวันที่ล่าสุด
         const snapshot = await firebase.firestore().collection('reviews')
             .orderBy('date', 'desc').get();
-        
+
         let feedHTML = '';
         const currentUserId = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
 
         snapshot.forEach(doc => {
             const data = doc.data();
             const reviewId = doc.id;
-            
+
             // ถ้าระบุ Hashtag ให้ข้ามรีวิวที่ไม่มีคำนั้นไป
             if (hashtagFilter && !data.text.includes(hashtagFilter)) return;
 
             // ตกแต่งข้อความ: เปลี่ยนคำที่มี # ให้กลายเป็นปุ่มกดได้ (รองรับภาษาไทยและอังกฤษ)
             // ใช้ Regex จับคำที่ขึ้นต้นด้วย #
-            const formattedText = data.text.replace(/#([A-Za-z0-9_\u0E00-\u0E7F]+)/g, 
+            const formattedText = data.text.replace(/#([A-Za-z0-9_\u0E00-\u0E7F]+)/g,
                 '<span class="hashtag" onclick="loadCommunityFeed(\'#$1\')">#$1</span>');
 
-            const shopName = shopDatabase[data.shopId] ? shopDatabase[data.shopId].title : 'ร้านลับ';
+            const shopName = data.shopName || (data.shopId ? (shopDatabase[data.shopId]?.title || 'ร้านค้าทั่วไป') : 'ทั่วไป');
             const likesCount = data.likedBy ? data.likedBy.length : 0;
             const isLiked = data.likedBy && currentUserId && data.likedBy.includes(currentUserId);
             const likeClass = isLiked ? 'liked' : '';
             const heartIcon = isLiked ? 'fa-solid' : 'fa-regular';
+            // 🟢 เช็คว่าคนที่ล็อกอินอยู่ คือเจ้าของโพสต์นี้หรือไม่
+            const isOwner = currentUserId === data.userId;
+            const deleteBtnHtml = isOwner ? `<button class="delete-post-btn" onclick="window.deleteReview('${reviewId}')" title="ลบโพสต์นี้"><i class="fa-solid fa-trash-can"></i></button>` : '';
 
             // ถ้าไม่มีรูป ให้โชว์โลโก้สีเทาแทน
-            const imageRender = data.reviewImage 
-                ? `<img src="${data.reviewImage}" class="feed-img" alt="Review Image">` 
+            const imageRender = data.reviewImage
+                ? `<img src="${data.reviewImage}" class="feed-img" alt="Review Image">`
                 : `<div class="feed-img" style="height: 150px; background: #e2e8f0; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-camera" style="font-size:40px; color:#cbd5e1;"></i></div>`;
 
             feedHTML += `
                 <div class="feed-card">
                     ${imageRender}
                     <div class="feed-content">
-                        <div class="feed-shop-name"><i class="fa-solid fa-location-dot"></i> ${shopName}</div>
+                        <div class="feed-shop-name" style="display: flex; justify-content: space-between; align-items: center;">
+    <div><i class="fa-solid fa-location-dot"></i> ${shopName}</div>
+    ${deleteBtnHtml}
+</div>
                         <div class="feed-text">${formattedText}</div>
                         <div class="feed-meta">
                             <div class="feed-user">
@@ -1452,7 +1483,7 @@ async function loadCommunityFeed(hashtagFilter = null) {
             `;
         });
 
-        if(feedHTML === '') {
+        if (feedHTML === '') {
             feedGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#94a3b8;">ยังไม่มีรีวิว หรือไม่พบ Hashtag ที่ค้นหาครับ มารีวิวคนแรกกันเถอะ!</p>';
         } else {
             feedGrid.innerHTML = feedHTML;
@@ -1474,7 +1505,7 @@ async function toggleLike(reviewId) {
     }
 
     const reviewRef = firebase.firestore().collection('reviews').doc(reviewId);
-    
+
     try {
         // ใช้ Transaction เพื่อความแม่นยำเวลาคนกดพร้อมกันเยอะๆ
         await firebase.firestore().runTransaction(async (transaction) => {
@@ -1513,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 // สคริปต์สำหรับสร้างรีวิวปลอม (รันแค่ครั้งเดียวแล้วลบทิ้งได้เลย)
 // ============================================================
-window.generateFakeReviews = async function() {
+window.generateFakeReviews = async function () {
     const fakeReviews = [
         {
             shopId: "mingle",
@@ -1535,7 +1566,7 @@ window.generateFakeReviews = async function() {
             date: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 วันที่แล้ว
             reviewImage: "Im/สุกี้ตี๋น้อย2.webp",
             userId: "fake_user_2",
-            likedBy: ["uid1", "uid2", "uid3"] 
+            likedBy: ["uid1", "uid2", "uid3"]
         },
         {
             shopId: "moca",
@@ -1546,7 +1577,7 @@ window.generateFakeReviews = async function() {
             date: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 วันที่แล้ว
             reviewImage: "Im/พิพิธภัณฑ์ศิลปะร่วมสมัย 2.jpg",
             userId: "fake_user_3",
-            likedBy: ["uid1", "uid2", "uid3", "uid4", "uid5", "uid6", "uid7", "uid8"] 
+            likedBy: ["uid1", "uid2", "uid3", "uid4", "uid5", "uid6", "uid7", "uid8"]
         },
         {
             shopId: "ting_ting",
@@ -1557,7 +1588,7 @@ window.generateFakeReviews = async function() {
             date: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3 วันที่แล้ว
             reviewImage: "Im/ถิงถิงบิงซูน้ำขิง2.jpg",
             userId: "fake_user_4",
-            likedBy: ["uid1", "uid2"] 
+            likedBy: ["uid1", "uid2"]
         },
         {
             shopId: "ja_ou",
@@ -1568,7 +1599,7 @@ window.generateFakeReviews = async function() {
             date: new Date(Date.now() - 1000 * 60 * 60 * 96).toISOString(), // 4 วันที่แล้ว
             reviewImage: "Im/จ่าอูหมูเกาหลี2.webp",
             userId: "fake_user_5",
-            likedBy: ["uid1", "uid2", "uid3", "uid4"] 
+            likedBy: ["uid1", "uid2", "uid3", "uid4"]
         }
     ];
 
@@ -1583,91 +1614,319 @@ window.generateFakeReviews = async function() {
 }
 
 // ============================================================
-// QUICK REVIEW SYSTEM (Lemon8 Style Action Button)
+// COMMUNITY POST SYSTEM
 // ============================================================
-const quickModal = document.getElementById('quickReviewModal');
-const quickBtn = document.getElementById('quickReviewBtn');
-let quickRating = 0;
-let quickImage = null;
+const communityPostModal = document.getElementById('communityPostModal');
+const openCommunityPostBtn = document.getElementById('openCommunityPostBtn');
+let communityImage = null;
+let communityRating = 0;
 
-// 1. เปิดหน้าต่างเขียนรีวิว
-if (quickBtn) {
-    quickBtn.addEventListener('click', () => {
-        const user = firebase.auth().currentUser;
-        if (!user) {
-            showToast('กรุณาล็อกอินก่อนแบ่งปันรีวิวนะครับ', 'error');
-            document.getElementById('loginModal').style.display = 'flex';
-            return;
-        }
-        
-        // โหลดรายชื่อร้านลงใน Select
-        const select = document.getElementById('quickShopSelect');
-        select.innerHTML = '<option value="">-- เลือกสถานที่ --</option>';
-        Object.keys(shopDatabase).forEach(key => {
-            select.innerHTML += `<option value="${key}">${shopDatabase[key].title}</option>`;
-        });
-
-        quickModal.style.display = 'flex';
+if (openCommunityPostBtn) {
+    openCommunityPostBtn.addEventListener('click', () => {
+        // 🟢 เอาโค้ดที่ดึง Dropdown เก่าออก เพราะเราให้พิมพ์เองแล้ว
+        communityPostModal.style.display = 'flex';
     });
 }
 
-// 2. จัดการรูปภาพ Preview (พร้อมย่อขนาด)
-document.getElementById('quickPhotoInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        compressImage(file, function(compressedBase64) {
-            quickImage = compressedBase64;
-            document.getElementById('quickPhotoPreview').src = quickImage;
-            document.getElementById('quickPhotoPreviewContainer').style.display = 'block';
-        });
-    }
-});
-
-// 3. จัดการดาว (Rating)
-document.querySelectorAll('#quickStarRating i').forEach(star => {
-    star.addEventListener('click', function() {
-        quickRating = parseInt(this.getAttribute('data-value'));
-        document.querySelectorAll('#quickStarRating i').forEach(s => {
+// 🟢 ระบบให้คะแนนดาว
+const communityStars = document.querySelectorAll('#communityStarRating i');
+communityStars.forEach(star => {
+    star.addEventListener('click', function () {
+        communityRating = parseInt(this.getAttribute('data-value'));
+        communityStars.forEach(s => {
             const v = parseInt(s.getAttribute('data-value'));
-            s.className = v <= quickRating ? 'fa-solid fa-star filled' : 'fa-regular fa-star';
+            s.className = v <= communityRating ? 'fa-solid fa-star filled' : 'fa-regular fa-star';
         });
     });
 });
 
-// 4. สั่งโพสต์ลง Firebase
-document.getElementById('submitQuickReview').addEventListener('click', async () => {
-    const shopId = document.getElementById('quickShopSelect').value;
-    const text = document.getElementById('quickReviewText').value;
-    const user = firebase.auth().currentUser;
+// 🟢 ระบบกดปุ่มเพิ่มแท็กด่วน
+const quickTags = document.querySelectorAll('.quick-add-tag');
+quickTags.forEach(tag => {
+    tag.addEventListener('click', function() {
+        const textInput = document.getElementById('communityPostText');
+        textInput.value += ' ' + this.innerText + ' ';
+        textInput.focus(); // ให้เคอร์เซอร์ไปกระพริบรอพิมพ์ต่อ
+    });
+});
 
-    if (!shopId) return alert('กรุณาเลือกสถานที่ด้วยครับ');
-    if (quickRating === 0) return alert('กรุณาให้ดาวด้วยครับ');
-    if (!text) return alert('เขียนข้อความสักนิดนะครับ');
+// จัดการรูปภาพ
+const communityPhotoInput = document.getElementById('communityPhotoInput');
+if (communityPhotoInput) {
+    communityPhotoInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            compressImage(file, function (compressedBase64) {
+                communityImage = compressedBase64;
+                document.getElementById('communityPhotoPreview').src = communityImage;
+                document.getElementById('communityPhotoPreviewContainer').style.display = 'block';
+            });
+        }
+    });
+}
+
+// สั่งส่งข้อมูลขึ้น Firebase
+const submitCommunityPostBtn = document.getElementById('submitCommunityPostBtn');
+if (submitCommunityPostBtn) {
+    submitCommunityPostBtn.addEventListener('click', async () => {
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+
+        const text = document.getElementById('communityPostText').value;
+        const shopNameText = document.getElementById('communityShopInput').value.trim() || 'โพสต์ทั่วไป';
+
+        // 🟢 เช็คก่อนว่าให้ดาวหรือยัง
+        if (communityRating === 0) return showToast('อย่าลืมให้คะแนนดาวด้วยนะครับ 🌟', 'error');
+        if (!text.trim()) return showToast('กรุณาเขียนข้อความสักนิดนะครับ', 'error');
+
+        const originalText = submitCommunityPostBtn.innerText;
+        submitCommunityPostBtn.innerText = 'POSTING...';
+        submitCommunityPostBtn.disabled = true;
+
+        try {
+            // ดึงรูปโปรไฟล์
+            let currentAvatar = user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`;
+            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            if (userDoc.exists && userDoc.data().profileImage) { currentAvatar = userDoc.data().profileImage; }
+
+            await firebase.firestore().collection('reviews').add({
+                shopId: null,
+                shopName: shopNameText,
+                name: user.displayName || 'Student',
+                avatar: currentAvatar,
+                rating: communityRating, // 🟢 เปลี่ยนตรงนี้ให้บันทึกดาวที่ผู้ใช้กด
+                text: text,
+                date: new Date().toISOString(),
+                reviewImage: communityImage,
+                userId: user.uid,
+                likedBy: []
+            });
+
+            showToast('สร้างโพสต์สำเร็จ!', 'success');
+            communityPostModal.style.display = 'none';
+
+            // ล้างฟอร์ม (🟢 เพิ่มการล้างดาวด้วย)
+            document.getElementById('communityShopInput').value = '';
+            document.getElementById('communityPostText').value = '';
+            document.getElementById('communityPhotoPreviewContainer').style.display = 'none';
+            communityImage = null;
+            communityRating = 0;
+            communityStars.forEach(s => s.className = 'fa-regular fa-star');
+
+            // อัปเดตหน้าจอ
+            loadCommunityFeed();
+
+        } catch (error) {
+            showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+        } finally {
+            submitCommunityPostBtn.innerText = originalText;
+            submitCommunityPostBtn.disabled = false;
+        }
+    });
+}
+
+// ============================================================
+// AUTO CHATBOT SYSTEM (ระบบตอบโต้อัตโนมัติ)
+// ============================================================
+const chatBtn = document.getElementById('chatWidgetBtn');
+const chatWindow = document.getElementById('chatWidgetWindow');
+const closeChatBtn = document.getElementById('closeChatBtn');
+const chatInput = document.getElementById('chatInput');
+const sendChatBtn = document.getElementById('sendChatBtn');
+const chatBody = document.getElementById('chatBody');
+
+// 1. เปิด-ปิดหน้าต่างแชท
+if(chatBtn) {
+    chatBtn.addEventListener('click', () => {
+        chatWindow.style.display = 'flex';
+        chatBtn.style.display = 'none'; // ซ่อนปุ่มกลมๆ ตอนเปิดแชท
+    });
+    closeChatBtn.addEventListener('click', () => {
+        chatWindow.style.display = 'none';
+        chatBtn.style.display = 'flex'; // โชว์ปุ่มกลมๆ กลับมา
+    });
+}
+
+// ============================================================
+// 🧠 ระบบ AI จำลอง (ไม่ต้องง้อ API Key ไม่ต้องเสียเงิน!)
+// ============================================================
+
+// ฟังก์ชันสร้างข้อความในแชท
+function addChatMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender === 'user' ? 'user-message' : 'bot-message';
+    let formattedText = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    msgDiv.innerHTML = formattedText; 
+    chatBody.appendChild(msgDiv);
+    chatBody.scrollTop = chatBody.scrollHeight; 
+}
+
+// ฟังก์ชันประมวลผลเมื่อกดส่งข้อความ
+function handleSendChat() {
+    const text = chatInput.value.trim();
+    if (!text) return; 
+    
+    // โชว์คำถามฝั่งผู้ใช้
+    addChatMessage(text, 'user');
+    chatInput.value = ''; 
+
+    // โชว์จุด 3 จุด (บอทกำลังคิด...)
+    const typingMsgId = 'typing-' + Date.now();
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'bot-message';
+    typingDiv.id = typingMsgId;
+    typingDiv.innerHTML = '<i class="fa-solid fa-ellipsis" style="color: #cbd5e1; font-size: 20px; animation: pulse 1s infinite;"></i>';
+    chatBody.appendChild(typingDiv);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // หน่วงเวลาให้เหมือน AI กำลังประมวลผล (1.5 วินาที)
+    setTimeout(() => {
+        document.getElementById(typingMsgId).remove();
+        let aiReply = getSmartReply(text); // เรียกใช้สมองจำลอง
+        addChatMessage(aiReply, 'bot');
+    }, 1500);
+}
+
+// สมองจำลอง (ดักจับคำคีย์เวิร์ดแล้วตอบแบบเนียนๆ)
+function getSmartReply(userText) {
+    const text = userText.toLowerCase();
+
+    if (text.includes("สวัสดี") || text.includes("ดีจ้า") || text.includes("hi")) {
+        return "สวัสดีครับ! ผม BLOOM Bot ยินดีต้อนรับชาวศรีปทุมทุกคนครับ วันนี้อยากให้ผมแนะนำร้านอาหาร หรือที่เที่ยวดีครับ? 😊";
+    }
+    if (text.includes("หิว") || text.includes("กิน") || text.includes("อร่อย") || text.includes("อาหาร")) {
+        return "ถ้าหิวล่ะก็ แนะนำไปดูหมวด **EAT & DRINK** เลยครับ! มีทั้ง 'สุกี้ตี๋น้อย' ปิดดึก หรือถ้าอยากกินหม่าล่าแซ่บๆ ต้อง 'หม่าล่าเสฉวน' เลยครับ 🍜";
+    }
+    if (text.includes("คาเฟ่") || text.includes("กาแฟ") || text.includes("ทำงาน") || text.includes("อ่านหนังสือ")) {
+        return "สายคาเฟ่แนะนำ **Meetup Mingle Cafe** เลยครับ แอร์เย็น กาแฟอร่อย มีบอร์ดเกมให้เล่นด้วย หรือจะไปนั่งทำงานกลุ่มที่ **Co-Working Space** มหาลัยก็เริ่ดนะ ☕️💻";
+    }
+    if (text.includes("เที่ยว") || text.includes("ถ่ายรูป") || text.includes("เบื่อ") || text.includes("พักผ่อน")) {
+        return "ช่วงนี้ฮิตสุดๆ ต้อง **MOCA Museum** เลยครับ แสงสวย ถ่ายรูปปังมาก หรือถ้าชอบเดินชิลตอนเย็น ไป **JODD FAIRS แดนเนรมิต** ก็ได้ฟีลแคมป์ปิ้งดีนะครับ 📸✨";
+    }
+    if (text.includes("มู") || text.includes("สอบ") || text.includes("ขอพร") || text.includes("วัด")) {
+        return "ช่วงใกล้สอบ แนะนำไปไหว้พระขอพรที่ **วัดพระศรีมหาธาตุ** เลยครับ นั่ง BTS ไปลงหน้าวัดได้เลย ปังแน่นอน! 🙏✨";
+    }
+    if (text.includes("ขอบคุณ") || text.includes("แต๊ง")) {
+        return "ยินดีเสมอครับ! ถ้ามีอะไรให้ช่วยอีก ทักมาได้ตลอดเลยนะครับ BLOOM Bot สแตนด์บาย 24 ชม. ครับ 💙";
+    }
+    if (text.includes("ชื่ออะไร") || text.includes("คือใคร") || text.includes("ทำอะไรได้")) {
+        return "ผมชื่อ **BLOOM Bot** 🤖 เป็นผู้ช่วยอัจฉริยะประจำเว็บ BLOOM ครับ ผมช่วยแนะนำร้านอาหาร ที่เที่ยว และพิกัดเด็ดๆ รอบ ม.ศรีปทุม ให้คุณได้ครับ!";
+    }
+    if (text.includes("ไม่กินผัก") || text.includes("สายเนื้อ") || text.includes("เนื้อย่าง") || text.includes("หมูกระทะ")) {
+        return "มาถูกทางแล้ว! สายเนื้อเน้นๆ ไม่เน้นผัก แนะนำ 'ย่างเนย' หรือ 'สุกี้ตี๋น้อย' เลยครับ คุ้มสุดๆ หรือจะไปร้านสเต็กหลัง ม. ก็เด็ดนะ 🥩🔥";
+    }
+    if (text.includes("ลดน้ำหนัก") || text.includes("if") || text.includes("คลีน") || text.includes("สุขภาพ")) {
+        return "ช่วงคุมน้ำหนักหรือทำ IF แนะนำเมนูเกาเหลา ร้านก๋วยเตี๋ยวเรือหน้า ม. หรือร้านสลัด/อกไก่ปั่นแถวซอยพหลฯ 49 เลยครับ โปรตีนจุกๆ แน่นอน 💪🥗";
+    }
+    if (text.includes("ดึก") || text.includes("โต้รุ่ง") || text.includes("หิวตอนกลางคืน") || text.includes("เช้าตรู่")) {
+        return "หิวตอนดึกหรือตื่นเช้ามาก ไม่ต้องห่วง! 'ข้าวมันไก่เจ๊อ้วน' หรือ 'สุกี้ตี๋น้อย' เปิดดึกครับ ส่วนถ้าเช้าตรู่แวะ 7-11 หรือร้านข้าวแกงตลาดบางบัวได้เลยครับ 🦉🌅";
+    }
+    if (text.includes("bts") || text.includes("รถไฟฟ้า") || text.includes("เดินทาง") || text.includes("ไปมหาลัย")) {
+        return "เดินทางมา ม.ศรีปทุม ง่ายมากๆ แค่นั่ง BTS สายสีเขียวมาลงสถานี 'บางบัว' หรือ 'กรมป่าไม้' ก็เดินเข้ามอได้เลยครับ 🚝✨";
+    }
+    if (text.includes("ปริ้นงาน") || text.includes("ถ่ายเอกสาร") || text.includes("ร้านปริ้น")) {
+        return "งานด่วนใช่ไหมครับ! ร้านปริ้นงาน ถ่ายเอกสาร เข้าเล่ม มีเพียบเลยที่ชั้นล่างอาคาร 11 หรือตรงข้ามประตูหน้า ม. ก็มีหลายร้านเลยครับ 🖨️📄";
+    }
+    if (text.includes("ที่จอดรถ") || text.includes("จอดรถ")) {
+        return "ถ้าเอารถมาเอง สามารถจอดได้ที่อาคารจอดรถของมหาวิทยาลัยเลยครับ หรือถ้าเต็ม ลองดูที่จอดรถเอกชนในซอยพหลฯ 49 ได้ครับ 🚗🅿️";
+    }
+    if (text.includes("ของฝาก") || text.includes("ของที่ระลึก") || text.includes("ของชำร่วย")) {
+        return "อ๊ะๆ 😅 เว็บ BLOOM ของเราเน้นรีวิว 'ที่กิน' กับ 'ที่เที่ยว' ล้วนๆ เลยครับ หมวดสินค้าที่ระลึกเราไม่ได้ทำน้าา สนใจหาร้านอาหารแทนไหมครับ? 🍔";
+    }
+
+    // ตอบกลับแบบเนียนๆ กรณีไม่ตรงคีย์เวิร์ด
+    const defaultReplies = [
+        "เรื่องนี้ผมอาจจะยังไม่ค่อยมีข้อมูลครับ 😅 ลองถามผมเกี่ยวกับ 'ร้านอาหาร', 'คาเฟ่' หรือ 'ที่เที่ยว' รอบ ม. ดูสิครับ",
+        "น่าสนใจมากครับ! แต่ตอนนี้ผมเป็นเซียนแค่เรื่องกินกับเรื่องเที่ยวแถวศรีปทุมน้าา มีร้านไหนอยากให้แนะนำไหมครับ? 🍔",
+        "อันนี้แอบตอบยากแฮะ ขออภัยด้วยนะครับ 🙏 ลองเปลี่ยนเป็นถามพิกัดของกินอร่อยๆ ดูไหมครับ ผมถนัดมาก!"
+    ];
+    return defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+}
+
+// ผูกคำสั่งกับปุ่มและปุ่ม Enter
+if(sendChatBtn) {
+    // ล้าง Event เก่าทิ้งก่อนเผื่อบั๊ก
+    const newSendBtn = sendChatBtn.cloneNode(true);
+    sendChatBtn.parentNode.replaceChild(newSendBtn, sendChatBtn);
+    
+    newSendBtn.addEventListener('click', handleSendChat);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSendChat();
+    });
+}
+
+// ผูกคำสั่งกับปุ่มและปุ่ม Enter
+if(sendChatBtn) {
+    sendChatBtn.addEventListener('click', handleSendChat);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSendChat();
+    });
+}
+
+// ============================================================
+// ฟังก์ชันลบโพสต์ใน Community
+// ============================================================
+// ============================================================
+// ฟังก์ชันลบโพสต์ (เวอร์ชันเพื่อการทดสอบหาบั๊ก)
+// ============================================================
+window.deleteReview = async function (reviewId) {
+    if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้?")) return;
 
     try {
-        await firebase.firestore().collection('reviews').add({
-            shopId,
-            name: user.displayName,
-            avatar: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
-            rating: quickRating,
-            text: text,
-            date: new Date().toISOString(),
-            reviewImage: quickImage,
-            userId: user.uid,
-            likedBy: []
-        });
-
-        showToast('โพสต์รีวิวสำเร็จ! ขอบคุณที่ร่วมแบ่งปันครับ', 'success');
-        quickModal.style.display = 'none';
-        
-        // เคลียร์ค่าเดิม
-        document.getElementById('quickReviewText').value = '';
-        document.getElementById('quickPhotoPreviewContainer').style.display = 'none';
-        quickRating = 0;
-        
-        // โหลดฟีดใหม่
+        await firebase.firestore().collection('reviews').doc(reviewId).delete();
+        alert("✅ ลบโพสต์สำเร็จ! (ถ้าเห็นข้อความนี้แปลว่าโค้ดปกติ)");
         loadCommunityFeed();
     } catch (error) {
-        showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+        // บรรทัดนี้สำคัญมาก! มันจะบอกเลยว่าทำไม Firebase ถึงไม่ยอมให้ลบ
+        alert("❌ ลบไม่สำเร็จ! สาเหตุ: " + error.message);
     }
-});
+};
+
+// ฟังก์ชันสำหรับดึงรีวิวเฉพาะของร้านนี้มาแสดง
+// ฟังก์ชันสำหรับดึงรีวิวเฉพาะของร้านนี้มาแสดง
+async function loadReviewsForShop(shopId) {
+    const container = document.getElementById('shopReviewsContainer');
+    if (!container) return;
+
+    try {
+        // 🟢 เอา orderBy ออก เพื่อไม่ให้ติด Error ของ Firebase
+        const snapshot = await firebase.firestore().collection('shop_reviews')
+            .where('shopId', '==', shopId)
+            .get();
+
+        if (snapshot.empty) {
+            container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีรีวิวร้านนี้ เป็นคนแรกที่รีวิวเลย!</p>';
+            return;
+        }
+
+        // 🟢 ใช้ JavaScript เรียงลำดับให้รีวิวใหม่ล่าสุดขึ้นก่อน
+        let reviewsArray = [];
+        snapshot.forEach(doc => reviewsArray.push(doc.data()));
+        reviewsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        let html = '';
+        reviewsArray.forEach(data => {
+            // สร้างการ์ดรีวิวแต่ละอัน
+            html += `
+                <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <img src="${data.avatar}" style="width: 35px; height: 35px; border-radius: 50%;">
+                        <div>
+                            <div style="font-weight: bold; font-size: 14px;">${data.name}</div>
+                            <div style="color: #FFCE70; font-size: 12px;">
+                                ${'<i class="fa-solid fa-star"></i>'.repeat(data.rating)}
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: 14px; color: #475569;">${data.text}</p>
+                    ${data.reviewImage ? `<img src="${data.reviewImage}" style="width: 100%; border-radius: 8px; margin-top: 10px;">` : ''}
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error loading shop reviews:", error);
+        container.innerHTML = '<p style="text-align:center; color:red;">โหลดรีวิวไม่สำเร็จ</p>';
+    }
+}
