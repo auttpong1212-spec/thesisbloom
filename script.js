@@ -1833,6 +1833,15 @@ function getSmartReply(userText) {
     if (text.includes("ของฝาก") || text.includes("ของที่ระลึก") || text.includes("ของชำร่วย")) {
         return "อ๊ะๆ 😅 เว็บ BLOOM ของเราเน้นรีวิว 'ที่กิน' กับ 'ที่เที่ยว' ล้วนๆ เลยครับ หมวดสินค้าที่ระลึกเราไม่ได้ทำน้าา สนใจหาร้านอาหารแทนไหมครับ? 🍔";
     }
+    if (text.includes("เกรด") || text.includes("ติดเอฟ") || text.includes("f") || text.includes("เครียด")) {
+        return "เรื่องเรียนผมอาจจะช่วยติวไม่ได้ แต่ถ้าเครียดเรื่องสอบ... ไปหาของกินอร่อยๆ เยียวยาจิตใจในหมวด EAT & DRINK กันดีกว่าครับ! ขอให้ได้ A ทุกวิชานะครับ ✌️📚";
+    }
+    if (text.includes("ผู้สร้าง") || text.includes("ใครทำ") || text.includes("คนทำ") || text.includes("developer")) {
+        return "เว็บ BLOOM และตัวผม (BLOOM Bot) ถูกพัฒนาขึ้นโดย Natthawut Songchaibanchacheep ครับ! สามารถดูรายละเอียดทีมงานได้ที่แท็บ ABOUT เลยครับ 💻✨";
+    }
+    if (text.includes("แฟน") || text.includes("จีบ") || text.includes("เหงา")) {
+        return "ผมเป็นบอทครับ ยังไม่มีแฟน 🤖 แต่อย่าเพิ่งเหงาไปเลย ลองหาคาเฟ่นั่งชิลๆ เผื่อเจอคนถูกใจได้ในหมวด HANGOUT นะครับ 😉💕";
+    }
 
     // ตอบกลับแบบเนียนๆ กรณีไม่ตรงคีย์เวิร์ด
     const defaultReplies = [

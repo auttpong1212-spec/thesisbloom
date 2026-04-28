@@ -2705,13 +2705,45 @@ ul {
 @media (max-width: 768px) {
     .chat-widget-btn {
         right: 20px;
-        bottom: 100px;
+        bottom: 90px; /* หลบปุ่ม Back to top */
     }
 
     .chat-widget-window {
         width: calc(100% - 40px);
-        bottom: 170px;
+        bottom: 90px; /* ขยับกล่องลงมาไม่ให้ลอยสูงเกินไป */
         right: 20px;
-        height: 450px;
+        height: 60vh; /* ให้กล่องสูงแค่ 60% ของหน้าจอมือถือแต่ละรุ่น */
+        max-height: 450px;
+    }
+}
+
+/* 📱 ปรับแต่งหน้าต่าง Modal สำหรับมือถือ */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 15px !important; /* ลด Padding */
+        width: 95% !important;   /* ขยายความกว้าง */
+        margin: 10px auto !important;
+        border-radius: 12px !important;
+    }
+    .input-group label {
+        font-size: 14px !important;
+    }
+    textarea, .custom-input {
+        font-size: 14px !important;
+    }
+}
+
+/* 🤖 ปรับแต่งแชทบอทสำหรับมือถือ */
+@media (max-width: 768px) {
+    .chat-widget-window {
+        bottom: 80px !important; /* ระยะห่างจากขอบล่าง */
+        right: 10px !important;
+        width: calc(100% - 20px) !important;
+        height: 55vh !important; /* ความสูงพอเหมาะ */
+        max-height: 450px !important;
+    }
+    .bot-message, .user-message {
+        font-size: 13px !important;
+        padding: 8px 12px !important;
     }
 }
